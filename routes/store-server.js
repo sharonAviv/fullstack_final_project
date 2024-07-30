@@ -26,21 +26,8 @@ router.get('/search', async (req, res) => {
 });
 
 router.post('/add-to-cart', verifyToken, async (req, res) => {
+    // Assuming you have logic here to add products to the cart
     res.send({ message: 'Product added to cart successfully' });
 });
-
-function verifyToken(req, res, next) {
-    const token = req.cookies.token;
-    if (!token) {
-        return res.status(401).redirect('/login');
-    }
-    jwt.verify(token, 'your_secret_key', (err, decoded) => {
-        if (err) {
-            return res.status(401).redirect('/login');
-        }
-        req.user = decoded.username;
-        next();
-    });
-}
 
 module.exports = router;

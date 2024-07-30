@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Ticket = require('../models/Ticket'); // Assuming Mongoose models
+const Ticket = require('../models/Ticket');
 
 // GET tickets for a specific game
 router.get('/', async (req, res) => {
