@@ -1,3 +1,4 @@
+/* General body styles for all pages */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f8ff; /* Light blue background */
@@ -8,7 +9,8 @@ body {
     margin: 0;
 }
 
-.login-container {
+/* Login and register container styles */
+.form-container {
     background-color: white;
     padding: 30px;
     border-radius: 10px;
@@ -17,13 +19,13 @@ body {
     text-align: center;
 }
 
-.login-container h2 {
+.form-container h2 {
     color: #0038a8; /* Dark blue text */
     margin-bottom: 20px;
 }
 
-.login-container input[type="text"],
-.login-container input[type="password"] {
+.form-container input[type="text"],
+.form-container input[type="password"] {
     width: calc(100% - 20px);
     padding: 10px;
     margin: 10px 0;
@@ -32,8 +34,8 @@ body {
     outline: none;
 }
 
-.login-container input[type="text"]:focus,
-.login-container input[type="password"]:focus {
+.form-container input[type="text"]:focus,
+.form-container input[type="password"]:focus {
     border-color: #0056b3; /* Blue border on focus */
 }
 
@@ -49,7 +51,7 @@ body {
     color: #333;
 }
 
-.login-container button {
+.form-container button {
     width: 100%;
     padding: 10px;
     background-color: #0056b3; /* Blue button */
@@ -60,20 +62,135 @@ body {
     font-weight: bold;
 }
 
-.login-container button:hover {
+.form-container button:hover {
     background-color: #003f8a; /* Darker blue on hover */
 }
 
-.login-container .message {
+.form-container .message {
     margin-top: 20px;
     color: #333;
 }
 
-.login-container .message a {
+.form-container .message a {
     color: #0056b3;
     text-decoration: none;
 }
 
-.login-container .message a:hover {
+.form-container .message a:hover {
     text-decoration: underline;
+}
+
+/* Header styles */
+header {
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 60px; /* Increase padding to move content away from edges */
+    position: fixed;
+    width: calc(100% - 120px); /* Adjust width to accommodate padding */
+    top: 0;
+    z-index: 1000;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-left .flag-icon {
+    width: 24px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.header-left span {
+    color: #0038a8; /* Match color with right-side menu */
+    font-family: Arial, sans-serif;
+    font-size: 18px; /* Slightly bigger font size */
+}
+
+.header-right .login-icon {
+    background-image: url('../icons/login.png');
+}
+
+.header-right .cart-icon {
+    background-image: url('../icons/cart.png');
+}
+
+.header-right .menu-icon {
+    background-image: url('../icons/hamburger.png');
+}
+
+.header-right .icon {
+    width: 24px;
+    height: 24px;
+    margin-left: 20px;
+    display: inline-block;
+    background-size: contain;
+    cursor: pointer;
+    filter: none; /* Remove any default border */
+}
+
+/* Hover effects for icons */
+.header-right .icon:hover {
+    background-color: #0038a8;
+    filter: invert(1); /* Makes icon white */
+}
+
+/* Tooltip styles */
+.tooltip {
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1001;
+}
+
+/* Navigation menu styles */
+#navigation-menu {
+    background-color: white;
+    border-left: 1px solid #ccc;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 50px; /* Adjust to move down the menu */
+    right: -350px; /* Initially hidden, completely out of the screen */
+    width: 300px;
+    height: calc(100% - 50px); /* Adjust to move down the menu */
+    padding: 20px;
+    transition: right 0.3s ease;
+    z-index: 999;
+}
+
+#navigation-menu ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#navigation-menu ul li {
+    margin: 20px 0;
+}
+
+#navigation-menu ul li a {
+    color: #0038a8;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+#navigation-menu ul li .cart-symbol {
+    background-image: url('cart-symbol.png');
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin-left: 5px;
 }
