@@ -15,52 +15,46 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load games
     function loadGames() {
         const selectedMonth = gameDateFilter.value;
-    
+
         if (!selectedMonth) {
             gamesList.style.display = 'none';
             return;
         }
-    
+
         fetch('/api/games')
             .then(response => response.json())
             .then(games => {
                 gamesList.innerHTML = '';
-                let gamesFound = false; // Flag to track if games are found
-                games
-                    .filter(game => {
-                        const gameDate = new Date(game.date);
-                        const gameMonth = gameDate.toISOString().slice(0, 7); // Get YYYY-MM format
-                        return game.status === 'scheduled' && gameMonth === selectedMonth;
-                    })
-                    .forEach(game => {
-                        gamesFound = true; // Set flag if a game is found
-                        const gameItem = document.createElement('div');
-                        gameItem.className = 'game-item';
-                        gameItem.innerHTML = `
-                            <h3>${game.title}</h3>
-                            <p>${new Date(game.date).toLocaleDateString()} ${new Date(game.date).toLocaleTimeString()}</p>
-                            <button>Select Match</button>
-                        `;
-                        gameItem.querySelector('button').addEventListener('click', () => selectGame(game.id));
-                        gamesList.appendChild(gameItem);
-                    });
-    
-                // Show games list if available
+                let gamesFound = false;
+                const filteredGames = games.filter(game => {
+                    const gameDate = new Date(game.date);
+                    const gameMonth = gameDate.toISOString().slice(0, 7);
+                    return game.status === 'scheduled' && gameMonth === selectedMonth;
+                });
+
+                filteredGames.forEach(game => {
+                    gamesFound = true;
+                    const gameItem = document.createElement('div');
+                    gameItem.className = 'game-item';
+                    if (filteredGames.length === 1) {
+                        gameItem.classList.add('single');
+                    }
+                    gameItem.innerHTML = `
+                        <h3>${game.title}</h3>
+                        <p>${new Date(game.date).toLocaleDateString()} ${new Date(game.date).toLocaleTimeString()}</p>
+                        <button>Select Match</button>
+                    `;
+                    gameItem.querySelector('button').addEventListener('click', () => selectGame(game.id));
+                    gamesList.appendChild(gameItem);
+                });
+
                 gamesList.style.display = gamesFound ? 'block' : 'none';
-                // Display message if no games are found
                 document.getElementById('message').innerText = gamesFound ? '' : 'No games available for the selected date.';
             });
     }
 
-    gameDateFilter.addEventListener('change', () => {
-        console.log('Game date filter changed.'); // Debugging log
-        loadGames();
-        continueButton.style.display = gameDateFilter.value ? 'block' : 'none';
-    });
-
-    // Event listener for the continue button
     continueButton.addEventListener('click', () => {
-        console.log('Continue button clicked.'); // Debugging log
+        console.log('Continue button clicked.');
         if (gameDateFilter.value) {
             loadGames();
         }
@@ -78,6 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/api/tickets?gameId=${selectedGameId}`)
             .then(response => response.json())
             .then(tickets => {
+                if (!Array.isArray(tickets)) {
+                    throw new Error('Tickets response is not an array');
+                }
                 const stands = ['north', 'south', 'east', 'west'];
                 stands.forEach(stand => {
                     const standElement = document.getElementById(`${stand}-stand`);
@@ -89,7 +86,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         standElement.className = 'stand unavailable';
                     }
                 });
-            });
+            })
+            .catch(error => console.error('Error loading stands:', error));
     }
 
     function selectStand(stand) {
@@ -101,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load seats
     function loadSeats() {
-        fetch(`/api/tickets?gameId=${selectedGameId}`)
+        fetch(`/api/tickets?gameId=${selectedGameId}&stand=${selectedStand}`)
             .then(response => response.json())
             .then(tickets => {
                 seatsMap.innerHTML = '';
