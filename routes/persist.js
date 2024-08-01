@@ -28,7 +28,11 @@ async function getUsers() {
     const data = await fs.promises.readFile(USERS_FILE);
     return JSON.parse(data);
   } catch (error) {
-    return []; // Return an empty array if the file doesn't exist or there's an error
+    if (error.code === 'ENOENT') {
+      return []; // Return an empty array if file doesn't exist
+    } else {
+      throw error; // Rethrow other errors
+    }
   }
 }
 
@@ -57,7 +61,11 @@ async function getCarts() {
     const data = await fs.promises.readFile(CART_FILE);
     return JSON.parse(data);
   } catch (error) {
-    return {}; // Return an empty object if no carts or error
+    if (error.code === 'ENOENT') {
+      return {}; // Return an empty object if file doesn't exist
+    } else {
+      throw error; // Rethrow other errors
+    }
   }
 }
 

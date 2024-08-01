@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Israel's Soccer Team's Store</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="shop.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="../icons/flag.png" alt="Israeli Flag" class="flag-icon">
+            <span>Israel's Soccer Team's Store</span>
+        </div>
+        <div class="header-right">
+            <a href="login.html" class="icon login-icon"></a>
+            <a href="cart.html" class="icon cart-icon"></a>
+            <div class="icon menu-icon" id="menu-icon"></div>
+        </div>
+    </header>
+
+    <nav id="navigation-menu">
+        <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="cart.html">My Cart <span class="cart-symbol"></span></a></li>
+            <li><a href="store.html">Store</a></li>
+            <li><a href="tickets.html">Tickets</a></li>
+            <li><a href="team.html">The Team</a></li>
+            <li><a href="news.html">News</a></li>
+            <li><a href="admin.html">Admin</a></li>
+        </ul>
+    </nav>
+    <main class="shop-container">
+        <div id="product-list" class="product-grid">
+            <!-- Products will be dynamically loaded here -->
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
