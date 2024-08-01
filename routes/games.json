@@ -1,0 +1,25 @@
+[
+    {
+      "id": 1,
+      "title": "Israel vs Germany",
+      "date": "2024-08-20T18:00:00Z",
+      "venue": "National Stadium",
+      "teams": {
+        "home": "Israel",
+        "away": "Germany"
+      },
+      "status": "scheduled"
+    },
+    {
+      "id": 2,
+      "title": "Israel vs France",
+      "date": "2024-09-10T18:00:00Z",
+      "venue": "National Stadium",
+      "teams": {
+        "home": "Israel",
+        "away": "France"
+      },
+      "status": "scheduled"
+    }
+  ]
+  

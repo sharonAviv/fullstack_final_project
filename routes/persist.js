@@ -4,6 +4,8 @@ const path = require('path');
 // Paths to the JSON files
 const USERS_FILE = path.join(__dirname, 'users.json');
 const CART_FILE = path.join(__dirname, 'carts.json');
+const GAMES_FILE = path.join(__dirname, 'games.json');
+const TICKETS_FILE = path.join(__dirname, 'tickets.json');
 
 // Ensure admin user exists
 async function init() {
@@ -12,6 +14,54 @@ async function init() {
   if (!users.find(user => user.username === 'admin')) {
     users.push(adminUser);
     await fs.promises.writeFile(USERS_FILE, JSON.stringify(users, null, 2));
+  }
+
+  await initGames();
+  await initTickets();
+}
+
+// Initialize games from JSON file
+async function initGames() {
+  try {
+    const data = await fs.promises.readFile(GAMES_FILE);
+    const games = JSON.parse(data);
+    // Assuming games is an array
+    console.log('Games initialized:', games);
+  } catch (error) {
+    console.error('Error initializing games:', error);
+  }
+}
+
+// Initialize tickets from JSON file
+async function initTickets() {
+  try {
+    const data = await fs.promises.readFile(TICKETS_FILE);
+    const tickets = JSON.parse(data);
+    // Assuming tickets is an array
+    console.log('Tickets initialized:', tickets);
+  } catch (error) {
+    console.error('Error initializing tickets:', error);
+  }
+}
+
+// Save a new user to users.json
+async function saveUser(user) {
+  const users = await getUsers();
+  users.push(user);
+  await fs.promises.writeFile(USERS_FILE, JSON.stringify(users, null, 2));
+}
+
+// Get all users from users.json
+async function getUsers() {
+  try {
+    const data = await fs.promises.readFile(USERS_FILE);
+    return JSON.parse(data);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return []; // Return an empty array if file doesn't exist
+    } else {
+      throw error; // Rethrow other errors
+    }
   }
 }
 
