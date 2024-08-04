@@ -8,22 +8,35 @@
     <script defer src="shop.js"></script>
 </head>
 <body>
-    <header>
+    <!-- Rest of the HTML content -->
+    <header class="main-header">
         <div class="header-left">
             <img src="../icons/flag.png" alt="Israeli Flag" class="flag-icon">
             <span>Israel's Soccer Team's Store</span>
         </div>
         <div class="header-right">
-            <a href="login.html" class="icon login-icon"></a>
-            <a href="cart.html" class="icon cart-icon"></a>
+            <span id="user-greeting" class="user-greeting"></span>
+            <a href="login.html" class="icon login-icon" id="auth-link"></a>
+            <div class="icon cart-icon" id="cart-icon"></div>
             <div class="icon menu-icon" id="menu-icon"></div>
         </div>
     </header>
 
-    <nav id="navigation-menu">
+    <section class="products-section">
+        <header class="products-header">
+            <h1>Products List</h1>
+        </header>
+        <main class="shop-container">
+            <div id="product-list" class="product-grid">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+        </main>
+    </section>
+
+    <nav id="navigation-menu" class="navigation-menu panel">
         <ul>
             <li><a href="login.html">Login</a></li>
-            <li><a href="cart.html">My Cart <span class="cart-symbol"></span></a></li>
+            <li><a href="#" class="cart-link">My Cart <span class="cart-symbol"></span></a></li>
             <li><a href="store.html">Store</a></li>
             <li><a href="tickets.html">Tickets</a></li>
             <li><a href="team.html">The Team</a></li>
@@ -31,11 +44,21 @@
             <li><a href="admin.html">Admin</a></li>
         </ul>
     </nav>
-    <main class="shop-container">
-        <div id="product-list" class="product-grid">
-            <!-- Products will be dynamically loaded here -->
+
+    <!-- Sliding Cart Window -->
+    <div id="cart" class="cart-container panel">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
         </div>
-    </main>
-    <script src="script.js"></script>
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be dynamically loaded here -->
+        </div>
+        <div class="cart-footer">
+            <button id="close-cart" class="close-cart">&times;</button>
+            <button id="checkout" class="checkout-button">Checkout</button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
 </body>
 </html>

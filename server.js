@@ -19,19 +19,20 @@ const app = express();
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'http://localhost:3000', // Adjust this if your frontend is on a different origin
   methods: 'GET,POST,PUT,DELETE',
   credentials: true
 }));
 
+// Middleware setup
 app.use(express.json());
 app.use(cookieParser());
 
-// Serve static files from the 'src' and 'icons' directories
+// Serve static files from 'src' and 'icons' directories
 app.use(express.static(path.join(__dirname, 'src')));
 app.use('/icons', express.static(path.join(__dirname, 'icons')));
 
-// Mount API routers
+// Mount API routers with /api prefix
 app.use('/api/register', registerRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/logout', logoutRouter);
@@ -47,7 +48,7 @@ app.get('/shop', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'shop.html'));
 });
 
-// Additional routes for other pages
+// Serve additional static pages
 app.get('/cart', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'cart.html'));
 });
@@ -56,7 +57,7 @@ app.get('/checkout', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'checkout.html'));
 });
 
-// Serve the default page for other unspecified routes
+// SPA fallback route for unspecified routes
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'shop.html'));
 });
@@ -67,11 +68,12 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something went wrong!');
 });
 
-// Initialize the application
-init();
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Initialize the application and start the server
+init().then(() => {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}).catch(err => {
+  console.error('Failed to initialize the application:', err);
 });

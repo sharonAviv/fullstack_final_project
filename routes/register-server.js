@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { saveUser, findUserByUsername } = require('./persist');
+const { saveUser, findUserByUsername } = require('./persist'); // Adjust path if necessary
 
-router.post('/register', async (req, res) => {
+// Define the route without the /register prefix, since it's included when mounting the router
+router.post('/', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -20,6 +21,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully.' });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
