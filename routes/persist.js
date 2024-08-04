@@ -54,15 +54,23 @@ async function createTables() {
 
       db.run(`CREATE TABLE IF NOT EXISTS games (
         game_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        genre TEXT,
-        release_date TEXT
+        title TEXT NOT NULL,
+        game_date DATE,
+        team_home TEXT,
+        team_away TEXT,
+        stadium_name TEXT,
+        status TEXT DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'ongoing', 'completed')),
       )`);
 
       db.run(`CREATE TABLE IF NOT EXISTS tickets (
         ticket_id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
         game_id INTEGER,
+        game_date DATE,
+        seat_number TEXT,
+        stand TEXT(status IN ('north', 'south', 'east', 'west')),
+        price FLOAT, 
+        status TEXT CHECK(status IN ('available', 'sold')),
         purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(user_id) REFERENCES users(user_id),
         FOREIGN KEY(game_id) REFERENCES games(game_id)
