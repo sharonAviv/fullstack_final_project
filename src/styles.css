@@ -2,21 +2,95 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
-    padding-top: 130px; /* Account for both headers */
 }
 
-/* Main Header styles */
-.main-header {
+/* Login and register container styles */
+.form-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.form-container h2 {
+    color: #0038a8; /* Dark blue text */
+    margin-bottom: 20px;
+}
+
+.form-container input[type="text"],
+.form-container input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+.form-container input[type="text"]:focus,
+.form-container input[type="password"]:focus {
+    border-color: #0056b3; /* Blue border on focus */
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    justify-content: left;
+}
+
+.checkbox-container label {
+    margin-left: 5px;
+    color: #333;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0056b3; /* Blue button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.form-container button:hover {
+    background-color: #003f8a; /* Darker blue on hover */
+}
+
+.form-container .message {
+    margin-top: 20px;
+    color: #333;
+}
+
+.form-container .message a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.form-container .message a:hover {
+    text-decoration: underline;
+}
+
+/* Header styles */
+header {
     background-color: white;
     border-bottom: 1px solid #ccc;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 60px;
+    padding: 10px 60px; /* Increase padding to move content away from edges */
     position: fixed;
-    width: calc(100% - 120px);
+    width: calc(100% - 120px); /* Adjust width to accommodate padding */
     top: 0;
     z-index: 1000;
 }
@@ -33,19 +107,9 @@ body {
 }
 
 .header-left span {
-    color: #0038a8;
+    color: #0038a8; /* Match color with right-side menu */
     font-family: Arial, sans-serif;
-    font-size: 18px;
-}
-
-.header-right .icon {
-    width: 24px;
-    height: 24px;
-    margin-left: 20px;
-    display: inline-block;
-    background-size: contain;
-    cursor: pointer;
-    filter: none; /* Remove any default border */
+    font-size: 18px; /* Slightly bigger font size */
 }
 
 .header-right .login-icon {
@@ -60,167 +124,50 @@ body {
     background-image: url('../icons/hamburger.png');
 }
 
+.header-right .icon {
+    width: 24px;
+    height: 24px;
+    margin-left: 20px;
+    display: inline-block;
+    background-size: contain;
+    cursor: pointer;
+    filter: none; /* Remove any default border */
+}
+
 /* Hover effects for icons */
 .header-right .icon:hover {
     background-color: #0038a8;
-    filter: invert(1);
+    filter: invert(1); /* Makes icon white */
 }
 
-/* Products Header styles */
-.products-header {
-    background-color: #e0e0e0; /* Light grey background */
-    border-bottom: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 10px 60px;
-    width: calc(100% - 120px);
-    position: fixed;
-    top: 50px;
-    z-index: 1000;
-    text-align: center;
-}
-
-.products-header h1 {
-    margin: 0;
-    font-size: 24px;
-    color: #0038a8;
-}
-
-/* Main content padding to accommodate fixed headers */
-.shop-container {
-    padding-top: 150px; /* Ensure content isn't hidden behind headers */
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Product Grid */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-/* Product Item */
-.product-item {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.product-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Image Carousel */
-.image-carousel {
-    position: relative;
-    width: 100%;
-    height: 300px; /* Set a fixed height */
-    overflow: hidden;
-    border-radius: 10px 10px 0 0;
-    background-color: #f0f0f0; /* Add background color to prevent flickering */
-}
-
-.product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Ensure images cover the area without distortion */
-    display: block;
-    transition: opacity 0.3s ease;
-}
-
-/* Carousel buttons */
-.carousel-btn {
+/* Tooltip styles */
+.tooltip {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
+    background-color: #333;
     color: white;
-    border: none;
-    border-radius: 50%;
-    padding: 5px;
-    cursor: pointer;
-    z-index: 1001; /* Ensure buttons are above images */
-}
-
-.prev-btn {
-    left: 10px;
-}
-
-.next-btn {
-    right: 10px;
-}
-
-.carousel-btn:hover {
-    background: rgba(0, 0, 0, 0.7);
-}
-
-/* Product Title */
-.product-item h2 {
-    font-size: 1.1em;
-    color: #333;
-    margin: 10px 0;
-}
-
-/* Product Description */
-.product-item p {
-    font-size: 0.9em;
-    color: #666;
-    margin: 10px 0;
-}
-
-/* Product Price */
-.product-item .price {
-    font-size: 1em;
-    color: #000;
-    font-weight: bold;
-    margin: 10px 0;
-}
-
-/* Add to Cart Button */
-.add-to-cart {
-    display: inline-block;
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
+    padding: 5px 10px;
     border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 12px;
+    white-space: nowrap;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1001;
 }
 
-.add-to-cart:hover {
-    background-color: #0056b3;
-}
-
-/* Panel Styles for Sliding Elements (Navigation and Cart) */
-.panel {
+/* Navigation menu styles */
+#navigation-menu {
     background-color: white;
     border-left: 1px solid #ccc;
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
     position: fixed;
-    top: 50px;
-    right: -350px; /* Initially hidden off-screen */
+    top: 50px; /* Adjust to move down the menu */
+    right: -350px; /* Initially hidden, completely out of the screen */
     width: 300px;
-    height: calc(100% - 50px); /* Align with the header height */
+    height: calc(100% - 50px); /* Adjust to move down the menu */
     padding: 20px;
     transition: right 0.3s ease;
-    z-index: 1000;
-    overflow-y: auto;
-}
-
-.panel.active {
-    right: 0;
-}
-
-/* Navigation Menu Specific Styles */
-.navigation-menu {
-    /* Additional specific styles for the navigation menu can go here if needed */
+    z-index: 999;
 }
 
 #navigation-menu ul {
