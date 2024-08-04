@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { getProducts, searchProducts } = require('./products');
-const { verifyToken } = require('./middleware');
+const { getProducts, searchProducts } = require('./products'); // Adjust the path as necessary
+const { verifyToken } = require('./middleware'); // Middleware for authentication
+const { addToCart } = require('./persist'); // Add the function to persist cart items
 
 // Get all products
 router.get('/products', async (req, res) => {
@@ -33,7 +34,9 @@ router.get('/search', async (req, res) => {
 router.post('/add-to-cart', verifyToken, async (req, res) => {
     try {
         const { productId } = req.body;
-        // Assuming you have a function to handle adding to cart
+        if (!productId) {
+            return res.status(400).send({ message: 'Product ID is required' });
+        }
         await addToCart(req.user.username, productId);
         res.status(200).send({ message: 'Product added to cart successfully' });
     } catch (error) {

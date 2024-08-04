@@ -1,25 +1,35 @@
-const fs = require('fs');
-const path = require('path');
-const PRODUCTS_FILE = path.join(__dirname, 'products.json');
+const { saveProduct, getProducts, searchProducts } = require('./persist');
 
-async function saveProduct(product) {
+// Function to save a product
+async function saveNewProduct(product) {
+  try {
+    const productId = await saveProduct(product);
+    console.log(`Product saved with ID: ${productId}`);
+  } catch (error) {
+    console.error('Error saving product:', error);
+  }
+}
+
+// Function to get all products
+async function retrieveAllProducts() {
+  try {
     const products = await getProducts();
-    products.push(product);
-    return fs.promises.writeFile(PRODUCTS_FILE, JSON.stringify(products));
+    return products;
+  } catch (error) {
+    console.error('Error retrieving products:', error);
+    return [];
+  }
 }
 
-async function getProducts() {
-    try {
-        const data = await fs.promises.readFile(PRODUCTS_FILE);
-        return JSON.parse(data);
-    } catch (error) {
-        return []; // Return an empty array if no products or error
-    }
+// Function to search for products
+async function findProducts(query) {
+  try {
+    const products = await searchProducts(query);
+    return products;
+  } catch (error) {
+    console.error('Error searching products:', error);
+    return [];
+  }
 }
 
-async function searchProducts(query) {
-    const products = await getProducts();
-    return products.filter(p => p.name.startsWith(query) || p.description.startsWith(query));
-}
-
-module.exports = { saveProduct, getProducts, searchProducts };
+module.exports = { saveNewProduct, retrieveAllProducts, findProducts };

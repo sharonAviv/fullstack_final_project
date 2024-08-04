@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const bcryptjs = require('bcryptjs');
-const { findUserByUsername } = require('./persist');
 const jwt = require('jsonwebtoken');
+const { findUserByUsername } = require('./persist'); // Adjust the path as necessary
 const { logActivity } = require('./activityLogger'); // Import the logging utility
 
 router.post('/', async (req, res) => {
@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
 
-        const passwordMatch = await bcryptjs.compare(password, user.password);
+        const passwordMatch = await bcryptjs.compare(password, user.password_hash);
         if (!passwordMatch) {
             console.log('Incorrect password for user:', username);
             return res.status(401).json({ message: 'Invalid credentials.' });
@@ -24,13 +24,13 @@ router.post('/', async (req, res) => {
 
         const expiresIn = remember ? '10d' : '30m';
         const token = jwt.sign({ username }, 'your_secret_key', { expiresIn });
-        console.log('Token generated for user:', username , token);
+        console.log('Token generated for user:', username, token);
 
-        res.cookie('token', token, { maxAge: remember ? 864000000 : 1800000 });
-        
+        res.cookie('token', token, { maxAge: remember ? 864000000 : 1800000, httpOnly: true });
 
         await logActivity(username, 'login');
         res.json({ message: 'Logged in successfully', redirect: '/shop' });
+        
     } catch (error) {
         console.error('Error during login:', error);
         if (!res.headersSent) {
