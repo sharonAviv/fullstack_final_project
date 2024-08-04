@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
+    <header class="main-header">
         <div class="header-left">
             <img src="../icons/flag.png" alt="Israeli Flag" class="flag-icon">
             <span>Israel's Soccer Team's Store</span>
@@ -19,17 +19,33 @@
         </div>
     </header>
 
-    <nav id="navigation-menu">
+    <nav id="navigation-menu" class="navigation-menu panel">
         <ul>
             <li><a href="login.html">Login</a></li>
             <li><a href="cart.html">My Cart <span class="cart-symbol"></span></a></li>
-            <li><a href="store.html">Store</a></li>
+            <li><a href="shop.html">Store</a></li>
             <li><a href="tickets.html">Tickets</a></li>
             <li><a href="team.html">The Team</a></li>
             <li><a href="news.html">News</a></li>
             <li><a href="admin.html">Admin</a></li>
         </ul>
     </nav>
+
+    <!-- Sliding Cart Window -->
+    <div id="cart" class="cart-container panel">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+        </div>
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be dynamically loaded here -->
+        </div>
+        <div class="cart-footer">
+            <button id="close-cart" class="close-cart">&times;</button>
+            <button id="checkout" class="checkout-button">Checkout</button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
 
     <main id="ticket-selection">
         <div id="game-selection" class="selection-step form-container">
@@ -41,15 +57,16 @@
             <div id="games-list" style="display: none;"></div>
         </div>
     
-        <div id="stand-selection" class="selection-step form-container" style="display: none;">
+        <div id="stand-selection" class="selection-step form-container" style="display: none; width: 500px;">
             <h2>Select a Stand</h2>
             <div id="stadium-map">
                 <div class="stand horizontal" id="north-stand">North Stand</div>
-                <div class="field">Field</div>
-                <div class="stand horizontal" id="south-stand">South Stand</div>
                 <div class="stand vertical" id="east-stand">East Stand</div>
+                <div class="field" id="Field">Field</div>
                 <div class="stand vertical" id="west-stand">West Stand</div>
+                <div class="stand horizontal" id="south-stand">South Stand</div>
             </div>
+            
         </div>
     
         <div id="seat-selection" class="selection-step form-container" style="display: none;">

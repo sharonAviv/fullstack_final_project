@@ -390,16 +390,15 @@ body {
 
 #stadium-map {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column; /* Arrange stands vertically */
+    align-items: center; /* Center align stands */
     position: relative;
     width: 600px; /* Adjust the width as needed */
     height: 300px; /* Adjust the height as needed */
-    border: 1px solid #ccc; /* Optional border for visualization */
     margin-top: 20px;
 }
 
-.stand {
+/* .stand {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -410,12 +409,12 @@ body {
     font-size: 14px;
     font-weight: bold;
     color: black; /* Default font color */
-}
+} */
 
 .stand.horizontal {
     width: 150px; /* Adjust width for horizontal stands */
     height: 50px; /* Adjust height for horizontal stands */
-    margin: 10px 0; /* Vertical margin */
+    margin: 0; /* Vertical margin */
 }
 
 .stand.vertical {
@@ -439,7 +438,7 @@ body {
 }
 
 .field {
-    background-color: white;
+    background-color: #52CC7A;
     width: 150px; /* Match width with horizontal stands */
     height: 150px; /* Match height with combined vertical stands */
     border: 1px solid #ccc; /* Optional border for visualization */
@@ -447,6 +446,11 @@ body {
     align-items: center;
     justify-content: center;
     margin: 0 10px; /* Horizontal margin to align with vertical stands */
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: black; /* Default font color */
+    border-radius: 10px;
 }
 
 #seats-map {

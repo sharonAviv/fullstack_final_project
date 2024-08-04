@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load stands
     function loadStands() {
-        fetch(`/api/tickets?gameId=${selectedGameId}`)
+        fetch(`/api/tickets?game_id=${selectedGameId}`)
             .then(response => response.json())
             .then(tickets => {
                 if (!Array.isArray(tickets)) {
