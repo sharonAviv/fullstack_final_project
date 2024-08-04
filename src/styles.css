@@ -2,8 +2,83 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f8ff; /* Light blue background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
     padding-top: 130px; /* Account for both headers */
+}
+
+/* Login and register container styles */
+.form-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.form-container h2 {
+    color: #0038a8; /* Dark blue text */
+    margin-bottom: 20px;
+}
+
+.form-container input[type="text"],
+.form-container input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+.form-container input[type="text"]:focus,
+.form-container input[type="password"]:focus {
+    border-color: #0056b3; /* Blue border on focus */
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    justify-content: left;
+}
+
+.checkbox-container label {
+    margin-left: 5px;
+    color: #333;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #0056b3; /* Blue button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.form-container button:hover {
+    background-color: #003f8a; /* Darker blue on hover */
+}
+
+.form-container .message {
+    margin-top: 20px;
+    color: #333;
+}
+
+.form-container .message a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.form-container .message a:hover {
+    text-decoration: underline;
 }
 
 /* Main Header styles */
@@ -77,6 +152,21 @@ body {
     top: 50px;
     z-index: 1000;
     text-align: center;
+}
+
+/* Tooltip styles */
+.tooltip {
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1001;
 }
 
 .products-header h1 {
@@ -221,6 +311,17 @@ body {
 /* Navigation Menu Specific Styles */
 .navigation-menu {
     /* Additional specific styles for the navigation menu can go here if needed */
+    background-color: white;
+    border-left: 1px solid #ccc;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 50px; /* Adjust to move down the menu */
+    right: -350px; /* Initially hidden, completely out of the screen */
+    width: 300px;
+    height: calc(100% - 50px); /* Adjust to move down the menu */
+    padding: 20px;
+    transition: right 0.3s ease;
+    z-index: 999;
 }
 
 #navigation-menu ul {
