@@ -248,114 +248,201 @@ body {
     margin-left: 5px;
 }
 
-/* Cart Container Specific Styles */
-.cart-container .cart-header, .cart-footer {
-    padding: 20px;
-    border-bottom: 1px solid #ccc;
-}
-
-.cart-items {
-    padding: 20px;
-}
-
-.close-cart {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-/* Overlay Styles */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: none;
-    z-index: 999;
-}
-
-.overlay.active {
-    display: block;
-}
-
-/* Form Container styles */
-.form-container {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    width: 300px;
-    margin: 0 auto;
+/* Styles for the ticket selection process */
+.selection-step {
     text-align: center;
+    margin-top: 100px; /* Adjust for header space */
 }
 
-/* Heading styles */
-.form-container h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #0038a8;
-}
-
-/* Form input styles */
-.form-container input[type="text"],
-.form-container input[type="password"] {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Checkbox container styles */
-.checkbox-container {
+#games-list {
     display: flex;
-    align-items: center;
-    margin: 10px 0;
-}
-
-.checkbox-container input[type="checkbox"] {
-    margin-right: 10px;
-}
-
-/* Button styles */
-.form-container button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.form-container button:hover {
-    background-color: #0056b3;
-}
-
-/* Message and link styles */
-.message {
+    flex-wrap: wrap;
+    justify-content: center;
     margin-top: 20px;
 }
 
-.message p {
-    color: #333;
+.game-item {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 10px;
+    cursor: pointer;
+    width: 200px;
+    text-align: center;
+    transition: background-color 0.2s;
 }
 
-.message a {
-    color: #007bff;
-    text-decoration: none;
+.game-item.single {
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.message a:hover {
-    text-decoration: underline;
+.game-item:hover {
+    background-color: #f0f8ff;
 }
 
-/* User greeting styles */
-.user-greeting {
-    margin-right: 20px;
-    font-size: 16px;
-    color: #0038a8;
+.message {
+    margin-top: 10px;
+    color: red; /* Change color to your preference */
+}
+
+#stadium-map {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 600px; /* Adjust the width as needed */
+    height: 300px; /* Adjust the height as needed */
+    border: 1px solid #ccc; /* Optional border for visualization */
+    margin-top: 20px;
+}
+
+.stand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    transition: background-color 0.2s, color 0.2s;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: black; /* Default font color */
+}
+
+.stand.horizontal {
+    width: 150px; /* Adjust width for horizontal stands */
+    height: 50px; /* Adjust height for horizontal stands */
+    margin: 10px 0; /* Vertical margin */
+}
+
+.stand.vertical {
+    width: 50px; /* Adjust width for vertical stands */
+    height: 150px; /* Adjust height for vertical stands */
+    margin: 0 10px; /* Horizontal margin */
+}
+
+.stand.available {
+    background-color: lightblue;
+}
+
+.stand.unavailable {
+    background-color: grey;
+    cursor: not-allowed;
+}
+
+.stand.available:hover {
+    background-color: #0038a8;
+    color: white;
+}
+
+.field {
+    background-color: white;
+    width: 150px; /* Match width with horizontal stands */
+    height: 150px; /* Match height with combined vertical stands */
+    border: 1px solid #ccc; /* Optional border for visualization */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px; /* Horizontal margin to align with vertical stands */
+}
+
+#seats-map {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.seat {
+    width: 20px;
+    height: 20px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.seat.available {
+    background-color: lightblue;
+}
+
+.seat.unavailable {
+    background-color: grey;
+    cursor: not-allowed;
+}
+
+.seat.available:hover {
+    background-color: #0038a8;
+}
+
+.seat-info {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    display: none;
+}
+
+.seat-info button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.seat-info button:hover {
+    background-color: #0038a8;
+}
+
+#stadium-map {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%; /* Adjust as needed */
+}
+
+.field {
+    background-color: white;
+    width: 100px; /* Adjust field width */
+    height: 200px; /* Adjust field height */
+    margin: 0 20px; /* Space between stands */
+}
+
+.stand {
+    background-color: lightblue; /* Default available color */
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.stand:hover {
+    background-color: darkblue; /* Color on hover */
+}
+
+.stand.unavailable {
+    background-color: grey; /* Color for unavailable tickets */
+    cursor: not-allowed; /* Indicate no click action */
+}
+
+/* Horizontal stands */
+.horizontal {
+    flex: 1; /* Let it take equal space */
+    height: 50px; /* Height for horizontal stands */
+}
+
+/* Vertical stands */
+.vertical {
+    width: 50px; /* Width for vertical stands */
+    height: 100px; /* Height for vertical stands */
 }

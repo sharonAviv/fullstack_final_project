@@ -1,0 +1,31 @@
+[
+    {
+      "id": 1,
+      "game_id": 1,
+      "seat_number": "A1",
+      "price": 50,
+      "status": "available"
+    },
+    {
+      "id": 2,
+      "game_id": 1,
+      "seat_number": "A2",
+      "price": 50,
+      "status": "available"
+    },
+    {
+      "id": 3,
+      "game_id": 2,
+      "seat_number": "B1",
+      "price": 60,
+      "status": "available"
+    },
+    {
+      "id": 4,
+      "game_id": 2,
+      "seat_number": "B2",
+      "price": 60,
+      "status": "available"
+    }
+  ]
+  

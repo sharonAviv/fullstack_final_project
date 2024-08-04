@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const bcryptjs = require('bcryptjs');
 const { findUserByUsername } = require('./persist');
-const { logActivity } = require('./activityLogger');
+const jwt = require('jsonwebtoken');
+const { logActivity } = require('./activityLogger'); // Import the logging utility
 
 router.post('/', async (req, res) => {
     try {
@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcryptjs.compare(password, user.password);
         if (!passwordMatch) {
             console.log('Incorrect password for user:', username);
             return res.status(401).json({ message: 'Invalid credentials.' });

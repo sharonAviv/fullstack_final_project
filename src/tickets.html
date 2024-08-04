@@ -31,8 +31,35 @@
         </ul>
     </nav>
 
-    <!-- Your page content goes here -->
+    <main id="ticket-selection">
+        <div id="game-selection" class="selection-step form-container">
+            <h2>Select a Game</h2>
+            <label for="game-date-filter">Filter by Month/Year:</label>
+            <input type="month" id="game-date-filter"><br><br>
+            <button id="continue-button">Continue</button>
+            <div id="message" class="message"></div>
+            <div id="games-list" style="display: none;"></div>
+        </div>
+    
+        <div id="stand-selection" class="selection-step form-container" style="display: none;">
+            <h2>Select a Stand</h2>
+            <div id="stadium-map">
+                <div class="stand horizontal" id="north-stand">North Stand</div>
+                <div class="field">Field</div>
+                <div class="stand horizontal" id="south-stand">South Stand</div>
+                <div class="stand vertical" id="east-stand">East Stand</div>
+                <div class="stand vertical" id="west-stand">West Stand</div>
+            </div>
+        </div>
+    
+        <div id="seat-selection" class="selection-step form-container" style="display: none;">
+            <h2>Select a Seat</h2>
+            <div id="seats-map"></div>
+        </div>
+    </main>
+    
 
     <script src="script.js"></script>
+    <script src="ticket-selection.js"></script>
 </body>
 </html>
