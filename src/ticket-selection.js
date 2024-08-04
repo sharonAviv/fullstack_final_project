@@ -69,8 +69,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load stands
     function loadStands() {
-        fetch(`/api/tickets?game_id=${selectedGameId}`)
-            .then(response => response.json())
+        fetch(`/api/tickets?gameId=${selectedGameId}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Error: ${text}`);
+                    });
+                }
+                return response.json();
+            })
             .then(tickets => {
                 if (!Array.isArray(tickets)) {
                     throw new Error('Tickets response is not an array');

@@ -13,7 +13,8 @@ router.get('/', async (req, res) => {
         const tickets = await Ticket.find(query);
         res.status(200).json(tickets);
     } catch (error) {
-        res.status(500).send(error.message);
+        console.error('Error fetching tickets:', error);
+        res.status(500).send({ error: 'Error fetching tickets', details: error.message });
     }
 });
 
