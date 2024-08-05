@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const { title } = require('process');
 
 const dbPath = path.join(__dirname, 'shop.db');
 const db = new sqlite3.Database(dbPath);
@@ -99,8 +100,9 @@ async function ensureAdminUserExists() {
 // Initialize games from a predefined list
 async function initGames() {
   const games = [
-    { name: 'Game 1', genre: 'Action', release_date: '2021-01-01' },
-    { name: 'Game 2', genre: 'Adventure', release_date: '2021-02-01' },
+    { title: 'Israel vs Germany', game_date: '2024-08-20', team_home: 'Israel', away: 'Germany', stadium_name:'National Stadium' },
+    { title: 'Israel vs France', game_date: '2024-09-10', team_home: 'Israel', away: 'France', stadium_name:'National Stadium' },
+
   ];
 
   for (const game of games) {
@@ -112,6 +114,16 @@ async function initGames() {
 // Initialize tickets from a predefined list
 async function initTickets() {
   // Implement logic to initialize tickets if necessary
+  const tickets = [
+    { seat_number: '1N', game_date: '2024-08-20', stand: 'north', price: '50', status:'available' },
+    { seat_number: '1S', game_date: '2024-08-20', stand: 'south', price: '50', status:'available' },
+    { seat_number: '1E', game_date: '2024-08-20', stand: 'east', price: '30', status:'available' },
+    { seat_number: '1W', game_date: '2024-08-20', stand: 'west', price: '30', status:'available' },
+    { seat_number: '1N', game_date: '2024-09-10', stand: 'north', price: '60', status:'available' },
+    { seat_number: '1S', game_date: '2024-09-10', stand: 'south', price: '60', status:'available' },
+    { seat_number: '1E', game_date: '2024-09-10', stand: 'east', price: '20', status:'available' },
+    { seat_number: '1W', game_date: '2024-09-10', stand: 'west', price: '20', status:'available' },
+  ]
   console.log('Tickets initialized');
 }
 
