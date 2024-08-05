@@ -64,8 +64,6 @@ async function createTables() {
 
       db.run(`CREATE TABLE IF NOT EXISTS tickets (
         ticket_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        game_id INTEGER,
         game_date DATE,
         seat_number TEXT,
         stand TEXT(status IN ('north', 'south', 'east', 'west')),
