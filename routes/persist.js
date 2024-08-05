@@ -17,6 +17,9 @@ async function init() {
     console.log("games")
     await initTickets();
     console.log("tickets")
+    //await initProducts();
+    console.log("products")
+
   } catch (error) {
     console.error('Initialization error:', error);
   }
@@ -80,6 +83,15 @@ async function createTables() {
         purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(user_id) REFERENCES users(user_id),
         FOREIGN KEY(game_id) REFERENCES games(game_id)
+      )`);
+
+      db.run(`CREATE TABLE IF NOT EXISTS products (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        price REAL NOT NULL,
+        images TEXT NOT NULL, -- Store images as a JSON string
+        stock INTEGER NOT NULL
       )`, (err) => {
         if (err) {
           reject(err);
@@ -90,6 +102,7 @@ async function createTables() {
     });
   });
 }
+
 
 // Retrieve game IDs
 async function getGameIds() {
@@ -160,6 +173,43 @@ async function initTickets() {
   for (const ticket of tickets) {
     await saveTicket(ticket);
   }
+}
+
+async function initProducts() {
+  return new Promise((resolve, reject) => {
+    const products = [
+      {
+        id: "prod001",
+        name: "Blue T-Shirt",
+        description: "A comfortable blue t-shirt made from 100% cotton.",
+        price: 19.99,
+        images: JSON.stringify(["../icons/front_shirt_ISR.jpg", "../icons/rear_shirt_ISR.jpg"]),
+        stock: 50
+      },
+      {
+        id: "prod002",
+        name: "White Sneakers",
+        description: "Stylish white sneakers suitable for casual wear.",
+        price: 49.99,
+        images: JSON.stringify(["../icons/front_sneakers_ISR.jpg", "../icons/rear_sneakers_ISR.jpg"]),
+        stock: 50
+      }
+    ];
+
+    db.serialize(() => {
+      const stmt = db.prepare(`INSERT INTO products (id, name, description, price, images, stock) VALUES (?, ?, ?, ?, ?, ?)`);
+      for (const product of products) {
+        stmt.run(product.id, product.name, product.description, product.price, product.images, product.stock);
+      }
+      stmt.finalize((err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  });
 }
 
 // Save a new user to the database
@@ -306,16 +356,27 @@ async function saveGame(game) {
   });
 }
 
-// Add an activity to the database
 async function addActivity(activity) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO activities (datetime, user_id, type) VALUES (?, ?, ?)`;
-    console.log(activity.datetime)
-    db.run(query, [activity.datetime, activity.user_id, activity.type], function (err) {
+    console.log(activity)
+    const userIdQuery = 'SELECT user_id FROM users WHERE username = ?';
+    
+    db.get(userIdQuery, [activity.username], (err, row) => {
       if (err) {
         reject(err);
+      } else if (!row) {
+        reject(new Error('User not found'));
       } else {
-        resolve(this.lastID);
+        const userId = row.user_id;
+        const query = `INSERT INTO activities (datetime, username, user_id, type) VALUES (?, ?, ?, ?)`;
+        
+        db.run(query, [activity.datetime, activity.username, userId, activity.type], function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(this.lastID);
+          }
+        });
       }
     });
   });

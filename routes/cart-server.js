@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { getCart, saveCart } = require('./persist'); // Adjust the path as necessary
+const { getCart, saveCart } = require('./persist');
 const { verifyToken } = require('./middleware'); // Middleware for authentication
 const { logActivity } = require('./activityLogger'); // Activity logging
 
 // View the cart
 router.get('/view', verifyToken, async (req, res) => {
-    const username = req.user.username; // Assuming req.user is set by verifyToken
+    console.log('/view route hit'); // Debugging log
+    const username = req.user; // Assuming req.user is set by verifyToken
     try {
         const cartItems = await getCart(username);
         res.json(cartItems);
@@ -16,12 +17,15 @@ router.get('/view', verifyToken, async (req, res) => {
 });
 
 // Add an item to the cart
-router.post('/add', verifyToken, async (req, res) => {
-    const username = req.user.username;
+router.post('/add-to-cart', verifyToken, async (req, res) => {
+    console.log('/add-to-cart route hit'); // Debugging log
+    const username = req.user; // Assuming req.user is set by verifyToken
+    console.log('Username:', username); // Debugging log
     const { productId, customization } = req.body; // Expecting productId and customization details
 
     try {
         let cartItems = await getCart(username);
+        console.log('Current cart items:', cartItems); // Debugging log
         const newItem = {
             productId,
             customization,  // Stores custom details like {name: "Custom Name", number: "99"}
@@ -46,7 +50,8 @@ router.post('/add', verifyToken, async (req, res) => {
 
 // Remove an item from the cart
 router.post('/remove', verifyToken, async (req, res) => {
-    const username = req.user.username;
+    console.log('/remove route hit'); // Debugging log
+    const username = req.user; // Assuming req.user is set by verifyToken
     const { productId } = req.body;
     try {
         let cartItems = await getCart(username);

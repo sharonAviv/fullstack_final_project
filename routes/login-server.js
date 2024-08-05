@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
         const token = jwt.sign({ username }, 'your_secret_key', { expiresIn });
         console.log('Token generated for user:', username, token);
 
-        res.cookie('token', token, { maxAge: remember ? 864000000 : 1800000, httpOnly: true });
+        res.cookie('token', token, { maxAge: remember ? 864000000 : 1800000 });
 
         await logActivity(username, 'login');
         res.json({ message: 'Logged in successfully', redirect: '/shop' });

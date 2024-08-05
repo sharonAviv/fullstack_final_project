@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { getProducts, searchProducts } = require('./products'); // Adjust the path as necessary
+const { searchProducts, retrieveAllProducts } = require('./products'); // Adjust the path as necessary
 const { verifyToken } = require('./middleware'); // Middleware for authentication
 const { addToCart } = require('./persist'); // Add the function to persist cart items
 
 // Get all products
 router.get('/products', async (req, res) => {
     try {
-        const products = await getProducts();
+        const products = await retrieveAllProducts();
         res.json(products);
     } catch (error) {
         console.error('Error fetching products:', error);
