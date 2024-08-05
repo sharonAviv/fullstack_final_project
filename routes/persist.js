@@ -134,8 +134,8 @@ async function ensureAdminUserExists() {
 // Initialize games from a predefined list
 async function initGames() {
   const games = [
-    { title: 'Israel vs Germany', game_date: '2024-08-20', team_home: 'Israel', team_away: 'Germany', stadium_name:'National Stadium' },
-    { title: 'Israel vs France', game_date: '2024-09-10', team_home: 'Israel', team_away: 'France', stadium_name:'National Stadium' },
+    { title: 'Israel vs Germany', game_date: '2024-08-20', team_home: 'Israel', team_away: 'Germany', stadium_name:'National Stadium', status: 'scheduled' },
+    { title: 'Israel vs France', game_date: '2024-09-10', team_home: 'Israel', team_away: 'France', stadium_name:'National Stadium', status: 'scheduled' },
   ];
 
   for (const game of games) {

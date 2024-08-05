@@ -1,13 +1,23 @@
 /* General body styles for all pages */
 body {
-    font-family: Arial, sans-serif;
+    margin: 0;
+    font-family: Poppins, Arial, sans-serif;
     background-color: #f0f8ff; /* Light blue background */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
     padding-top: 130px; /* Account for both headers */
+}
+
+/* Container styles */
+.container {
+    width: 900px;
+    margin: auto;
+    max-width: 90vw;
+    text-align: center;
+    padding-top: 10px;
+    transition: transform .5s;
 }
 
 /* Login and register container styles */
@@ -129,6 +139,22 @@ body {
 
 .header-right .cart-icon {
     background-image: url('../icons/cart.png');
+    position: relative;
+}
+
+.header-right .cart-icon span {
+    position: absolute;
+    background-color: red;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color: #fff;
+    top: -5px;
+    right: -10px;
+    font-size: 12px;
 }
 
 .header-right .menu-icon {
@@ -154,6 +180,12 @@ body {
     text-align: center;
 }
 
+.products-header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #0038a8;
+}
+
 /* Tooltip styles */
 .tooltip {
     position: absolute;
@@ -167,12 +199,6 @@ body {
     opacity: 0;
     transition: opacity 0.2s;
     z-index: 1001;
-}
-
-.products-header h1 {
-    margin: 0;
-    font-size: 24px;
-    color: #0038a8;
 }
 
 /* Main content padding to accommodate fixed headers */
@@ -310,7 +336,6 @@ body {
 
 /* Navigation Menu Specific Styles */
 .navigation-menu {
-    /* Additional specific styles for the navigation menu can go here if needed */
     background-color: white;
     border-left: 1px solid #ccc;
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
@@ -347,6 +372,93 @@ body {
     height: 20px;
     display: inline-block;
     margin-left: 5px;
+}
+
+/* Cart styles */
+.cartTab {
+    width: 400px;
+    background-color: #353432;
+    color: #eee;
+    position: fixed;
+    top: 0;
+    right: -400px;
+    bottom: 0;
+    display: grid;
+    grid-template-rows: 70px 1fr 70px;
+    transition: .5s;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+body.showCart .cartTab {
+    right: 0;
+}
+
+body.showCart .container {
+    transform: translateX(-250px);
+}
+
+.cartTab h1 {
+    padding: 20px;
+    margin: 0;
+    font-weight: 300;
+}
+
+.cartTab .btn {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.cartTab button {
+    background-color: #E8BC0E;
+    border: none;
+    font-family: Poppins;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.cartTab .close {
+    background-color: #eee;
+}
+
+.listCart .item {
+    display: grid;
+    grid-template-columns: 70px 150px 50px 1fr;
+    gap: 10px;
+    text-align: center;
+    align-items: center;
+}
+
+.listCart .item img {
+    width: 100%;
+}
+
+.listCart .quantity span {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background-color: #eee;
+    border-radius: 50%;
+    color: #555;
+    cursor: pointer;
+}
+
+.listCart .quantity span:nth-child(2) {
+    background-color: transparent;
+    color: #eee;
+    cursor: auto;
+}
+
+.listCart .item:nth-child(even) {
+    background-color: #eee1;
+}
+
+.listCart {
+    overflow: auto;
+}
+
+.listCart::-webkit-scrollbar {
+    width: 0;
 }
 
 /* Styles for the ticket selection process */
@@ -397,19 +509,6 @@ body {
     height: 300px; /* Adjust the height as needed */
     margin-top: 20px;
 }
-
-/* .stand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    transition: background-color 0.2s, color 0.2s;
-    text-align: center;
-    font-size: 14px;
-    font-weight: bold;
-    color: black; /* Default font color */
-
 
 .stand.horizontal {
     width: 150px; /* Adjust width for horizontal stands */
@@ -551,3 +650,4 @@ body {
     width: 50px; /* Width for vertical stands */
     height: 100px; /* Height for vertical stands */
 }
+

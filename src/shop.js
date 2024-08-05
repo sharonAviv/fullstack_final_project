@@ -166,6 +166,7 @@ document.addEventListener('DOMContentLoaded', restoreShoppingCart);
 
 // Display login link
 function displayLoginLink() {
+    const userGreeting = document.getElementById('user-greeting');
     console.log('Displaying login link');
     const authLink = document.getElementById('auth-link');
     userGreeting.textContent = `Hi, Guest, login in order to buy`;
@@ -242,6 +243,7 @@ function displayProducts(products) {
 
 // Add a product to the cart
 function addToCart(productId) {
+    console.log("adding to cart " + productId)
     fetch('/api/cart/add-to-cart', {
         method: 'POST',
         headers: {
