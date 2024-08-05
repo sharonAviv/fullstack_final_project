@@ -109,10 +109,11 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/api/tickets?gameId=${selectedGameId}&stand=${selectedStand}`)
             .then(response => response.json())
             .then(tickets => {
+                console.log("Fetched tickets for selected stand:", tickets); // Log fetched tickets
                 seatsMap.innerHTML = '';
                 for (let i = 1; i <= 100; i++) {
-                    const seatNumber = `${selectedStand.charAt(0).toUpperCase()}${i}`;
-                    const seat = tickets.find(ticket => ticket.seat_number === seatNumber);
+                    const seatNumber = `${i}`;
+                    const seat = tickets.find(ticket => ticket.seat_number.startsWith(seatNumber) && ticket.seat_number.endsWith(selectedStand.charAt(0).toUpperCase()));
                     const seatElement = document.createElement('div');
                     seatElement.className = 'seat';
                     if (seat && seat.status === 'available') {
@@ -123,7 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     seatsMap.appendChild(seatElement);
                 }
-            });
+            })
+            .catch(error => console.error('Error fetching seats:', error)); // Log any error
     }
 
     function selectSeat(seat) {
