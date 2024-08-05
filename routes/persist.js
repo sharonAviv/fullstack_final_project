@@ -84,6 +84,20 @@ async function createTables() {
   });
 }
 
+// Retrieve game IDs
+async function getGameIds() {
+  return new Promise((resolve, reject) => {
+    const query = `SELECT game_id FROM games ORDER BY game_id`;
+    db.all(query, [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows.map(row => row.game_id));
+      }
+    });
+  });
+}
+
 // Ensure admin user exists
 async function ensureAdminUserExists() {
   const adminUser = {
@@ -113,18 +127,33 @@ async function initGames() {
 
 // Initialize tickets from a predefined list
 async function initTickets() {
+  // Retrieve the game IDs
+  const games = await getAllGames();
+
+  if (games.length < 2) {
+    console.error('Not enough games found to initialize tickets - Games init error');
+    return;
+  }
+
+  const firstGameId = games[0].game_id;
+  const secondGameId = games[1].game_id;
+
   // Implement logic to initialize tickets if necessary
   const tickets = [
-    { seat_number: '1N', game_date: '2024-08-20', stand: 'north', price: '50', status:'available' },
-    { seat_number: '1S', game_date: '2024-08-20', stand: 'south', price: '50', status:'available' },
-    { seat_number: '1E', game_date: '2024-08-20', stand: 'east', price: '30', status:'available' },
-    { seat_number: '1W', game_date: '2024-08-20', stand: 'west', price: '30', status:'available' },
-    { seat_number: '1N', game_date: '2024-09-10', stand: 'north', price: '60', status:'available' },
-    { seat_number: '1S', game_date: '2024-09-10', stand: 'south', price: '60', status:'available' },
-    { seat_number: '1E', game_date: '2024-09-10', stand: 'east', price: '20', status:'available' },
-    { seat_number: '1W', game_date: '2024-09-10', stand: 'west', price: '20', status:'available' },
+    { seat_number: '1N', game_date: '2024-08-20', stand: 'north', price: '50', status:'available', game_id: firstGameId },
+    { seat_number: '1S', game_date: '2024-08-20', stand: 'south', price: '50', status:'available', game_id: firstGameId },
+    { seat_number: '1E', game_date: '2024-08-20', stand: 'east', price: '30', status:'available', game_id: firstGameId },
+    { seat_number: '1W', game_date: '2024-08-20', stand: 'west', price: '30', status:'available', game_id: firstGameId },
+    { seat_number: '1N', game_date: '2024-09-10', stand: 'north', price: '60', status:'available', game_id: secondGameId },
+    { seat_number: '1S', game_date: '2024-09-10', stand: 'south', price: '60', status:'available', game_id: secondGameId },
+    { seat_number: '1E', game_date: '2024-09-10', stand: 'east', price: '20', status:'available', game_id: secondGameId },
+    { seat_number: '1W', game_date: '2024-09-10', stand: 'west', price: '20', status:'available', game_id: secondGameId },
   ]
   console.log('Tickets initialized');
+
+  for (const ticket of tickets) {
+    await saveTicket(ticket);
+  }
 }
 
 // Save a new user to the database
@@ -260,8 +289,8 @@ async function addCartItem(cartId, item) {
 // Save a game to the database
 async function saveGame(game) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO games (name, genre, release_date) VALUES (?, ?, ?)`;
-    db.run(query, [game.title, game.genre, game.release_date], function (err) {
+    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?)`;
+    db.run(query, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -302,8 +331,8 @@ async function getActivities() {
 
 async function addGame(game) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO games (title, date, venue, teams, status) VALUES (?, ?, ?, ?, ?)`;
-    db.run(query, [game.title, game.date, game.venue, game.teams, game.status], function (err) {
+    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?, ?, ?)`;
+    db.run(query, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -322,6 +351,20 @@ async function getAllGames() {
         reject(err);
       } else {
         resolve(rows);
+      }
+    });
+  });
+}
+
+// Save a new ticket to the database
+async function saveTicket(ticket) {
+  return new Promise((resolve, reject) => {
+    const query = `INSERT INTO tickets (seat_number, game_date, stand, price, status, game_id) VALUES (?, ?, ?, ?, ?, ?)`;
+    db.run(query, [ticket.seat_number, ticket.game_date, ticket.stand, ticket.price, ticket.status, ticket.game_id], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.lastID);
       }
     });
   });
@@ -451,6 +494,17 @@ async function purchaseTickets(ticketIds) {
     });
   });
 }
+
+// Example usage
+(async () => {
+  await init();
+  const users = await getUsers();
+  console.log(users);
+  const games = await getAllGames();
+  console.log(games);
+  const tickets = await getCart(1);
+  console.log(tickets);
+})();
 
 module.exports = {
   init,
