@@ -49,7 +49,7 @@ async function createTables() {
         activity_id INTEGER PRIMARY KEY AUTOINCREMENT,
         datetime TEXT NOT NULL,
         username TEXT NOT NULL,
-        user_id INTEGER
+        user_id INTEGER,
         type TEXT NOT NULL
       )`);
 
@@ -60,7 +60,7 @@ async function createTables() {
         team_home TEXT,
         team_away TEXT,
         stadium_name TEXT,
-        status TEXT DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'ongoing', 'completed')),
+        status TEXT DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'ongoing', 'completed'))
       )`);
 
       db.run(`CREATE TABLE IF NOT EXISTS tickets (
@@ -261,7 +261,7 @@ async function addCartItem(cartId, item) {
 async function saveGame(game) {
   return new Promise((resolve, reject) => {
     const query = `INSERT INTO games (name, genre, release_date) VALUES (?, ?, ?)`;
-    db.run(query, [game.name, game.genre, game.release_date], function (err) {
+    db.run(query, [game.title, game.genre, game.release_date], function (err) {
       if (err) {
         reject(err);
       } else {
