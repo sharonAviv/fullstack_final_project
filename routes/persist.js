@@ -329,19 +329,6 @@ async function getActivities() {
   });
 }
 
-async function addGame(game) {
-  return new Promise((resolve, reject) => {
-    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?, ?, ?)`;
-    db.run(query, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ id: this.lastID, ...game });
-      }
-    });
-  });
-}
-
 // Get all games from the database
 async function getAllGames() {
   return new Promise((resolve, reject) => {
@@ -515,7 +502,7 @@ module.exports = {
   saveCart,
   addActivity,
   getActivities,
-  addGame,
+  saveGame,
   getAllGames,
   saveProduct,
   getProducts,
