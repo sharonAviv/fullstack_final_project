@@ -295,7 +295,7 @@ async function addCartItem(cartId, item) {
 // Save a game to the database
 async function saveGame(game) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?, ?, ?,?)`;
+    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?, ?, ?, ?)`;
     db.run(query, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
       if (err) {
         reject(err);
@@ -330,19 +330,6 @@ async function getActivities() {
         reject(err);
       } else {
         resolve(rows);
-      }
-    });
-  });
-}
-
-async function addGame(game) {
-  return new Promise((resolve, reject) => {
-    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?, ?, ?)`;
-    db.run(query, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ id: this.lastID, ...game });
       }
     });
   });
@@ -523,7 +510,7 @@ module.exports = {
   saveCart,
   addActivity,
   getActivities,
-  addGame,
+  saveGame,
   getAllGames,
   saveProduct,
   getProducts,
