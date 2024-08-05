@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>${formattedDate} ${time}</p>
                 <button>Select Match</button>
             `;
-            gameItem.querySelector('button').addEventListener('click', () => selectGame(game.id));
+            gameItem.querySelector('button').addEventListener('click', () => selectGame(game.game_id));
             gamesList.appendChild(gameItem);
         });
 
@@ -99,28 +99,24 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedGameId = gameId;
         gameSelection.style.display = 'none';
         standSelection.style.display = 'block';
-        loadStands();
+        loadStands(selectedGameId);
     }
 
     // Load stands
-    function loadStands() {
+    function loadStands(selectedGameId) {
+        // Fetch tickets for the selected game
         fetch(`/api/tickets?gameId=${selectedGameId}`)
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`Error: ${text}`);
-                    });
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(tickets => {
-                if (!Array.isArray(tickets)) {
-                    throw new Error('Tickets response is not an array');
-                }
-                const stands = ['north', 'south', 'east', 'west'];
+                console.log("Fetched Tickets for Game ID:", selectedGameId, tickets); // Log fetched tickets
+    
+                // Iterate through your stand elements
+                const stands = ['north', 'south', 'east', 'west']; // Adjust this based on your stand names
                 stands.forEach(stand => {
                     const standElement = document.getElementById(`${stand}-stand`);
                     const availableTickets = tickets.filter(ticket => ticket.stand === stand && ticket.status === 'available').length;
+                    console.log(`${stand} available tickets:`, availableTickets); // Log available tickets
+    
                     if (availableTickets > 0) {
                         standElement.className = 'stand available';
                         standElement.addEventListener('click', () => selectStand(stand));
@@ -129,14 +125,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             })
-            .catch(error => console.error('Error loading stands:', error));
+            .catch(error => console.error('Error fetching tickets:', error));
     }
+    
 
     function selectStand(stand) {
         selectedStand = stand;
         standSelection.style.display = 'none';
         seatSelection.style.display = 'block';
-        loadSeats();
+        loadSeats(stand);
     }
 
     // Load seats
@@ -169,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p>Price: $${seat.price}</p>
             <button>Add to Cart</button>
         `;
-        seatInfo.querySelector('button').addEventListener('click', () => addToCart(seat._id));
+        seatInfo.querySelector('button').addEventListener('click', () => addToCart(seat.ticket_id));
         seatsMap.appendChild(seatInfo);
         seatInfo.style.display = 'block';
     }
