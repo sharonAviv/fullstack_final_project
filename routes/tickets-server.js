@@ -7,6 +7,7 @@ router.get('/', async (req, res) => {
     const { gameId, stand } = req.query;
     try {
         const tickets = await getTickets(gameId, stand);
+        console.log("Tickets fetched for gameId and stand:", { gameId, stand, tickets }); // Debugging line
         res.status(200).json(tickets);
     } catch (error) {
         console.error('Error fetching tickets:', error);
