@@ -10,9 +10,13 @@ const db = new sqlite3.Database(dbPath);
 async function init() {
   try {
     await createTables();
+    console.log("tabels created")
     await ensureAdminUserExists();
+    console.log("admin")
     await initGames();
+    console.log("games")
     await initTickets();
+    console.log("tickets")
   } catch (error) {
     console.error('Initialization error:', error);
   }
@@ -50,7 +54,8 @@ async function createTables() {
         datetime TEXT NOT NULL,
         username TEXT NOT NULL,
         user_id INTEGER,
-        type TEXT NOT NULL
+        type TEXT NOT NULL,
+        FOREIGN KEY(user_id) REFERENCES users(user_id)
       )`);
 
       db.run(`CREATE TABLE IF NOT EXISTS games (
@@ -65,9 +70,11 @@ async function createTables() {
 
       db.run(`CREATE TABLE IF NOT EXISTS tickets (
         ticket_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        game_id INTEGER,
         game_date DATE,
         seat_number TEXT,
-        stand TEXT(status IN ('north', 'south', 'east', 'west')),
+        stand TEXT CHECK(stand IN ('north', 'south', 'east', 'west')),
         price FLOAT, 
         status TEXT CHECK(status IN ('available', 'sold')),
         purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -114,9 +121,8 @@ async function ensureAdminUserExists() {
 // Initialize games from a predefined list
 async function initGames() {
   const games = [
-    { title: 'Israel vs Germany', game_date: '2024-08-20', team_home: 'Israel', away: 'Germany', stadium_name:'National Stadium' },
-    { title: 'Israel vs France', game_date: '2024-09-10', team_home: 'Israel', away: 'France', stadium_name:'National Stadium' },
-
+    { title: 'Israel vs Germany', game_date: '2024-08-20', team_home: 'Israel', team_away: 'Germany', stadium_name:'National Stadium' },
+    { title: 'Israel vs France', game_date: '2024-09-10', team_home: 'Israel', team_away: 'France', stadium_name:'National Stadium' },
   ];
 
   for (const game of games) {
@@ -289,7 +295,7 @@ async function addCartItem(cartId, item) {
 // Save a game to the database
 async function saveGame(game) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?)`;
+    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?, ?, ?, ?)`;
     db.run(query, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
       if (err) {
         reject(err);
@@ -303,7 +309,7 @@ async function saveGame(game) {
 // Add an activity to the database
 async function addActivity(activity) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO activities (activity_time, user_id, type) VALUES (?, ?, ?)`;
+    const query = `INSERT INTO activities (datetime, user_id, type) VALUES (?, ?, ?)`;
     console.log(activity.datetime)
     db.run(query, [activity.datetime, activity.user_id, activity.type], function (err) {
       if (err) {
@@ -346,8 +352,8 @@ async function getAllGames() {
 // Save a new ticket to the database
 async function saveTicket(ticket) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO tickets (seat_number, game_date, stand, price, status, game_id) VALUES (?, ?, ?, ?, ?, ?)`;
-    db.run(query, [ticket.seat_number, ticket.game_date, ticket.stand, ticket.price, ticket.status, ticket.game_id], function (err) {
+    const query = `INSERT INTO tickets (seat_number, game_date, stand, price, status, game_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    db.run(query, [ticket.seat_number, ticket.game_date, ticket.stand, ticket.price, ticket.status, ticket.game_id, ticket.user_id], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -356,6 +362,8 @@ async function saveTicket(ticket) {
     });
   });
 }
+
+
 
 // Add a product to the database
 async function saveProduct(product) {
@@ -483,15 +491,15 @@ async function purchaseTickets(ticketIds) {
 }
 
 // Example usage
-(async () => {
-  await init();
-  const users = await getUsers();
-  console.log(users);
-  const games = await getAllGames();
-  console.log(games);
-  const tickets = await getCart(1);
-  console.log(tickets);
-})();
+//(async () => {
+  //await init();
+  //const users = await getUsers();
+  //console.log(users);
+  //const games = await getAllGames();
+  //console.log(games);
+  //const tickets = await getCart(1);
+  //console.log(tickets);
+//})();
 
 module.exports = {
   init,

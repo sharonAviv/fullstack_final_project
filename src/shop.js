@@ -106,17 +106,69 @@ function displayUserGreeting(username) {
     console.log('Displaying user greeting for:', username);
     const userGreeting = document.getElementById('user-greeting');
     const authLink = document.getElementById('auth-link');
-
+    
     userGreeting.textContent = `Hi, ${username}`;
-    authLink.textContent = 'Logout';
-    authLink.href = '/api/logout'; // Ensure this route handles the logout process
+    
+    authLink.onclick = function(event) {
+        event.preventDefault(); // Prevent the default link behavior
+
+        // Save user information before logging out (e.g., shopping cart)
+        const cart = getShoppingCart(); // Assume this function retrieves the current shopping cart
+        localStorage.setItem('cart', JSON.stringify(cart));
+        // Perform the logout process
+        fetch('/api/logout', {
+            method: 'POST', // Assuming your logout route is a POST request
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: username })
+            
+        })
+        .then(response => {
+            if (response.ok) {
+                // Clear user session data but keep the cart
+                localStorage.removeItem('username');
+                userGreeting.textContent = 'Hi, Guest';
+                authLink.onclick = function() {
+                    window.location.href = '/login.html'; // Redirect to login page
+                };
+            } else {
+                console.error('Logout failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+        });
+    };
 }
+
+function getShoppingCart() {
+    // Implement this function to retrieve the current shopping cart
+    // For example, you might have an array of items stored in a variable or state
+    return [
+        { id: 1, name: 'Product 1', quantity: 2 },
+        { id: 2, name: 'Product 2', quantity: 1 }
+    ];
+}
+
+function restoreShoppingCart() {
+    const cart = JSON.parse(localStorage.getItem('cart'));
+    if (cart) {
+        // Restore the cart to the shopping cart state
+        console.log('Restoring cart:', cart);
+        // Implement this logic to repopulate the shopping cart in the UI
+    }
+}
+
+// Call this function when the page loads to restore the cart
+document.addEventListener('DOMContentLoaded', restoreShoppingCart);
+
 
 // Display login link
 function displayLoginLink() {
     console.log('Displaying login link');
     const authLink = document.getElementById('auth-link');
-    authLink.textContent = 'Login';
+    userGreeting.textContent = `Hi, Guest, login in order to buy`;
     authLink.href = 'login.html';
 }
 
