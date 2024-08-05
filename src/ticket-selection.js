@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedGameId = null;
     let selectedStand = null;
 
-    // Load games
-    function loadGames() {
+    // Load games and filter based on selected month
+    const loadGames = async () => {
         const selectedMonth = gameDateFilter.value;
 
         if (!selectedMonth) {
@@ -21,37 +21,72 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        fetch('/api/games')
-            .then(response => response.json())
-            .then(games => {
-                gamesList.innerHTML = '';
-                let gamesFound = false;
-                const filteredGames = games.filter(game => {
-                    const gameDate = new Date(game.date);
-                    const gameMonth = gameDate.toISOString().slice(0, 7);
-                    return game.status === 'scheduled' && gameMonth === selectedMonth;
-                });
+        try {
+            const games = await fetchGames(); // Fetch the games
+            const filteredGames = filterGames(games, selectedMonth); // Filter based on selected month
+            console.log("Filtered Games:", filteredGames); // Log filtered results
+            displayGames(filteredGames); // Display the filtered games
+        } catch (error) {
+            console.error("Error loading games:", error);
+        }
+    };
 
-                filteredGames.forEach(game => {
-                    gamesFound = true;
-                    const gameItem = document.createElement('div');
-                    gameItem.className = 'game-item';
-                    if (filteredGames.length === 1) {
-                        gameItem.classList.add('single');
-                    }
-                    gameItem.innerHTML = `
-                        <h3>${game.title}</h3>
-                        <p>${new Date(game.date).toLocaleDateString()} ${new Date(game.date).toLocaleTimeString()}</p>
-                        <button>Select Match</button>
-                    `;
-                    gameItem.querySelector('button').addEventListener('click', () => selectGame(game.id));
-                    gamesList.appendChild(gameItem);
-                });
+    // Function to fetch games from the API
+    const fetchGames = async () => {
+        const response = await fetch('/api/games');
+        const games = await response.json();
+        // Log the game dates before filtering
+        console.log("Game Dates:", games.map(game => game.game_date));
+        return games;
+    };
 
-                gamesList.style.display = gamesFound ? 'block' : 'none';
-                document.getElementById('message').innerText = gamesFound ? '' : 'No games available for the selected date.';
-            });
-    }
+    // Function to filter games based on the selected month
+    const filterGames = (games, selectedMonth) => {
+        return games.filter(game => {
+            const gameMonth = game.game_date.slice(0, 7).trim(); // Get the year-month part of the date
+            console.log("Game Month:", gameMonth); // Log the month for each game
+            console.log("Selected Month:", selectedMonth); // Log selected month
+
+            // Check that both are the same for filtering
+            return game.status === 'scheduled' && gameMonth === selectedMonth.trim();
+        });
+    };
+
+    // In your HTML or JavaScript, make sure you log the selected month value to ensure it’s correct
+    console.log("Selected Month Value from Filter:", gameDateFilter.value);
+
+    // Function to display the filtered games
+    const displayGames = (filteredGames) => {
+        gamesList.innerHTML = ''; // Clear the list
+        let gamesFound = false;
+
+        // Debugging: Check the selected month and the filtered results
+        console.log("Filtered Games:", filteredGames);
+
+        filteredGames.forEach(game => {
+            gamesFound = true;
+            const gameItem = document.createElement('div');
+            gameItem.className = 'game-item';
+            if (filteredGames.length === 1) {
+                gameItem.classList.add('single');
+            }
+
+            // Format the game date to "YYYY-MM-DD 20:00"
+            const formattedDate = game.game_date.split('T')[0]; // Get just the date part (YYYY-MM-DD)
+            const time = '20:00'; // Fixed time                     
+
+            gameItem.innerHTML = `
+                <h3>${game.title}</h3>
+                <p>${formattedDate} ${time}</p>
+                <button>Select Match</button>
+            `;
+            gameItem.querySelector('button').addEventListener('click', () => selectGame(game.id));
+            gamesList.appendChild(gameItem);
+        });
+
+        gamesList.style.display = gamesFound ? 'block' : 'none';
+        document.getElementById('message').innerText = gamesFound ? '' : 'No games available for the selected date.';
+    };
 
     continueButton.addEventListener('click', () => {
         console.log('Continue button clicked.');
