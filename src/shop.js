@@ -192,7 +192,7 @@ function displayProducts(products) {
         productItem.className = 'product-item';
 
         // Ensure the image property exists and is an array with at least one image
-        const images = Array.isArray(product.image) && product.image.length > 0 
+        const images = Array.isArray(product.image) && product.images.length > 0 
                        ? product.image 
                        : ['default-image.jpg', 'default-image.jpg'];
 

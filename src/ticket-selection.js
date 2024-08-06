@@ -194,21 +194,25 @@ document.addEventListener('DOMContentLoaded', function() {
         seatInfo.style.display = 'block';
     }
 
-    function addToCart(seatId) {
-        fetch('/api/tickets/purchase', {
+    function addToCart(ticketId) {
+        fetch('/api/cart/add-to-cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ ticketIds: [seatId] }),
+            body: JSON.stringify({ productId: '1' + ticketId, customization: null }), // prepend '0' to ticket_id
         })
         .then(response => response.json())
         .then(data => {
-            alert('Ticket added to cart');
-            seatInfo.style.display = 'none';
+            if (data.success) {
+                alert('Ticket added to cart');
+            } else {
+                alert('Failed to add ticket to cart: ' + data.message);
+            }
+            seatInfo.style.display = 'none'; // Hide seat info after adding to cart
         })
         .catch(error => console.error('Error:', error));
-    }
+    }  
 
     loadGames();
 });

@@ -21,7 +21,7 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
     console.log('/add-to-cart route hit'); // Debugging log
     const username = req.user; // Assuming req.user is set by verifyToken
     console.log('Username:', username); // Debugging log
-    const { productId, customization } = req.body; // Expecting productId and customization details
+    const { productId, customization = null } = req.body; // Expecting productId and customization details
 
     try {
         let cartItems = await getCart(username);
