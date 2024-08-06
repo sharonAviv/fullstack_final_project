@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameDateFilter = document.getElementById('game-date-filter');
     const continueButton = document.getElementById('continue-button');
 
+    const backToGameButton = document.getElementById('back-game');
+    const backToGameFromSeatButton = document.getElementById('back-game-seat');
+    const backToStandButton = document.getElementById('back-stand');
+
     let selectedGameId = null;
     let selectedStand = null;
 
@@ -52,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // In your HTML or JavaScript, make sure you log the selected month value to ensure it’s correct
     console.log("Selected Month Value from Filter:", gameDateFilter.value);
 
     // Function to display the filtered games
@@ -93,6 +96,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (gameDateFilter.value) {
             loadGames();
         }
+    });
+
+    backToGameButton.addEventListener('click', () => {
+        console.log('Back to game selection button clicked.');
+        standSelection.style.display = 'none';
+        gameSelection.style.display = 'block';
+    });
+
+    backToGameFromSeatButton.addEventListener('click', () => {
+        console.log('Back to game selection button from seat clicked.');
+        seatSelection.style.display = 'none';
+        gameSelection.style.display = 'block';
+    });
+
+    backToStandButton.addEventListener('click', () => {
+        console.log('Back to stand selection button clicked.');
+        seatSelection.style.display = 'none';
+        standSelection.style.display = 'block';
     });
 
     function selectGame(gameId) {
