@@ -17,7 +17,7 @@ async function init() {
     console.log("games")
     await initTickets();
     console.log("tickets")
-    //await initProducts();
+    await initProducts();
     console.log("products")
 
   } catch (error) {
@@ -48,6 +48,8 @@ async function createTables() {
         cart_id INTEGER,
         product_id INTEGER,
         quantity INTEGER,
+        name TEXT,
+        price REAL NOT NULL,
         added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(cart_id) REFERENCES carts(cart_id)
       )`);
@@ -85,6 +87,14 @@ async function createTables() {
         FOREIGN KEY(game_id) REFERENCES games(game_id)
       )`);
 
+      db.run(`CREATE TABLE IF NOT EXISTS ticket_cart (
+        ticket_id INTEGER,
+        user_id INTEGER
+        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES users(user_id),
+        FOREIGN KEY(ticket_id) REFERENCES tickets(ticket_id)
+      )`);
+
       db.run(`CREATE TABLE IF NOT EXISTS products (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
@@ -104,19 +114,19 @@ async function createTables() {
 }
 
 
-// Retrieve game IDs
-async function getGameIds() {
-  return new Promise((resolve, reject) => {
-    const query = `SELECT game_id FROM games ORDER BY game_id`;
-    db.all(query, [], (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows.map(row => row.game_id));
-      }
-    });
-  });
-}
+// // Retrieve game IDs
+// async function getGameIds() {
+//   return new Promise((resolve, reject) => {
+//     const query = `SELECT game_id FROM games ORDER BY game_id`;
+//     db.all(query, [], (err, rows) => {
+//       if (err) {
+//         reject(err);
+//       } else {
+//         resolve(rows.map(row => row.game_id));
+//       }
+//     });
+//   });
+// }
 
 // Ensure admin user exists
 async function ensureAdminUserExists() {
@@ -255,10 +265,45 @@ async function findUserByUsername(username) {
   });
 }
 
+async function findUserIDByUsername(username) {
+  return new Promise((resolve, reject) => {
+    const query = `SELECT user_id FROM users WHERE username = ?`;
+    db.get(query, [username], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (row) {
+          resolve(row.user_id); // Resolve the user_id directly
+        } else {
+          reject(new Error('User not found'));
+        }
+      }
+    });
+  });
+}
+
 // Get cart items for a specific user
-async function getCart(userId) {
+async function getCart(username) {
+  const user_id = await findUserIDByUsername(username);
+  console.log(user_id + "user id")
   return new Promise((resolve, reject) => {
     const query = `SELECT * FROM cart_items WHERE cart_id IN (SELECT cart_id FROM carts WHERE user_id = ?)`;
+    db.all(query, [user_id], (err, rows) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        reject(err);
+      } else {
+        console.log('Query executed successfully, retrieved rows:', rows);
+        resolve(rows);
+      }
+    });
+  });
+} 
+
+// Get cart items for a specific user
+async function getTicketCart(userId) {
+  return new Promise((resolve, reject) => {
+    const query = `SELECT * FROM ticket_cart WHERE user_id = ?`;
     db.all(query, [userId], (err, rows) => {
       if (err) {
         reject(err);
@@ -270,14 +315,32 @@ async function getCart(userId) {
 }
 
 // Save cart items for a specific user
-async function saveCart(userId, cartItems) {
+async function saveCart(username, cartItems) {
+  userId = await findUserIDByUsername(username);
+  console.log(userId + " userid in save carts");
   return new Promise(async (resolve, reject) => {
     try {
       const cart = await getCartByUserId(userId);
       const cartId = cart ? cart.cart_id : await createCart(userId);
+      console.log(cartId + " cartid");
       await clearCartItems(cartId);
       for (const item of cartItems) {
         await addCartItem(cartId, item);
+      }
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+// Save ticket cart items for a specific user
+async function saveTicketCart(userId, cartItems) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await clearTicketCartItems(userId);
+      for (const item of cartItems) {
+        await addTicketCartItem(userId, item);
       }
       resolve();
     } catch (error) {
@@ -314,6 +377,20 @@ async function getCartByUserId(userId) {
   });
 }
 
+// Get cart by user ID
+async function getTicketCartByUserId(userId) {
+  return new Promise((resolve, reject) => {
+    const query = `SELECT * FROM ticket_cart WHERE user_id = ?`;
+    db.get(query, [userId], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+}
+
 // Clear cart items
 async function clearCartItems(cartId) {
   return new Promise((resolve, reject) => {
@@ -328,11 +405,62 @@ async function clearCartItems(cartId) {
   });
 }
 
-// Add a cart item
-async function addCartItem(cartId, item) {
+// Clear ticket cart items
+async function clearTicketCartItems(userId) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, ?)`;
-    db.run(query, [cartId, item.product_id, item.quantity], function (err) {
+    const query = `DELETE FROM ticket_cart WHERE user_id = ?`;
+    db.run(query, [userId], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+async function getProductDetails(productId) {
+  return new Promise((resolve, reject) => {
+    console.log(productId + " prodid"); // Log the product ID being queried
+    const query = `SELECT name, price FROM products WHERE id = ?`;
+    db.get(query, [productId], (err, row) => {
+      if (err) {
+        console.error('Error fetching product details:', err); // Log any errors
+        reject(err);
+      } else {
+        console.log('Fetched product details:', row); // Log the retrieved product details
+        resolve(row);
+      }
+    });
+  });
+}
+
+// Add a cart item
+async function addCartItem(cartId, productDetails) {
+  try {
+    return new Promise((resolve, reject) => {
+      const query = `INSERT INTO cart_items (cart_id, product_id, quantity, name, price) VALUES (?, ?, ?, ?, ?)`;
+      db.run(query, [cartId, productDetails.product_id, productDetails.quantity, productDetails.name, productDetails.price], function (err) {
+        if (err) {
+          console.error('Error inserting cart item:', err); // Log any errors
+          reject(err);
+        } else {
+          console.log('Inserted cart item with ID:', this.lastID); // Log the ID of the inserted item
+          resolve(this.lastID);
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Error in addCartItem:', error); // Log any errors
+    throw error;
+  }
+}
+
+// Add a ticket cart item
+async function addTicketCartItem(userId, item) {
+  return new Promise((resolve, reject) => {
+    const query = `INSERT INTO ticket_cart (user_id, ticket_id) VALUES (?, ?)`;
+    db.run(query, [userId, item.product_id], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -471,20 +599,52 @@ async function searchProducts(query) {
 
 // Add a product to the user's cart
 async function addToCart(username, productId) {
+  try {
+    const user = await findUserByUsername(username);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const userId = user.user_id;
+    const cart = await getCartByUserId(userId);
+    const cartId = cart ? cart.cart_id : await createCart(userId);
+    const existingCartItem = await findCartItem(cartId, productId);
+    const productDetails = await getProductDetails(productId);
+    if (!productDetails) {
+      throw new Error('Product not found');
+    }
+    if (existingCartItem) {
+      await updateCartItemQuantity(existingCartItem.product_id, existingCartItem.quantity + 1, productDetails.price);
+    } else {
+      await addCartItem(cartId, {
+        product_id: productId,
+        quantity: 1,
+        name: productDetails.name,
+        price: productDetails.price
+      });
+    }
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    throw error;
+  }
+}
+
+// Add a product to the user's ticket cart
+async function addToTicketCart(username, ticketId) {
   const user = await findUserByUsername(username);
   if (!user) {
     throw new Error('User not found');
   }
   const userId = user.user_id;
 
-  const cart = await getCartByUserId(userId);
-  const cartId = cart ? cart.cart_id : await createCart(userId);
+  const cart = await getTicketCartByUserId(userId);
 
-  const existingCartItem = await findCartItem(cartId, productId);
+  const existingCartItem = await findTicketCartItem(userId, ticketId);
   if (existingCartItem) {
-    await updateCartItemQuantity(existingCartItem.cart_item_id, existingCartItem.quantity + 1);
+    // Return a message indicating the ticket is already in the cart
+    return { success: false, message: 'Ticket already in cart' };
   } else {
-    await addCartItem(cartId, { product_id: productId, quantity: 1 });
+    await addTicketCartItem(userId, ticketId);
+    return { success: true, message: 'Ticket added to cart' };
   }
 }
 
@@ -502,11 +662,25 @@ async function findCartItem(cartId, productId) {
   });
 }
 
-// Update the quantity of a cart item
-async function updateCartItemQuantity(cartItemId, quantity) {
+// Find a cart item by cart ID and product ID
+async function findTicketCartItem(userId, ticketId) {
   return new Promise((resolve, reject) => {
-    const query = `UPDATE cart_items SET quantity = ? WHERE cart_item_id = ?`;
-    db.run(query, [quantity, cartItemId], (err) => {
+    const query = `SELECT * FROM ticket_cart WHERE user_id = ? AND ticket_id = ?`;
+    db.get(query, [userId, ticketId], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+}
+
+// Update the quantity of a cart item
+async function updateCartItemQuantity(productId, quantity, price) {
+  return new Promise((resolve, reject) => {
+    const query = `UPDATE cart_items SET quantity = ?, price = ? WHERE product_id = ?`;
+    db.run(query, [quantity, price * quantity, productId], (err) => {
       if (err) {
         reject(err);
       } else {
@@ -517,7 +691,7 @@ async function updateCartItemQuantity(cartItemId, quantity) {
 }
 
 // Get tickets for a specific game and stand
-async function getTickets(gameId, stand) {
+async function getTicketsByGameStand(gameId, stand) {
   return new Promise((resolve, reject) => {
     let query = `SELECT * FROM tickets WHERE game_id = ?`;
     const params = [gameId];
@@ -528,6 +702,32 @@ async function getTickets(gameId, stand) {
     }
 
     db.all(query, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+async function getTicketsByTicketID(ticketId) {
+  return new Promise((resolve, reject) => {
+    let query = `SELECT * FROM tickets WHERE ticket_id = ?`;
+    db.all(query, [ticketId], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+async function getTicketsByGameID(gameId) {
+  return new Promise((resolve, reject) => {
+    let query = `SELECT * FROM tickets WHERE game_id = ?`;
+    db.all(query, [gameId], (err, rows) => {
       if (err) {
         reject(err);
       } else {
@@ -551,24 +751,15 @@ async function purchaseTickets(ticketIds) {
   });
 }
 
-// Example usage
-//(async () => {
-  //await init();
-  //const users = await getUsers();
-  //console.log(users);
-  //const games = await getAllGames();
-  //console.log(games);
-  //const tickets = await getCart(1);
-  //console.log(tickets);
-//})();
-
 module.exports = {
   init,
   saveUser,
   getUsers,
   findUserByUsername,
   getCart,
+  getTicketCart,
   saveCart,
+  saveTicketCart,
   addActivity,
   getActivities,
   saveGame,
@@ -577,7 +768,10 @@ module.exports = {
   getProducts,
   searchProducts,
   addToCart,
-  getTickets,
+  addToTicketCart,
+  getTicketsByGameStand,
+  getTicketsByTicketID,
+  getTicketsByGameID,
   purchaseTickets,
 };
 

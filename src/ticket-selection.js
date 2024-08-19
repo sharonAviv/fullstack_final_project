@@ -2,19 +2,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameSelection = document.getElementById('game-selection');
     const standSelection = document.getElementById('stand-selection');
     const seatSelection = document.getElementById('seat-selection');
+    const checkoutScreen = document.getElementById('ticket-checkout');
 
     const gamesList = document.getElementById('games-list');
     const stadiumMap = document.getElementById('stadium-map');
     const seatsMap = document.getElementById('seats-map');
     const gameDateFilter = document.getElementById('game-date-filter');
     const continueButton = document.getElementById('continue-button');
+    const checkoutTicketsButton = document.getElementById('checkout-tickets');  
+    const moveToPayButton = document.getElementById('move-to-pay-tickets');
 
     const backToGameButton = document.getElementById('back-game');
     const backToGameFromSeatButton = document.getElementById('back-game-seat');
+    const backToGameFromCheckoutButton = document.getElementById('back-game-checkout');
     const backToStandButton = document.getElementById('back-stand');
+    const backToStandFromCheckoutButton = document.getElementById('back-stand-checkout');
+    const backToSeatButton = document.getElementById('back-seat-checkout');
 
     let selectedGameId = null;
     let selectedStand = null;
+    let seatInfo = null;
 
     // Load games and filter based on selected month
     const loadGames = async () => {
@@ -110,11 +117,41 @@ document.addEventListener('DOMContentLoaded', function() {
         gameSelection.style.display = 'block';
     });
 
+    backToGameFromCheckoutButton.addEventListener('click', () => {
+        console.log('Back to game selection button from checkout clicked.');
+        checkoutScreen.style.display = 'none';
+        gameSelection.style.display = 'block';
+    });
+
     backToStandButton.addEventListener('click', () => {
         console.log('Back to stand selection button clicked.');
         seatSelection.style.display = 'none';
         standSelection.style.display = 'block';
     });
+
+    backToSeatButton.addEventListener('click', () => {
+        console.log('Back to seat selection button from checkout clicked.');
+        checkoutScreen.style.display = 'none';
+        seatSelection.style.display = 'block';
+    });
+
+    backToStandFromCheckoutButton.addEventListener('click', () => {
+        console.log('Back to stand selection button checkout clicked.');
+        checkoutScreen.style.display = 'none';
+        standSelection.style.display = 'block';
+    });
+
+    checkoutTicketsButton.addEventListener('click', () => {
+        console.log('Checkout button clicked.');
+        if (gameDateFilter.value) {
+            loadCheckout();
+        }
+    });
+
+    function loadCheckout(){
+        seatSelection.style.display = 'none';
+        checkoutScreen.style.display = 'block';
+    }
 
     function selectGame(gameId) {
         selectedGameId = gameId;
@@ -182,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function selectSeat(seat) {
-        const seatInfo = document.createElement('div');
+        seatInfo = document.createElement('div');
         seatInfo.className = 'seat-info';
         seatInfo.innerHTML = `
             <p>Seat: ${seat.seat_number}</p>
@@ -195,16 +232,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function addToCart(ticketId) {
-        fetch('/api/cart/add-to-cart', {
+        fetch('/api/ticket-cart/add-to-cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ productId: '1' + ticketId, customization: null }), // prepend '0' to ticket_id
+            body: JSON.stringify({ ticketId: ticketId }), 
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        .then(response => {
+            return response.json().then(data => ({ status: response.status, data }));
+        })
+        .then(({ status, data }) => {
+            if (status === 201) { // Expecting status code 201 for resource creation
                 alert('Ticket added to cart');
             } else {
                 alert('Failed to add ticket to cart: ' + data.message);
@@ -212,7 +251,55 @@ document.addEventListener('DOMContentLoaded', function() {
             seatInfo.style.display = 'none'; // Hide seat info after adding to cart
         })
         .catch(error => console.error('Error:', error));
-    }  
+    }
+
+// Load user's ticket cart for checkout
+function loadCheckout() {
+    fetch(`/api/ticket-cart/view`)
+        .then(response => response.json())
+        .then(ticketCartItems => {
+            // Extract all ticket_id values
+            const ticketIds = ticketCartItems.map(item => item.ticket_id);
+            
+            // Fetch ticket details for each ticket_id
+            const ticketDetailsPromises = ticketIds.map(ticketId =>
+                fetch(`/api/tickets?ticketId=${ticketId}`)
+                    .then(response => response.json())
+            );
+
+            // Wait for all ticket details to be fetched
+            return Promise.all(ticketDetailsPromises);
+        })
+        .then(ticketsDetailsArray => {
+            // Flatten the array of ticket details
+            const ticketsDetails = ticketsDetailsArray.flat();
+
+            // Display the required fields
+            ticketsDetails.forEach(ticket => {
+                const { game_date, seat_number, stand, price, status } = ticket;
+                // Assuming you have a function to render each ticket's details
+                renderTicketDetails(game_date, seat_number, stand, price, status);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading checkout:', error);
+        });
+}
+
+// Example function to render ticket details (you should implement this)
+function renderTicketDetails(game_date, seat_number, stand, price, status) {
+    // Implement this function to display the ticket details in your UI
+    const ticketDetailsDiv = document.createElement('div');
+    ticketDetailsDiv.innerHTML = `
+        <p>Game Date: ${game_date}</p>
+        <p>Seat Number: ${seat_number}</p>
+        <p>Stand: ${stand}</p>
+        <p>Price: ${price}</p>
+        <p>Status: ${status}</p>
+    `;
+    document.getElementById('checkoutContainer').appendChild(ticketDetailsDiv);
+}
+
 
     loadGames();
 });

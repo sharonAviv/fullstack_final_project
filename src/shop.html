@@ -6,6 +6,7 @@
     <title>Israel's Soccer Team's Store</title>
     <link rel="stylesheet" href="styles.css">
     <script defer src="shop.js"></script>
+    <script>src="login.js"</script>
 </head>
 <body>
     <!-- Rest of the HTML content -->
@@ -17,14 +18,15 @@
         <div class="header-right">
             <span id="user-greeting" class="user-greeting"></span>
             <a href="login.html" class="icon login-icon" id="auth-link"></a>
-            <div class="icon cart-icon" id="cart-icon"></div>
+            <div class="icon cart-icon" id="cart-icon">
+                <span>0</span>
+            </div>
             <div class="icon menu-icon" id="menu-icon"></div>
         </div>
     </header>
 
     <section class="products-section">
         <header class="products-header">
-            <h1>Products List</h1>
         </header>
         <main class="shop-container">
             <div id="product-list" class="product-grid">
@@ -46,10 +48,11 @@
     </nav>
 
     <!-- Sliding Cart Window -->
-    <div id="cart" class="cart-container panel">
+    <div id="cart" class="cartTab panel">
         <div class="cart-header">
             <h2>Your Cart</h2>
         </div>
+        <button id="clear-cart" class="clear-cart">Clear cart</button>
         <div id="cart-items" class="cart-items">
             <!-- Cart items will be dynamically loaded here -->
         </div>

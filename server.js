@@ -12,6 +12,7 @@ const cartRouter = require('./routes/cart-server');
 const checkoutRouter = require('./routes/checkout-server');
 const gamesRouter = require('./routes/games-server');
 const ticketsRouter = require('./routes/tickets-server');
+const ticketCartRouter = require('./routes/ticket-cart-server');
 const userDataRouter = require('./routes/user-data-server'); // Import the user-data router
 const { init } = require('./routes/persist');
 
@@ -37,6 +38,7 @@ app.use('/api/register', registerRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/logout', logoutRouter);
 app.use('/api/store', storeRouter);
+app.use('/api/ticket-cart', ticketCartRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/checkout', checkoutRouter);
 app.use('/api/games', gamesRouter);

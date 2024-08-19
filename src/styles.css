@@ -169,15 +169,8 @@ body {
 
 /* Products Header styles */
 .products-header {
-    background-color: #e0e0e0; /* Light grey background */
-    border-bottom: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 10px 60px;
-    width: calc(100% - 120px);
     position: fixed;
     top: 50px;
-    z-index: 1000;
-    text-align: center;
 }
 
 .products-header h1 {
@@ -320,18 +313,23 @@ body {
     border-left: 1px solid #ccc;
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
     position: fixed;
-    top: 50px;
-    right: -350px; /* Initially hidden off-screen */
+    top: 50px; /* Adjust to move down the menu */
+    right: -350px; /* Initially hidden, completely out of the screen */
     width: 300px;
-    height: calc(100% - 50px); /* Align with the header height */
+    height: calc(100% - 50px); /* Adjust to move down the menu */
     padding: 20px;
     transition: right 0.3s ease;
-    z-index: 1000;
-    overflow-y: auto;
+    z-index: 999;
 }
 
 .panel.active {
     right: 0;
+}
+
+.panel h2 {
+    padding: 20px;
+    margin: 0;
+    font-weight: 300;
 }
 
 /* Navigation Menu Specific Styles */
@@ -375,19 +373,8 @@ body {
 }
 
 /* Cart styles */
-.cartTab {
-    width: 400px;
-    background-color: #353432;
-    color: #eee;
-    position: fixed;
-    top: 0;
-    right: -400px;
-    bottom: 0;
-    display: grid;
-    grid-template-rows: 70px 1fr 70px;
-    transition: .5s;
-    z-index: 1000;
-    overflow-y: auto;
+.cartTab{
+
 }
 
 body.showCart .cartTab {
@@ -404,24 +391,51 @@ body.showCart .container {
     font-weight: 300;
 }
 
-.cartTab .btn {
+.cartTab .cart-footer {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    padding: 20px;
 }
 
-.cartTab button {
-    background-color: #E8BC0E;
+.cartTab .close-cart {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cartTab .checkout-button {
+    background-color: #1238cf; /* Blue button */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cartTab .close-cart:hover {
+    background-color: #c0392b;
+}
+
+.cartTab .checkout-button:hover {
+    background-color: #0f2bbd; /* Darker blue on hover */
+}
+
+.cart-footer .checkbox-button {
+    background-color: #1238cf;
     border: none;
     font-family: Poppins;
     font-weight: 500;
     cursor: pointer;
 }
 
-.cartTab .close {
+.cart-footer .close {
     background-color: #eee;
 }
 
-.listCart .item {
+.cartTab .cart-items .item {
     display: grid;
     grid-template-columns: 70px 150px 50px 1fr;
     gap: 10px;

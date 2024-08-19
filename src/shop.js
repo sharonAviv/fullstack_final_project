@@ -1,33 +1,42 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded and parsed');
 
-    // Check if the user is logged in
-    checkUserAuthentication();
-
-    // Fetch and display products
-    fetch('/api/store/products')
-        .then(response => {
-            console.log('Fetch products response:', response);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(products => {
-            console.log('Products:', products);
-            displayProducts(products);
-        })
-        .catch(error => {
-            console.error('Error fetching products:', error);
-        });
-
-    // Set up navigation and cart interactions
+    var username = "";
     const cartIcon = document.getElementById('cart-icon');
+    const clearCartIcon = document.getElementById('clear-cart')
     const menuIcon = document.getElementById('menu-icon');
     const cartContainer = document.getElementById('cart');
     const navigationMenu = document.getElementById('navigation-menu');
     const closeCartButton = document.getElementById('close-cart');
     const overlay = document.getElementById('overlay');
+
+
+    fetch('/api/store/products')
+    .then(response => {
+        console.log('Fetch products response:', response);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(products => {
+        console.log('Products:', products);
+        products.forEach(product => {
+            // Parse the images string into an array
+            product.images = JSON.parse(product.images.replace(/\\/g, ''));
+        });
+        displayProducts(products);
+    })
+    .catch(error => {
+        console.error('Error fetching products:', error);
+    });
+
+    // Check if the user is logged in
+    checkUserAuthentication();
+
+    // Set up navigation and cart interactions
+
 
     // Toggle the cart visibility
     const toggleCart = () => {
@@ -66,54 +75,168 @@ document.addEventListener('DOMContentLoaded', () => {
     cartIcon.addEventListener('click', toggleCart);
     menuIcon.addEventListener('click', toggleNavigation);
     closeCartButton.addEventListener('click', toggleCart);
+    clearCartIcon.addEventListener('click', cartClear)
     overlay.addEventListener('click', () => {
         closeCartIfOpen();
         closeNavigationIfOpen();
         overlay.classList.remove('active');
     });
+
 });
 
-// Check if the user is authenticated
+function cartClear() {
+    fetch('/api/cart/removeAll', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include' // Ensure cookies are sent with the request
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(data => {
+          throw new Error(data.message || 'Failed to clear cart');
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      alert('All items removed from cart successfully!');
+      console.log('Updated cart:', data.cartItems);
+      clearCartDisplay();
+    })
+    .catch(error => {
+      console.error('Error clearing cart:', error);
+      alert('An error occurred while clearing the cart.');
+    });
+  }
+  
+  function clearCartDisplay() {
+    const cartItemsContainer = document.getElementById('cart-items');
+    cartItemsContainer.innerHTML = '<p>Your cart is currently empty.</p>';
+    const cartIcon = document.querySelector('.cart-icon span');
+    cartIcon.textContent = '0';
+  }
+
+
+function displayProducts(products) {
+    const productList = document.getElementById('product-list');
+    products.forEach(product => {
+        const productItem = document.createElement('div');
+        productItem.className = 'product';
+ 
+        // Create the image carousel
+        let imageCarouselHTML = `
+            <div class="image-carousel">
+        `;
+        product.images.forEach((image, index) => {
+            imageCarouselHTML += `
+                <img src="${image}" alt="${product.name} Image ${index + 1}" class="product-image" style="${index === 0 ? 'display:block;' : 'display:none;'}">
+            `;
+        });
+        
+        if (product.images.length > 1) {
+            imageCarouselHTML += `
+                <button class="carousel-btn prev-btn">&lt;</button>
+                <button class="carousel-btn next-btn">&gt;</button>
+            `;
+        }
+        
+        imageCarouselHTML += `
+            </div>
+        `;
+
+        // Complete the product HTML
+        productItem.innerHTML = `
+            ${imageCarouselHTML}
+            <h2>${product.name}</h2>
+            <p>${product.description}</p>
+            <p class="price">$${product.price.toFixed(2)}</p>
+            <button class="add-to-cart" data-id="${product.id}">Add to Cart</button>
+        `;
+        
+        productList.appendChild(productItem);
+
+        // Add event listeners for carousel buttons if there are more than one image
+        if (product.images.length > 1) {
+            const carousel = productItem.querySelector('.image-carousel');
+            const images = carousel.querySelectorAll('.product-image');
+            let currentImageIndex = 0;
+
+            const showImage = (index) => {
+                images[currentImageIndex].style.display = 'none';
+                currentImageIndex = index;
+                images[currentImageIndex].style.display = 'block';
+            };
+
+            const prevBtn = carousel.querySelector('.prev-btn');
+            const nextBtn = carousel.querySelector('.next-btn');
+
+            prevBtn.addEventListener('click', () => {
+                const newIndex = (currentImageIndex === 0) ? images.length - 1 : currentImageIndex - 1;
+                showImage(newIndex);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const newIndex = (currentImageIndex === images.length - 1) ? 0 : currentImageIndex + 1;
+                showImage(newIndex);
+            });
+        }
+
+        // Add event listener to "Add to Cart" button
+        productItem.querySelector('.add-to-cart').addEventListener('click', (event) => {
+            const productId = event.target.getAttribute('data-id');
+            console.log(productId)
+            addToCart(productId);
+        });
+    });
+}
+
 function checkUserAuthentication() {
-    console.log('Checking user authentication...');
-    const token = getCookie('token');
-    console.log('Token from cookies:', token);
-    if (token) {
-        console.log('Token found:', token);
-        const payload = parseJwt(token);
-        console.log('Token payload:', payload);
-        const username = payload.username;
-        displayUserGreeting(username);
-    } else {
-        console.log('No user signed in');
+    fetch('/api/user-data/user')
+    .then(response => {
+        console.log('Fetch user response:', response);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (!data || !data.user) { // Check if the user object is present and has a username
+            console.log('No user found or user is not authenticated.');
+            displayLoginLink();
+        } else {
+            console.log('Authenticated user:', data.user);
+            displayUserGreeting(data.user); // Assume username is the correct identifier
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching user data:', error);
         displayLoginLink();
-    }
+    });
 }
 
-// Parse JWT token to get payload
-function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
-    return JSON.parse(jsonPayload);
+function displayLoginLink() {
+    const userGreeting = document.getElementById('user-greeting');
+    console.log('Displaying login link');
+    const authLink = document.getElementById('auth-link');
+    userGreeting.textContent = `Hi, Guest, login in order to buy`;
+    authLink.href = 'login.html';
 }
 
-// Display user greeting and logout link
 function displayUserGreeting(username) {
     console.log('Displaying user greeting for:', username);
     const userGreeting = document.getElementById('user-greeting');
     const authLink = document.getElementById('auth-link');
     
     userGreeting.textContent = `Hi, ${username}`;
-    
+    const cart = getShoppingCart(); // Assume this function retrieves the current shopping cart
+
+
     authLink.onclick = function(event) {
         event.preventDefault(); // Prevent the default link behavior
 
         // Save user information before logging out (e.g., shopping cart)
-        const cart = getShoppingCart(); // Assume this function retrieves the current shopping cart
         localStorage.setItem('cart', JSON.stringify(cart));
         // Perform the logout process
         fetch('/api/logout', {
@@ -143,107 +266,36 @@ function displayUserGreeting(username) {
 }
 
 function getShoppingCart() {
-    // Implement this function to retrieve the current shopping cart
-    // For example, you might have an array of items stored in a variable or state
-    return [
-        { id: 1, name: 'Product 1', quantity: 2 },
-        { id: 2, name: 'Product 2', quantity: 1 }
-    ];
-}
-
-function restoreShoppingCart() {
-    const cart = JSON.parse(localStorage.getItem('cart'));
-    if (cart) {
-        // Restore the cart to the shopping cart state
-        console.log('Restoring cart:', cart);
-        // Implement this logic to repopulate the shopping cart in the UI
-    }
-}
-
-// Call this function when the page loads to restore the cart
-document.addEventListener('DOMContentLoaded', restoreShoppingCart);
-
-
-// Display login link
-function displayLoginLink() {
-    const userGreeting = document.getElementById('user-greeting');
-    console.log('Displaying login link');
-    const authLink = document.getElementById('auth-link');
-    userGreeting.textContent = `Hi, Guest, login in order to buy`;
-    authLink.href = 'login.html';
-}
-
-// Get a cookie by name
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    console.log(document.cookie)
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}
-
-function displayProducts(products) {
-    console.log('Displaying products:', products);
-    const productList = document.getElementById('product-list');
-    productList.innerHTML = ''; // Clear existing content
-
-    products.forEach(product => {
-        const productItem = document.createElement('div');
-        productItem.className = 'product-item';
-
-        // Ensure the image property exists and is an array with at least one image
-        const images = Array.isArray(product.image) && product.images.length > 0 
-                       ? product.image 
-                       : ['default-image.jpg', 'default-image.jpg'];
-
-        productItem.innerHTML = `
-            <div class="image-carousel">
-                <img src="${images[0]}" alt="${product.name} Image 1" class="product-image">
-                <img src="${images[1]}" alt="${product.name} Image 2" class="product-image" style="display:none;">
-                <button class="carousel-btn prev-btn">&lt;</button>
-                <button class="carousel-btn next-btn">&gt;</button>
-            </div>
-            <h2>${product.name}</h2>
-            <p>${product.description}</p>
-            <p class="price">$${product.price.toFixed(2)}</p>
-            <button class="add-to-cart" data-id="${product.id}">Add to Cart</button>
-        `;
-        productList.appendChild(productItem);
-
-        // Carousel functionality
-        const imageElements = productItem.querySelectorAll('.product-image');
-        let currentIndex = 0;
-
-        const showImage = (index) => {
-            imageElements.forEach((img, i) => {
-                img.style.display = i === index ? 'block' : 'none';
-            });
-        };
-
-        productItem.querySelector('.prev-btn').addEventListener('click', () => {
-            currentIndex = (currentIndex > 0) ? currentIndex - 1 : imageElements.length - 1;
-            showImage(currentIndex);
-        });
-
-        productItem.querySelector('.next-btn').addEventListener('click', () => {
-            currentIndex = (currentIndex < imageElements.length - 1) ? currentIndex + 1 : 0;
-            showImage(currentIndex);
-        });
-
-        // Initialize with the first image displayed
-        showImage(currentIndex);
-
-        // Add event listener to "Add to Cart" button
-        productItem.querySelector('.add-to-cart').addEventListener('click', (event) => {
-            const productId = event.target.getAttribute('data-id');
-            addToCart(productId);
-        });
+    fetch('/api/cart/view', {
+        method: 'GET',
+        credentials: 'include' // Include cookies in the request for authentication via JWT
+    })
+    .then(response => {
+        console.log('Fetch cart response:', response);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(cartItems => {
+        if (!cartItems || cartItems.length === 0) { // Check if the cart is empty or not present
+            console.log('No cart items found or user is not authenticated.');
+            displayEmptyCartMessage();
+        } else {
+            console.log('Cart items retrieved:', cartItems);
+            displayCartItems(cartItems); // Function to display cart items
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching cart data:', error);
+        displayErrorFetchingCart();
     });
+
 }
 
-// Add a product to the cart
 function addToCart(productId) {
-    console.log("adding to cart " + productId)
+    console.log("Adding to cart:", productId);
+
     fetch('/api/cart/add-to-cart', {
         method: 'POST',
         headers: {
@@ -251,16 +303,62 @@ function addToCart(productId) {
         },
         body: JSON.stringify({ productId })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Product added to cart successfully!');
-        } else {
-            alert('Failed to add product to cart: ' + data.message);
+    .then(response => {
+        if (!response.ok) {
+            // Handle HTTP errors
+            return response.json().then(data => {
+                throw new Error(data.message || 'Failed to add product to cart');
+            });
         }
+        return response.json();
+    })
+    .then(data => {
+        // Handle the successful response
+        alert('Product added to cart successfully!');
+        console.log('Cart response data:', data);
+        getShoppingCart(); // Function to display cart items
     })
     .catch(error => {
         console.error('Error adding to cart:', error);
         alert('An error occurred while adding the product to the cart.');
     });
 }
+
+
+// Function to display a message when the cart is empty
+function displayEmptyCartMessage() {
+    const cartItemsContainer = document.getElementById('cart-items');
+    cartItemsContainer.innerHTML = `<p>Your cart is currently empty.</p>`; // Clear the cart and show a message
+}
+
+// Function to display cart items dynamically
+// Function to display cart items dynamically
+function displayCartItems(cartItems) {
+    const cartItemsContainer = document.getElementById('cart-items');
+    cartItemsContainer.innerHTML = ''; // Clear existing cart items
+
+    if (cartItems && cartItems.length > 0) {
+        cartItems.forEach(item => {
+            const itemElement = document.createElement('div'); // Use a different variable name
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+                <div class="item-name">${item.name}</div>
+                <div class="item-quantity">Quantity: ${item.quantity}</div>
+                <div class="item-price">$${item.price}</div>
+            `;
+            cartItemsContainer.appendChild(itemElement);
+        });
+    } else {
+        displayEmptyCartMessage(); // If no items, display empty cart message
+    }
+}
+
+// Function to handle and display errors when fetching cart data
+function displayErrorFetchingCart() {
+    const cartItemsContainer = document.getElementById('cart-items');
+    cartItemsContainer.innerHTML = `<p>There was an error fetching your cart data. Please try again later.</p>`;
+}
+
+
+
+

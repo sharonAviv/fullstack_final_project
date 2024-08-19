@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Israel's Soccer Team's Store</title>
     <link rel="stylesheet" href="styles.css">
+    <script defer src="shop.js"></script>
+    <script>src="login.js"</script>
 </head>
 <body>
     <header class="main-header">
@@ -13,8 +15,11 @@
             <span>Israel's Soccer Team's Store</span>
         </div>
         <div class="header-right">
-            <a href="login.html" class="icon login-icon"></a>
-            <a href="cart.html" class="icon cart-icon"></a>
+            <span id="user-greeting" class="user-greeting"></span>
+            <a href="login.html" class="icon login-icon" id="auth-link"></a>
+            <div class="icon cart-icon" id="cart-icon">
+                <span>0</span>
+            </div>
             <div class="icon menu-icon" id="menu-icon"></div>
         </div>
     </header>
@@ -22,7 +27,7 @@
     <nav id="navigation-menu" class="navigation-menu panel">
         <ul>
             <li><a href="login.html">Login</a></li>
-            <li><a href="cart.html">My Cart <span class="cart-symbol"></span></a></li>
+            <li><a href="#" class="cart-link">My Cart <span class="cart-symbol"></span></a></li>
             <li><a href="shop.html">Store</a></li>
             <li><a href="tickets.html">Tickets</a></li>
             <li><a href="team.html">The Team</a></li>
@@ -32,10 +37,11 @@
     </nav>
 
     <!-- Sliding Cart Window -->
-    <div id="cart" class="cart-container panel">
+    <div id="cart" class="cartTab panel">
         <div class="cart-header">
             <h2>Your Cart</h2>
         </div>
+        <button id="clear-cart" class="clear-cart">Clear cart</button>
         <div id="cart-items" class="cart-items">
             <!-- Cart items will be dynamically loaded here -->
         </div>
@@ -75,6 +81,16 @@
             <div id="seats-map"></div>
             <button id="back-game-seat">Back to game selection</button><br>
             <button id="back-stand">Back to stand selection</button>
+            <button id="checkout-tickets">Checkout tickets</button>
+        </div>
+
+        <div id="ticket-checkout" class="selection-step form-container" style="display: none;">
+            <h2>Your Tickets</h2>
+            <div id="ticket-cart"></div>
+            <button id="back-game-checkout">Back to game selection</button><br>
+            <button id="back-stand-checkout">Back to stand selection</button>
+            <button id="back-seat-checkout">Back to seat selection</button>
+            <button id="move-to-pay-tickets">Payment</button>
         </div>
     </main>
     
