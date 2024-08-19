@@ -143,15 +143,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     checkoutTicketsButton.addEventListener('click', () => {
         console.log('Checkout button clicked.');
-        if (gameDateFilter.value) {
-            loadCheckout();
-        }
-    });
-
-    function loadCheckout(){
         seatSelection.style.display = 'none';
         checkoutScreen.style.display = 'block';
-    }
+        loadCheckout();
+    });
+
 
     function selectGame(gameId) {
         selectedGameId = gameId;
@@ -256,7 +252,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load user's ticket cart for checkout
 function loadCheckout() {
     fetch(`/api/ticket-cart/view`)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Fetch tickets response:', response);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(ticketCartItems => {
             // Extract all ticket_id values
             const ticketIds = ticketCartItems.map(item => item.ticket_id);

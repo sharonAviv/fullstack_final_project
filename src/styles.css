@@ -36,6 +36,9 @@ body {
 }
 
 .form-container input[type="text"],
+.form-container input[type="email"],
+.form-container input[type="tel"],
+.form-container textarea,
 .form-container input[type="password"] {
     width: calc(100% - 20px);
     padding: 10px;

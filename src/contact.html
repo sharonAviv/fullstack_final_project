@@ -53,49 +53,56 @@
 
     <div id="overlay" class="overlay"></div>
 
-    <main id="ticket-selection">
-        <div id="game-selection" class="selection-step form-container">
-            <h2>Select a Game</h2>
-            <label for="game-date-filter">Filter by Month/Year:</label>
-            <input type="month" id="game-date-filter"><br><br>
-            <button id="continue-button">Continue</button>
-            <div id="message" class="message"></div>
-            <div id="games-list" style="display: none;"></div>
-        </div>
-    
-        <div id="stand-selection" class="selection-step form-container" style="display: none; width: 500px;">
-            <h2>Select a Stand</h2>
-            <div id="stadium-map">
-                <div class="stand horizontal" id="north-stand">North Stand</div>
-                <div class="stand vertical" id="east-stand">East Stand</div>
-                <div class="field" id="Field">Field</div>
-                <div class="stand vertical" id="west-stand">West Stand</div>
-                <div class="stand horizontal" id="south-stand">South Stand</div>
-                <button id="back-game">Back</button>
-            </div>
-            
-        </div>
-    
-        <div id="seat-selection" class="selection-step form-container" style="display: none; width: 550px;">
-            <h2>Select a Seat</h2>
-            <div id="seats-map"></div>
-            <button id="back-game-seat">Back to game selection</button><br>
-            <button id="back-stand">Back to stand selection</button>
-            <button id="checkout-tickets">Checkout tickets</button>
-        </div>
-
-        <div id="ticket-checkout" class="selection-step form-container" style="display: none;">
-            <h2>Your Tickets</h2>
-            <div id="ticket-cart"></div>
-            <button id="back-game-checkout">Back to game selection</button><br>
-            <button id="back-stand-checkout">Back to stand selection</button>
-            <button id="back-seat-checkout">Back to seat selection</button>
-            <button id="move-to-pay-tickets">Payment</button>
+    <main id="contact-create">
+        <div id="details-fill" class="form-container">
+            <h2>Please fill details</h2>
+            <form id="contactForm" action="/api/contact" method="POST">
+                <input type="text" name="name" placeholder="Enter your name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="tel" name="phone" placeholder="Phone number">
+                <textarea name="message" placeholder="Your message here" rows="4" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+            <div id="successMessage" class="message" style="display: none;">Thank you! Your message was sent successfully.</div>
         </div>
     </main>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.style.display = 'block';
+
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000); 
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error during sending the message:', error);
+                alert('Failed sending the message. Please try again.');
+            }
+        });
+    </script>
     
 
     <script src="script.js"></script>
-    <script src="ticket-selection.js"></script>
 </body>
 </html>

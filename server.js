@@ -13,7 +13,8 @@ const checkoutRouter = require('./routes/checkout-server');
 const gamesRouter = require('./routes/games-server');
 const ticketsRouter = require('./routes/tickets-server');
 const ticketCartRouter = require('./routes/ticket-cart-server');
-const userDataRouter = require('./routes/user-data-server'); // Import the user-data router
+const userDataRouter = require('./routes/user-data-server');
+const contactServer = require('./routes/contact-server');
 const { init } = require('./routes/persist');
 
 const app = express();
@@ -43,7 +44,8 @@ app.use('/api/cart', cartRouter);
 app.use('/api/checkout', checkoutRouter);
 app.use('/api/games', gamesRouter);
 app.use('/api/tickets', ticketsRouter);
-app.use('/api/user-data', userDataRouter); // Add the user-data route
+app.use('/api/user-data', userDataRouter);
+app.use('/api/contact', contactServer);
 
 // Serve the shop page as the starting point
 app.get('/shop', (req, res) => {
