@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Israel's Soccer Team's Store</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="shop.js"></script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-left">
+            <img src="../icons/flag.png" alt="Israeli Flag" class="flag-icon">
+            <span>Israel's Soccer Team's Store</span>
+        </div>
+        <div class="header-right">
+            <span id="user-greeting" class="user-greeting"></span>
+            <a href="login.html" class="icon login-icon" id="auth-link"></a>
+            <div class="icon cart-icon" id="cart-icon">
+                <span>0</span>
+            </div>
+            <div class="icon menu-icon" id="menu-icon"></div>
+        </div>
+    </header>
+
+    <nav id="navigation-menu" class="navigation-menu panel">
+        <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="#" class="cart-link">My Cart <span class="cart-symbol"></span></a></li>
+            <li><a href="shop.html">Store</a></li>
+            <li><a href="tickets.html">Tickets</a></li>
+            <li><a href="news.html">News</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+            <li><a href="admin.html">Admin</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sliding Cart Window -->
+    <div id="cart" class="cartTab panel">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+        </div>
+        <button id="clear-cart" class="clear-cart">Clear cart</button>
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be dynamically loaded here -->
+        </div>
+        <div class="cart-footer">
+            <button id="close-cart" class="close-cart">&times;</button>
+            <button id="checkout" class="checkout-button">Checkout</button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    <div class="form-container selection-step" style="width: 500px;">
+        <h2>News - Israeli Soccer</h2>
+        <div id="news-reel" class="news-scroller"></div>
+    </div>
+    
+    <script>
+        async function fetchSportsNews() {
+            try{
+                const response = await fetch('/api/news'); // Fetch from your backend router
+                if (response.ok) {
+                    const data = await response.json();
+                    displayNews(data);
+                } else {
+                    console.error('Error fetching news:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+      
+        function displayNews(articles) {
+          const newsContainer = document.getElementById('news-reel');
+          newsContainer.innerHTML = ''; // Clear existing content
+      
+          articles.forEach(article => {
+            const articleElement = document.createElement('div');
+            articleElement.className = 'news-item';
+      
+            articleElement.innerHTML = `
+              <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
+              <p>${article.description}</p>
+              <p><small>${new Date(article.publishedAt).toLocaleDateString()}</small></p>
+            `;
+      
+            newsContainer.appendChild(articleElement);
+          });
+        }
+      
+        // Fetch news when the page loads
+        document.addEventListener('DOMContentLoaded', fetchSportsNews);
+    </script>
+       
+    
+    <script src="script.js"></script>
+</body>
+</html>

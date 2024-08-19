@@ -46,6 +46,11 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     outline: none;
+    font-family: Poppins, Arial, sans-serif;
+}
+
+.form-container textarea {
+    resize: vertical; 
 }
 
 .form-container input[type="text"]:focus,
@@ -482,6 +487,21 @@ body.showCart .container {
 .selection-step {
     text-align: center;
     margin-top: 100px; /* Adjust for header space */
+}
+
+.news-scroller {
+    max-height: 400px; /* Set a max height for the news reel */
+    overflow-y: auto;  /* Enable vertical scrolling */
+}
+
+.news-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.news-item:last-child {
+    border-bottom: none;
 }
 
 #games-list {
