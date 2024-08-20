@@ -456,11 +456,11 @@ async function addCartItem(cartId, productDetails) {
   }
 }
 
-// Add a ticket cart item
-async function addTicketCartItem(userId, item) {
+// Add a ticket to ticket cart
+async function addTicketCartItem(userId, ticketId) {
   return new Promise((resolve, reject) => {
     const query = `INSERT INTO ticket_cart (user_id, ticket_id) VALUES (?, ?)`;
-    db.run(query, [userId, item.product_id], function (err) {
+    db.run(query, [userId, ticketId], function (err) {
       if (err) {
         reject(err);
       } else {
@@ -644,6 +644,7 @@ async function addToTicketCart(username, ticketId) {
     return { success: false, message: 'Ticket already in cart' };
   } else {
     await addTicketCartItem(userId, ticketId);
+    console.log('ticket added to cart, ticketId: ${ticketID}, userID: ${userID}', ticketId, userId);
     return { success: true, message: 'Ticket added to cart' };
   }
 }

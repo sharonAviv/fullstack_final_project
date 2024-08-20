@@ -241,6 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(({ status, data }) => {
             if (status === 201) { // Expecting status code 201 for resource creation
                 alert('Ticket added to cart');
+                console.log('Ticket was added to ticket cart with ticket ID:', ticketId);
             } else {
                 alert('Failed to add ticket to cart: ' + data.message);
             }
