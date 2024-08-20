@@ -301,10 +301,12 @@ async function getCart(username) {
 } 
 
 // Get cart items for a specific user
-async function getTicketCart(userId) {
+async function getTicketCart(username) {
+  const user_id = await findUserIDByUsername(username);
+  console.log(user_id + "user id")
   return new Promise((resolve, reject) => {
     const query = `SELECT * FROM ticket_cart WHERE user_id = ?`;
-    db.all(query, [userId], (err, rows) => {
+    db.all(query, [user_id], (err, rows) => {
       if (err) {
         reject(err);
       } else {
@@ -644,7 +646,7 @@ async function addToTicketCart(username, ticketId) {
     return { success: false, message: 'Ticket already in cart' };
   } else {
     await addTicketCartItem(userId, ticketId);
-    console.log('ticket added to cart, ticketId: ${ticketID}, userID: ${userID}', ticketId, userId);
+    console.log('ticket added to cart, ticketId: ' + ticketId + ', userId: ' + userId);
     return { success: true, message: 'Ticket added to cart' };
   }
 }

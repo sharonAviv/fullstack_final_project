@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedGameId = null;
     let selectedStand = null;
     let seatInfo = null;
+    let totalPrice = 0;
 
     // Load games and filter based on selected month
     const loadGames = async () => {
@@ -263,6 +264,7 @@ function loadCheckout() {
         .then(ticketCartItems => {
             // Extract all ticket_id values
             const ticketIds = ticketCartItems.map(item => item.ticket_id);
+            console.log('Fetch ticket ids:', ticketIds);
             
             // Fetch ticket details for each ticket_id
             const ticketDetailsPromises = ticketIds.map(ticketId =>
@@ -273,15 +275,21 @@ function loadCheckout() {
             // Wait for all ticket details to be fetched
             return Promise.all(ticketDetailsPromises);
         })
+        // Handle tickets presentation
         .then(ticketsDetailsArray => {
             // Flatten the array of ticket details
             const ticketsDetails = ticketsDetailsArray.flat();
 
-            // Display the required fields
+            // Clear the container before adding new tickets
+            const checkoutContainer = document.getElementById('checkoutContainer');
+            checkoutContainer.innerHTML = ''; // Clear existing tickets
+            
+            // Display the required fields for each ticket
             ticketsDetails.forEach(ticket => {
-                const { game_date, seat_number, stand, price, status } = ticket;
-                // Assuming you have a function to render each ticket's details
-                renderTicketDetails(game_date, seat_number, stand, price, status);
+                const { ticket_id, game_date, seat_number, stand, price } = ticket;
+                totalPrice += price;
+                // Render each ticket's details
+                renderTicketDetails(ticket_id, game_date, seat_number, stand, price);
             });
         })
         .catch(error => {
@@ -290,18 +298,20 @@ function loadCheckout() {
 }
 
 // Example function to render ticket details (you should implement this)
-function renderTicketDetails(game_date, seat_number, stand, price, status) {
-    // Implement this function to display the ticket details in your UI
+function renderTicketDetails(ticket_id, game_date, seat_number, stand, price) {
+    // Create a div for the ticket details
     const ticketDetailsDiv = document.createElement('div');
     ticketDetailsDiv.innerHTML = `
         <p>Game Date: ${game_date}</p>
         <p>Seat Number: ${seat_number}</p>
         <p>Stand: ${stand}</p>
-        <p>Price: ${price}</p>
-        <p>Status: ${status}</p>
+        <p>Price: ${price}$</p>
+        <p>Ticket ID: ${ticket_id}</p>
     `;
+    // Append the div to the container
     document.getElementById('checkoutContainer').appendChild(ticketDetailsDiv);
 }
+
 
 
     loadGames();

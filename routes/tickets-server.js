@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getTicketsByGameStand, purchaseTickets, getTicketsByGameID } = require('./persist'); // Adjust the path as necessary
+const { getTicketsByGameStand, purchaseTickets, getTicketsByGameID, getTicketsByTicketID } = require('./persist'); // Adjust the path as necessary
 
 // GET tickets for a specific (game and stand) or ticketId
 router.get('/', async (req, res) => {
@@ -12,13 +12,17 @@ router.get('/', async (req, res) => {
     try {
         let tickets;
         if (gameId) {
-            // Fetch tickets by ticketId
+            // Fetch tickets by gameId
             tickets = await getTicketsByGameID(gameId);
             console.log("Tickets fetched for gameId:", { gameId, tickets });
         } else if (gameId && stand) {
             // Fetch tickets by gameId and stand
             tickets = await getTicketsByGameStand(gameId, stand);
             console.log("Tickets fetched for gameId and stand:", { gameId, stand, tickets });
+        } else if (ticketId) {
+            // Fetch tickets by ticketId
+            tickets = await getTicketsByTicketID(ticketId);
+            console.log("Tickets fetched for ticketId:", { ticketId, tickets });
         } else {
             throw new Error('Missing required query parameters');
         }
