@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameDateFilter = document.getElementById('game-date-filter');
     const continueButton = document.getElementById('continue-button');
     const checkoutTicketsButton = document.getElementById('checkout-tickets');  
-    const moveToPayButton = document.getElementById('move-to-pay-tickets');
+    const purchaseCompleteButton = document.getElementById('complete-purchase-button');
 
     const backToGameButton = document.getElementById('back-game');
     const backToGameFromSeatButton = document.getElementById('back-game-seat');
@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedGameId = null;
     let selectedStand = null;
     let seatInfo = null;
+    let ticketIds = null;
     let totalPrice = 0;
 
     // Load games and filter based on selected month
@@ -149,6 +150,56 @@ document.addEventListener('DOMContentLoaded', function() {
         loadCheckout();
     });
 
+    purchaseCompleteButton.addEventListener('click', (event) => {
+        console.log('Purchase complete button clicked.');
+        event.preventDefault(); // Prevents the default form submission behavior
+        checkoutScreen.style.display = 'none';
+        ticketPayment();
+        console.log('Payment proccess finished, redirecting confirmation');
+        window.location.href = 'confirmation.html';
+    });
+    
+    async function ticketPayment() {
+        try {
+            // Simulate order completion and clearing the cart on the server
+            console.log('trying to purchase tickets for ' + JSON.stringify({ ticketIds }));
+            const response = await fetch('/api/tickets/purchase', {
+                method: 'POST',
+                credentials: 'include', // Include cookies for authentication
+                headers: {
+                    'Content-Type': 'application/json'
+                }, 
+                body: JSON.stringify({ ticketIds }) // Replace with an array if multiple IDs
+            });
+
+            if (response.ok) {
+                console.log('Tickets purchased successfully');
+
+                // Loop through each ticketId and remove it from the cart
+                for (const ticketId of ticketIds) {
+                    const removeResponse = await fetch('/api/ticket-cart/remove', {
+                        method: 'POST',
+                        credentials: 'include', // Include cookies for authentication
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ ticketId }) // Send the current ticketId to remove
+                    });
+
+                    if (removeResponse.ok) {
+                        console.log(`Ticket ID ${ticketId} removed from cart successfully.`);
+                    } else {
+                        console.error(`Failed to remove Ticket ID ${ticketId} from cart.`);
+                    }
+                }
+            } else {
+                console.error('Failed to purchase tickets');
+            }
+        } catch (error) {
+            console.error('Error during purchase:', error);
+            alert('There was an issue completing your purchase. Please try again.');
+        }
+    }
 
     function selectGame(gameId) {
         selectedGameId = gameId;
@@ -263,7 +314,7 @@ function loadCheckout() {
         })
         .then(ticketCartItems => {
             // Extract all ticket_id values
-            const ticketIds = ticketCartItems.map(item => item.ticket_id);
+            ticketIds = ticketCartItems.map(item => item.ticket_id);
             console.log('Fetch ticket ids:', ticketIds);
             
             // Fetch ticket details for each ticket_id
@@ -302,11 +353,11 @@ function renderTicketDetails(ticket_id, game_date, seat_number, stand, price) {
     // Create a div for the ticket details
     const ticketDetailsDiv = document.createElement('div');
     ticketDetailsDiv.innerHTML = `
-        <p>Game Date: ${game_date}</p>
-        <p>Seat Number: ${seat_number}</p>
-        <p>Stand: ${stand}</p>
-        <p>Price: ${price}$</p>
-        <p>Ticket ID: ${ticket_id}</p>
+        <p><b>Game Date</b>: ${game_date}</p>
+        <p><b>Seat Number</b>: ${seat_number}</p>
+        <p><b>Stand</b>: ${stand}</p>
+        <p><b>Price</b>: ${price}$</p>
+        <p><b>Ticket ID</b>: ${ticket_id}</p>
     `;
     // Append the div to the container
     document.getElementById('checkoutContainer').appendChild(ticketDetailsDiv);

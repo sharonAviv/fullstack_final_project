@@ -68,30 +68,48 @@
             <div id="stadium-map">
                 <div class="stand horizontal" id="north-stand">North Stand</div>
                 <div class="stand vertical" id="east-stand">East Stand</div>
-                <div class="field" id="Field">Field</div>
+                <img src="../icons/soccer_field.png" alt="Soccer Field">
                 <div class="stand vertical" id="west-stand">West Stand</div>
                 <div class="stand horizontal" id="south-stand">South Stand</div>
                 <button id="back-game">Back</button>
-            </div>
-            
+            </div>            
         </div>
     
         <div id="seat-selection" class="selection-step form-container" style="display: none; width: 550px;">
             <h2>Select a Seat</h2>
             <div id="seats-map"></div>
-            <button id="back-game-seat">Back to game selection</button><br>
-            <button id="back-stand">Back to stand selection</button>
-            <button id="checkout-tickets">Checkout tickets</button>
+            <button id="back-game-seat" style="width: 50%; margin: 10px;">Back to game selection</button><br>
+            <button id="back-stand" style="width: 50%; margin: 10px;">Back to stand selection</button>
+            <button id="checkout-tickets" style="width: 50%; margin: 10px;">Checkout tickets</button>
         </div>
 
-        <div id="ticket-checkout" class="selection-step form-container" style="display: none;">
+        <div id="ticket-checkout" class="selection-step form-container" style="display: none; width: 550px;">
             <h2>Your Tickets</h2>
-            <div id="ticket-cart"></div>
-            <div id="checkoutContainer"></div>
-            <button id="back-game-checkout">Back to game selection</button><br>
-            <button id="back-stand-checkout">Back to stand selection</button>
-            <button id="back-seat-checkout">Back to seat selection</button>
-            <button id="move-to-pay-tickets">Payment</button>
+            <div id="ticket-cart" class="news-scroller" style="text-align: left;"></div>
+            <div id="checkoutContainer" class="news-scroller" style="text-align: left; max-height: 200px;"></div>
+            <h2>Payment Details</h3>
+            <form id="checkout-form" style="text-align: left;">
+                <div class="form-group">
+                    <label for="card-number">Card Number</label>
+                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456" required>
+                </div>
+                <div class="form-group">
+                    <label for="card-expiry">Expiry Date</label>
+                    <input type="text" id="card-expiry" placeholder="MM/YY" required>
+                </div>
+                <div class="form-group">
+                    <label for="card-cvc">CVC</label>
+                    <input type="text" id="card-cvc" placeholder="123" required>
+                </div>
+                <div class="form-group">
+                    <label for="billing-address">Billing Address</label>
+                    <textarea id="billing-address" rows="3" placeholder="1234 Main St, City, Country" required></textarea>
+                </div>
+            </form>
+            <button type="submit" id="complete-purchase-button" style="width: 50%; margin: 10px;">Complete Purchase</button>
+            <button id="back-game-checkout" style="width: 50%; margin: 10px;">Back to game selection</button><br>
+            <button id="back-stand-checkout" style="width: 50%; margin: 10px;">Back to stand selection</button>
+            <button id="back-seat-checkout" style="width: 50%; margin: 10px;">Back to seat selection</button>
         </div>
     </main>
     

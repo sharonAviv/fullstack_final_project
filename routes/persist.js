@@ -337,7 +337,8 @@ async function saveCart(username, cartItems) {
 }
 
 // Save ticket cart items for a specific user
-async function saveTicketCart(userId, cartItems) {
+async function saveTicketCart(username, cartItems) {
+  userId = await findUserIDByUsername(username);
   return new Promise(async (resolve, reject) => {
     try {
       await clearTicketCartItems(userId);

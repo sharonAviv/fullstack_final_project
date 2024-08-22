@@ -494,6 +494,7 @@ body.showCart .container {
     overflow-y: auto;  /* Enable vertical scrolling */
 }
 
+/* Optional: style for each news item */
 .news-item {
     margin-bottom: 15px;
     padding: 10px;
@@ -537,57 +538,74 @@ body.showCart .container {
     color: red; /* Change color to your preference */
 }
 
+/* Styles for the stadium map */
 #stadium-map {
-    display: flex;
-    flex-direction: column; /* Arrange stands vertically */
-    align-items: center; /* Center align stands */
-    position: relative;
-    width: 600px; /* Adjust the width as needed */
-    height: 300px; /* Adjust the height as needed */
-    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px; /* Adjust space between columns */
+    justify-items: center; /* Center align items horizontally */
+    align-items: center; /* Center align items vertically */
 }
 
-.stand.horizontal {
-    width: 150px; /* Adjust width for horizontal stands */
-    height: 50px; /* Adjust height for horizontal stands */
-    margin: 0; /* Vertical margin */
+#stadium-map img {
+    width: 30%; /* Set the width of the fields icon to be less than a third of a row */
+    justify-self: center; /* Center align the image horizontally */
 }
 
-.stand.vertical {
-    width: 50px; /* Adjust width for vertical stands */
-    height: 150px; /* Adjust height for vertical stands */
-    margin: 0 10px; /* Horizontal margin */
-}
-
-.stand.available {
-    background-color: lightblue;
-}
-
-.stand.unavailable {
-    background-color: grey;
-    cursor: not-allowed;
-}
-
-.stand.available:hover {
-    background-color: #0038a8;
-    color: white;
-}
-
-.field {
-    background-color: #52CC7A;
-    width: 150px; /* Match width with horizontal stands */
-    height: 150px; /* Match height with combined vertical stands */
-    border: 1px solid #ccc; /* Optional border for visualization */
+/* Styles for the stands */
+.stand {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 10px; /* Horizontal margin to align with vertical stands */
     text-align: center;
-    font-size: 14px;
-    font-weight: bold;
-    color: black; /* Default font color */
-    border-radius: 10px;
 }
+
+#north-stand,
+#south-stand {
+    width: 100%; /* Make stands as wide as the fields icon */
+    height: 80px; /* Adjust height to be less than the fields icon's height */
+}
+
+#east-stand,
+#west-stand {
+    width: 80px; /* Adjust width to be less than the fields icon's width */
+    height: 100%; /* Match the height of the fields icon */
+    justify-content: center; /* Center text horizontally */
+}
+
+#east-stand {
+    grid-column: 1; /* Position east stand on the left side */
+}
+
+#west-stand {
+    grid-column: 3; /* Position west stand on the right side */
+}
+
+#north-stand {
+    grid-column: 2; /* Center north stand */
+}
+
+#south-stand {
+    grid-column: 2; /* Center south stand */
+}
+
+#back-game {
+    grid-column: 1 / span 3; /* Make the back button span all columns */
+    justify-self: center; /* Center align the button horizontally */
+    margin-top: 10px; /* Space between stands and the back button */
+    background-color: #0056b3; /* Adjust background color for consistency */
+    color: white; /* Adjust text color for consistency */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Add padding for the button */
+    border-radius: 5px; /* Rounded corners for the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-weight: bold; /* Bold text for emphasis */
+}
+
+#back-game:hover {
+    background-color: #003f8a; /* Darker blue on hover */
+}
+
 
 #seats-map {
     display: flex;

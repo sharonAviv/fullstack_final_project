@@ -36,8 +36,10 @@ router.get('/', async (req, res) => {
 // POST to purchase tickets
 router.post('/purchase', async (req, res) => {
     const { ticketIds } = req.body;
+    console.log('/purchase route hit for ticketIds' + JSON.stringify({ ticketIds }));
     try {
         await purchaseTickets(ticketIds);
+        console.log('Tickets purchased successfully');
         res.status(200).send({ message: 'Tickets purchased successfully' });
     } catch (error) {
         console.error('Error purchasing tickets:', error);
