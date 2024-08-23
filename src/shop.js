@@ -193,7 +193,7 @@ function displayProducts(products) {
 }
 
 function checkUserAuthentication() {
-    fetch('/api/user-data/user')
+    fetch('/api/user-data/user-data')
     .then(response => {
         console.log('Fetch user response:', response);
         if (!response.ok) {
