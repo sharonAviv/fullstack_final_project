@@ -540,11 +540,10 @@ body.showCart .container {
 
 /* Styles for the stadium map */
 #stadium-map {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px; /* Adjust space between columns */
-    justify-items: center; /* Center align items horizontally */
-    align-items: center; /* Center align items vertically */
+    position: relative;
+    width: 300px; /* Set the width of the container */
+    height: 300px; /* Set the height of the container */
+    margin: 0 auto; /* Center the map container */
 }
 
 #stadium-map img {
@@ -552,54 +551,91 @@ body.showCart .container {
     justify-self: center; /* Center align the image horizontally */
 }
 
-/* Styles for the stands */
+#north-stand {
+    position: absolute;
+    top: 0;
+    left: 48%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 40px; 
+}
+
+#south-stand {
+    position: absolute;
+    bottom: 0;
+    left: 48%;
+    transform: translateX(-50%);
+    width: 110px; 
+    height: 40px; 
+}
+
+#west-stand {
+    position: absolute;
+    left: 65%;
+    top: 47%;
+    transform: translateY(-50%);
+    width: 75px; 
+    height: 55px; 
+}
+
+#east-stand {
+    position: absolute;
+    right: 65%;
+    top: 47%;
+    transform: translateY(-50%);
+    width: 75px; 
+    height: 55px; 
+}
+
+/* Soccer field positioning */
+#soccer-field {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: auto;
+}
+
+/* Common styles for stands */
 .stand {
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
+    padding: 10px;
+    border-radius: 10px; /* Rounded corners */
+    cursor: pointer;
 }
 
-#north-stand,
-#south-stand {
-    width: 100%; /* Make stands as wide as the fields icon */
-    height: 80px; /* Adjust height to be less than the fields icon's height */
+/* Colors for availability */
+.stand.available {
+    background-color: lightblue;
 }
 
-#east-stand,
-#west-stand {
-    width: 80px; /* Adjust width to be less than the fields icon's width */
-    height: 100%; /* Match the height of the fields icon */
-    justify-content: center; /* Center text horizontally */
+.stand.unavailable {
+    background-color: grey;
+    cursor: not-allowed;
 }
 
-#east-stand {
-    grid-column: 1; /* Position east stand on the left side */
+/* Hover effects */
+.stand.available:hover {
+    background-color: #0038a8;
+    color: white; /* White text on hover */
 }
 
-#west-stand {
-    grid-column: 3; /* Position west stand on the right side */
-}
 
-#north-stand {
-    grid-column: 2; /* Center north stand */
-}
-
-#south-stand {
-    grid-column: 2; /* Center south stand */
-}
-
+/* Back button styling */
 #back-game {
-    grid-column: 1 / span 3; /* Make the back button span all columns */
-    justify-self: center; /* Center align the button horizontally */
-    margin-top: 10px; /* Space between stands and the back button */
-    background-color: #0056b3; /* Adjust background color for consistency */
-    color: white; /* Adjust text color for consistency */
-    border: none; /* Remove default border */
-    padding: 10px 20px; /* Add padding for the button */
-    border-radius: 5px; /* Rounded corners for the button */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-weight: bold; /* Bold text for emphasis */
+    margin-top: 20px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100px; /* Adjust button width */
 }
 
 #back-game:hover {
