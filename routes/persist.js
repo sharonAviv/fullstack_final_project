@@ -239,6 +239,7 @@ async function initProducts() {
 
 // Save a new user to the database
 async function saveUser(user) {
+  console.log("trying to save: " + user);
   return new Promise((resolve, reject) => {
     const query = `INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)`;
     db.run(query, [user.username, user.password_hash, user.isAdmin || false], function (err) {
@@ -267,7 +268,7 @@ async function getUsers() {
 
 // Find a user by username
 async function findUserByUsername(username) {
-  console.log(username);
+  console.log("finding " + username);
   return new Promise((resolve, reject) => {
     const query = `SELECT * FROM users WHERE username = ?`;
     db.get(query, [username], (err, row) => {

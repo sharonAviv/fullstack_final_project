@@ -29,11 +29,19 @@
             const password = formData.get('password');
 
             try {
-                const response = await fetch('/api/register', { // Corrected to /api/register
+                const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
+
+                if (response.status === 409) {
+                    // Handle the case where the username is already in use
+                    const data = await response.json();
+                    document.getElementById('error-message').textContent = data.message;
+                    document.getElementById('error-message').style.color = 'red'; // Optional: Make error message red
+                    return;
+                }
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -45,6 +53,7 @@
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('error-message').textContent = 'An error occurred. Please try again.';
+                document.getElementById('error-message').style.color = 'red'; // Optional: Make error message red
             }
         });
     </script>
