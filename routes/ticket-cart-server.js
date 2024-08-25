@@ -35,14 +35,14 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
     }
 });
 
-// Remove an item from the cart
+// Remove an ticket from the cart
 router.post('/remove', verifyToken, async (req, res) => {
     console.log('/remove route hit'); // Debugging log
     const username = req.user; // Assuming req.user is set by verifyToken
     const { ticketId } = req.body;
     try {
         let cartItems = await getTicketCart(username);
-        cartItems = cartItems.filter(item => item.productId !== ticketId);
+        cartItems = cartItems.filter(ticket => ticket.ticket_id !== ticketId);
         await saveTicketCart(username, cartItems);
         await logActivity(username, 'item-removed-from-cart');
         res.send({ message: 'Item removed successfully', cartItems });

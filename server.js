@@ -18,8 +18,11 @@ const contactRouter = require('./routes/contact-server');
 const newsRouter = require('./routes/news-server');
 const adminRouter = require('./routes/admin-server');
 const { init } = require('./routes/persist');
+const applySecurity = require('./routes/security');
 
 const app = express();
+
+applySecurity(app);
 
 // Enable CORS for all routes
 app.use(cors({

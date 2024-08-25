@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { addGame, getAllGames } = require('./persist'); // Adjust the path as necessary
+const { saveGame, getAllGames } = require('./persist'); // Adjust the path as necessary
 
 // POST a new game
 router.post('/', async (req, res) => {
-    const { title, date, venue, teams } = req.body;
+    const { title, date, teamHome, teamAway, staiumName } = req.body;
     try {
-        const newGame = { title, date, venue, teams, status: 'scheduled' }; // Generate an ID
-        const addedGame = await addGame(newGame);
+        const newGame = { title, date, teamHome, teamAway, staiumName, status: 'scheduled' }; // Generate an ID
+        const addedGame = await saveGame(newGame);
         res.status(201).send(addedGame);
     } catch (error) {
         res.status(400).send({ message: 'Error adding game', error: error.message });
