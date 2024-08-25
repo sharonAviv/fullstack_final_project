@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Israel's Soccer Team's Store</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="checkout.js"></script>
+</head>
+<body>
+    <div class="container checkout-container">
+        <h2>Checkout</h2>
+        
+        <!-- Order Summary Section -->
+        <section class="order-summary">
+            <h3>Order Summary</h3>
+            <div class="order-items" id="order-items">
+                <!-- Dynamically generated order items will be inserted here -->
+            </div>
+            <div class="order-total" id="order-total">
+                <strong>Total: $0.00</strong>
+            </div>
+        </section>
+
+        <!-- Payment Details Section -->
+        <section class="payment-details">
+            <h3>Payment Details</h3>
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label for="card-number">Card Number</label>
+                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456" required>
+                </div>
+                <div class="form-group">
+                    <label for="card-expiry">Expiry Date</label>
+                    <input type="text" id="card-expiry" placeholder="MM/YY" required>
+                </div>
+                <div class="form-group">
+                    <label for="card-cvc">CVC</label>
+                    <input type="text" id="card-cvc" placeholder="123" required>
+                </div>
+                <div class="form-group">
+                    <label for="billing-address">Billing Address</label>
+                    <textarea id="billing-address" rows="3" placeholder="1234 Main St, City, Country" required></textarea>
+                </div>
+                <button type="submit" class="checkout-button">Complete Purchase</button>
+            </form>
+        </section>
+    </div>
+</body>
+</html>

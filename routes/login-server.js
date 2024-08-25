@@ -23,10 +23,12 @@ router.post('/', async (req, res) => {
         }
 
         const expiresIn = remember ? '10d' : '30m';
-        const token = jwt.sign({ username }, 'your_secret_key', { expiresIn });
+
+        // Include isAdmin in the JWT payload
+        const token = jwt.sign({ username: user.username, isAdmin: user.is_admin }, 'your_secret_key', { expiresIn });
         console.log('Token generated for user:', username, token);
 
-        res.cookie('token', token, { maxAge: remember ? 864000000 : 1800000 });
+        res.cookie('token', token, { maxAge: remember ? 864000000 : 1800000, httpOnly: true });
 
         await logActivity(username, 'login');
         res.json({ message: 'Logged in successfully', redirect: '/shop' });

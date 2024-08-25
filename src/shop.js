@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const navigationMenu = document.getElementById('navigation-menu');
     const closeCartButton = document.getElementById('close-cart');
     const overlay = document.getElementById('overlay');
+    const checkoutButton = document.getElementById('checkout');
+    const adminLink = document.querySelector('nav a[href="admin.html"]');
+
+
 
 
     fetch('/api/store/products')
@@ -80,6 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
         closeCartIfOpen();
         closeNavigationIfOpen();
         overlay.classList.remove('active');
+    });
+
+    checkoutButton.addEventListener('click', function () {
+        window.location.href = 'checkout.html';
     });
 
 });
@@ -193,7 +201,7 @@ function displayProducts(products) {
 }
 
 function checkUserAuthentication() {
-    fetch('/api/user-data/user')
+    fetch('/api/user-data/user-data')
     .then(response => {
         console.log('Fetch user response:', response);
         if (!response.ok) {
@@ -206,8 +214,17 @@ function checkUserAuthentication() {
             console.log('No user found or user is not authenticated.');
             displayLoginLink();
         } else {
-            console.log('Authenticated user:', data.user);
-            displayUserGreeting(data.user); // Assume username is the correct identifier
+            console.log('Authenticated user:', data.user.username);
+            displayUserGreeting(data.user.username);
+
+            // Check if the user is an admin
+            if (data.user.isAdmin) {
+                console.log('User is an admin');
+                displayAdminLink();
+            } else {
+                console.log('User is not an admin');
+                hideAdminLink();
+            }
         }
     })
     .catch(error => {
@@ -215,6 +232,22 @@ function checkUserAuthentication() {
         displayLoginLink();
     });
 }
+
+function displayAdminLink() {
+    const adminLink = document.querySelector('nav a[href="admin.html"]');
+    if (adminLink) {
+        adminLink.style.display = 'block'; // Show the admin link
+    }
+}
+
+function hideAdminLink() {
+    const adminLink = document.querySelector('nav a[href="admin.html"]');
+    if (adminLink) {
+        adminLink.style.display = 'none'; // Hide the admin link
+    }
+}
+
+
 
 function displayLoginLink() {
     const userGreeting = document.getElementById('user-greeting');
@@ -335,10 +368,15 @@ function displayEmptyCartMessage() {
 // Function to display cart items dynamically
 function displayCartItems(cartItems) {
     const cartItemsContainer = document.getElementById('cart-items');
+    const cartIconSpan = document.querySelector('#cart-icon span'); // Select the cart icon's span
     cartItemsContainer.innerHTML = ''; // Clear existing cart items
 
     if (cartItems && cartItems.length > 0) {
+        let totalItems = 0; // Initialize total items counter
+
         cartItems.forEach(item => {
+            totalItems += item.quantity; // Accumulate the total quantity
+
             const itemElement = document.createElement('div'); // Use a different variable name
             itemElement.className = 'cart-item';
             itemElement.innerHTML = `
@@ -348,10 +386,17 @@ function displayCartItems(cartItems) {
             `;
             cartItemsContainer.appendChild(itemElement);
         });
+
+        // Update the cart icon's span with the total number of items
+        cartIconSpan.textContent = totalItems;
     } else {
         displayEmptyCartMessage(); // If no items, display empty cart message
+
+        // Set the cart icon's span to 0 if the cart is empty
+        cartIconSpan.textContent = '0';
     }
 }
+
 
 // Function to handle and display errors when fetching cart data
 function displayErrorFetchingCart() {

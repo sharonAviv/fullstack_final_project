@@ -16,6 +16,7 @@ const ticketCartRouter = require('./routes/ticket-cart-server');
 const userDataRouter = require('./routes/user-data-server');
 const contactRouter = require('./routes/contact-server');
 const newsRouter = require('./routes/news-server');
+const adminRouter = require('./routes/admin-server');
 const { init } = require('./routes/persist');
 
 const app = express();
@@ -48,6 +49,7 @@ app.use('/api/tickets', ticketsRouter);
 app.use('/api/user-data', userDataRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/news', newsRouter);
+app.use('/api/admin', adminRouter);
 
 // Serve the shop page as the starting point
 app.get('/shop', (req, res) => {

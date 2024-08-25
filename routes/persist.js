@@ -17,7 +17,7 @@ async function init() {
     console.log("games")
     await initTickets();
     console.log("tickets")
-    await initProducts();
+    // await initProducts();
     console.log("products")
 
   } catch (error) {
@@ -33,6 +33,7 @@ async function createTables() {
         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
+        is_admin BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )`);
 
@@ -96,7 +97,7 @@ async function createTables() {
       )`);
 
       db.run(`CREATE TABLE IF NOT EXISTS products (
-        id TEXT PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         description TEXT,
         price REAL NOT NULL,
@@ -130,14 +131,30 @@ async function createTables() {
 
 // Ensure admin user exists
 async function ensureAdminUserExists() {
-  const adminUser = {
-    username: 'admin',
-    password_hash: '$2b$10$7B2kAI/3fX7KgX3XZTL5reJ56BObA5LB.n3b7F6fyQZ2pFhxS9Um6', // Pre-hashed password
-  };
+  const password = 'admin';
+  const saltRounds = 10;
 
-  const user = await findUserByUsername(adminUser.username);
-  if (!user) {
-    await saveUser(adminUser);
+  try {
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    const adminUser = {
+      username: 'admin',
+      password_hash: passwordHash, // Use the hashed password
+      isAdmin: true, // Ensure that this user is marked as an admin
+    };
+
+    // Now you can use `adminUser` to check if the admin exists in your database, or insert it if it doesn't.
+    // For example:
+    const existingUser = await findUserByUsername(adminUser.username);
+    if (!existingUser) {
+      await saveUser(adminUser);
+      console.log('Admin user created successfully.');
+    } else {
+      console.log('Admin user already exists.');
+    }
+  } catch (error) {
+    console.error('Error creating admin user:', error);
   }
 }
 
@@ -189,7 +206,6 @@ async function initProducts() {
   return new Promise((resolve, reject) => {
     const products = [
       {
-        id: "prod001",
         name: "Blue T-Shirt",
         description: "A comfortable blue t-shirt made from 100% cotton.",
         price: 19.99,
@@ -197,7 +213,6 @@ async function initProducts() {
         stock: 50
       },
       {
-        id: "prod002",
         name: "White Sneakers",
         description: "Stylish white sneakers suitable for casual wear.",
         price: 49.99,
@@ -225,13 +240,12 @@ async function initProducts() {
 // Save a new user to the database
 async function saveUser(user) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO users (username, password_hash) VALUES (?, ?)`;
-    db.run(query, [user.username, user.password_hash], function (err) {
-    
+    const query = `INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)`;
+    db.run(query, [user.username, user.password_hash, user.isAdmin || false], function (err) {
       if (err) {
         reject(err);
       } else {
-        resolve(this.lastID);
+        resolve(this.lastID); // Resolve with the last inserted ID
       }
     });
   });
@@ -434,6 +448,97 @@ async function getProductDetails(productId) {
     });
   });
 }
+
+async function removeProduct(productId) {
+  return new Promise((resolve, reject) => {
+    const query = `DELETE FROM products WHERE id = ?`;
+    db.run(query, [productId], function(err) {
+      if (err) {
+        console.error('Error removing product:', err);
+        reject(err);
+      } else {
+        console.log(`Product with ID ${productId} removed successfully.`);
+        resolve(this.changes); // Returns the number of rows affected
+      }
+    });
+  });
+}
+
+async function addProduct(product) {
+  return new Promise((resolve, reject) => {
+    const query = `INSERT INTO products (name, description, price, images, stock) VALUES (?, ?, ?, ?, ?)`;
+    const values = [
+      product.name,
+      product.description,
+      product.price,
+      JSON.stringify(product.images), // Convert images array to JSON string
+      product.stock
+    ];
+
+    db.run(query, values, function (err) {
+      if (err) {
+        console.error('Error adding product:', err);
+        reject(err);
+      } else {
+        console.log(`Product added successfully with ID ${this.lastID}.`);
+        resolve(this.lastID); // Return the ID of the newly inserted product
+      }
+    });
+  });
+}
+
+
+function updateProduct(productId, updateData) {
+  return new Promise((resolve, reject) => {
+      const fields = [];
+      const values = [];
+
+      if (updateData.name) {
+          fields.push('name = ?');
+          values.push(updateData.name);
+      }
+
+      if (updateData.description) {
+          fields.push('description = ?');
+          values.push(updateData.description);
+      }
+
+      if (updateData.price) {
+          fields.push('price = ?');
+          values.push(updateData.price);
+      }
+
+      if (updateData.images) {
+          const imagesJson = JSON.stringify(updateData.images);
+          fields.push('images = ?');
+          values.push(imagesJson);
+      }
+
+      if (updateData.stock) {
+          fields.push('stock = ?');
+          values.push(updateData.stock);
+      }
+
+      if (fields.length === 0) {
+          return reject(new Error('No fields to update'));
+      }
+
+      values.push(productId);
+
+      const sql = `UPDATE products SET ${fields.join(', ')} WHERE id = ?`;
+
+      db.run(sql, values, function(err) {
+          if (err) {
+              reject(err);
+          } else if (this.changes === 0) {
+              resolve(null);
+          } else {
+              resolve({ id: productId, ...updateData });
+          }
+      });
+  });
+}
+
 
 // Add a cart item
 async function addCartItem(cartId, productDetails) {
@@ -773,5 +878,8 @@ module.exports = {
   getTicketsByTicketID,
   getTicketsByGameID,
   purchaseTickets,
+  removeProduct,
+  addProduct,
+  updateProduct
 };
 

@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('./middleware'); // Adjust the path as necessary
+const { verifyToken, verifyAdmin } = require('./middleware'); // Adjust the path as necessary
 
+// Example route accessible to all authenticated users
 router.get('/user-data', verifyToken, (req, res) => {
-    console.log('trying to ver', username);
-    const username = req.user;
-    console.log('User authenticated:', username);
-    res.json({ user: username });
+    const user = req.user;
+    console.log('User authenticated:', user);
+    res.json({ user });
+});
+
+// Example route only accessible to admin users
+router.get('/admin-data', verifyToken, verifyAdmin, (req, res) => {
+    console.log('Admin authenticated:', req.user.username);
+    res.json({ message: 'Welcome, admin!', user: req.user });
 });
 
 module.exports = router;

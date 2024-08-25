@@ -16,9 +16,20 @@ function verifyToken(req, res, next) {
             return res.status(401).redirect('/login.html'); // Token is invalid, redirect to login page
         }
         console.log('Token decoded:', decoded); // Debugging log
-        req.user = decoded.username; // If the token is valid, set the user context
+        req.user = { username: decoded.username, isAdmin: decoded.isAdmin }; // Set user context including isAdmin
         next(); // Proceed to the next middleware or route handler
     });
 }
 
-module.exports = { verifyToken };
+function verifyAdmin(req, res, next) {
+    console.log("verifyAdmin middleware called"); // Debugging log
+
+    if (req.user && req.user.isAdmin) { // Assuming isAdmin is a boolean in the JWT payload
+        next(); // User is an admin, proceed to the next middleware or route handler
+    } else {
+        console.log("User is not an admin, access denied"); // Debugging log
+        return res.status(403).redirect('/shop.html'); // Redirect to another page if user is not an admin
+    }
+}
+
+module.exports = { verifyToken, verifyAdmin };

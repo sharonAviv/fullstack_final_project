@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <h1>Admin Panel</h1>
+
+        <!-- Back to Shop Button -->
+        <div class="back-to-shop">
+            <a href="/shop.html" class="back-to-shop-btn">Back to Shop</a>
+        </div>
+
+        <!-- Activity Log Section -->
+        <section id="activity-log">
+            <h2>User Activity Log</h2>
+            <input type="text" id="username-filter" placeholder="Filter by username prefix">
+            <div class="activity-scroller">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>Username</th>
+                            <th>Activity Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-table-body">
+                        <!-- Dynamically populated rows -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Manage Products Section -->
+        <section id="manage-products">
+            <h2>Manage Products</h2>
+            <form id="add-product-form" enctype="multipart/form-data">
+                <input type="text" id="product-title" placeholder="Product Title" required>
+                <textarea id="product-description" placeholder="Product Description" required></textarea>
+                <input type="number" id="price" placeholder="Price" required step="0.01">
+
+                <!-- Drop area for image upload -->
+                <div id="image-drop-area" class="drop-area">
+                    <p>Drag and drop images here, or click to select images</p>
+                    <input type="file" id="product-image-file" name="images" accept="image/*" multiple>
+                </div>
+
+                <!-- Preview uploaded images -->
+                <div id="image-preview" class="image-preview"></div>
+
+                <input type="number" id="amount" placeholder="Amount" value="0"> <!-- Default value is 0 -->
+                <button type="submit">Add Product</button>
+            </form>
+            <h3>Existing Products</h3>
+            <div class="product-scroller">
+                <ul id="product-list">
+                    <!-- Dynamically populated product list -->
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

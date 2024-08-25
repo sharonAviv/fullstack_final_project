@@ -7,7 +7,9 @@ const { logActivity } = require('./activityLogger'); // Activity logging
 // View the cart
 router.get('/view', verifyToken, async (req, res) => {
     console.log('/view route hit'); // Debugging log
-    const username = req.user; // Assuming req.user is set by verifyToken
+    console.log(req.user.username + " username in cart");
+
+    const username = req.user.username; // Assuming req.user is set by verifyToken
     try {
         const cartItems = await getCart(username);
         res.json(cartItems);
@@ -28,7 +30,7 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
     try {
         await addToCart(username, productId);
         const cartItems = await getCart(username); // Get updated cart items for the response
-        console.log(cartItems)
+        console.log(cartItems);
         await logActivity(username, 'item-added-to-cart');
         res.status(201).send({ message: 'Item added to cart successfully', cartItems });
     } catch (error) {
@@ -53,16 +55,46 @@ router.post('/remove', verifyToken, async (req, res) => {
     }
 });
 
+// Remove all items from the cart
 router.post('/removeAll', verifyToken, async (req, res) => {
     console.log('/remove all route hit'); // Debugging log
     const username = req.user; // Assuming req.user is set by verifyToken
     try {
-        const cartItems = []
+        const cartItems = [];
         await saveCart(username, cartItems);
         await logActivity(username, 'all-item-removed-from-cart');
         res.send({ message: 'Items removed successfully', cartItems });
     } catch (error) {
         res.status(500).send({ message: 'Error removing all items from cart', error: error.message });
+    }
+});
+
+// Complete the purchase
+router.post('/complete-purchase', verifyToken, async (req, res) => {
+    console.log('/complete-purchase route hit'); // Debugging log
+    const username = req.user; // Assuming req.user is set by verifyToken
+
+    try {
+        // Fetch the current cart items
+        const cartItems = await getCart(username);
+        if (cartItems.length === 0) {
+            return res.status(400).send({ message: 'Cart is empty. Cannot complete purchase.' });
+        }
+
+        // Here you would typically process payment and handle order saving logic
+        // (e.g., save the order to the database, send an email confirmation, etc.)
+        // For now, we will just log the activity and clear the cart.
+
+        // Log the purchase activity
+        await logActivity(username, 'purchase-completed');
+
+        // Clear the cart after purchase
+        await saveCart(username, []);
+
+        res.send({ message: 'Purchase completed successfully' });
+    } catch (error) {
+        console.error('Error completing purchase:', error); // Log the error for debugging
+        res.status(500).send({ message: 'Error completing purchase', error: error.message });
     }
 });
 
