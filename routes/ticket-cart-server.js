@@ -7,7 +7,7 @@ const { logActivity } = require('./activityLogger'); // Activity logging
 // View the cart
 router.get('/view', verifyToken, async (req, res) => {
     console.log('/view route hit'); // Debugging log
-    const username = req.user; // Assuming req.user is set by verifyToken
+    const username = req.user.username; // Assuming req.user is set by verifyToken
     try {
         const cartItems = await getTicketCart(username);
         res.json(cartItems);
@@ -19,7 +19,7 @@ router.get('/view', verifyToken, async (req, res) => {
 // Add an item to the cart
 router.post('/add-to-cart', verifyToken, async (req, res) => {
     console.log('/add-to-cart route hit'); // Debugging log
-    const username = req.user; // Assuming req.user is set by verifyToken
+    const username = req.user.username; // Assuming req.user is set by verifyToken
     console.log('Username:', username); // Debugging log
     const { ticketId } = req.body; // Expecting productId and customization details
 
@@ -38,7 +38,7 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
 // Remove an ticket from the cart
 router.post('/remove', verifyToken, async (req, res) => {
     console.log('/remove route hit'); // Debugging log
-    const username = req.user; // Assuming req.user is set by verifyToken
+    const username = req.user.username; // Assuming req.user is set by verifyToken
     const { ticketId } = req.body;
     try {
         let cartItems = await getTicketCart(username);

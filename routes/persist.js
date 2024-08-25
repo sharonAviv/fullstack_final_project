@@ -267,6 +267,7 @@ async function getUsers() {
 
 // Find a user by username
 async function findUserByUsername(username) {
+  console.log(username);
   return new Promise((resolve, reject) => {
     const query = `SELECT * FROM users WHERE username = ?`;
     db.get(query, [username], (err, row) => {

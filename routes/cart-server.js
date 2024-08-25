@@ -21,7 +21,7 @@ router.get('/view', verifyToken, async (req, res) => {
 // Add an item to the cart
 router.post('/add-to-cart', verifyToken, async (req, res) => {
     console.log('/add-to-cart route hit'); // Debugging log
-    const username = req.user; // Assuming req.user is set by verifyToken
+    const username = req.user.username; // Assuming req.user is set by verifyToken
     console.log('cart of user :', username); // Debugging log
     console.log(req.body);
 

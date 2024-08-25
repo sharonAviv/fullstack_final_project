@@ -27,7 +27,7 @@ module.exports = (app) => {
     // Adjusted Rate Limiting to prevent DoS attacks
     const limiter = rateLimit({
         windowMs: 5 * 60 * 1000, // 5-minute window
-        max: 50, // Limit each IP to 50 requests per windowMs
+        max: 150, // Limit each IP to 50 requests per windowMs
         message: 'Too many requests from this IP, please try again later.'
     });
 
