@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Israel's Soccer Team's Store</title>
     <link rel="stylesheet" href="styles.css">
-    <script defer src="shop.js"></script>
+    <script defer src="auth_cart.js"></script> <!-- Ensure auth_cart.js handles cart and auth -->
 </head>
 <body>
     <header class="main-header">
@@ -15,11 +15,16 @@
         </div>
         <div class="header-right">
             <span id="user-greeting" class="user-greeting"></span>
-            <a href="login.html" class="icon login-icon" id="auth-link"></a>
+            <a href="login.html" class="icon login-icon" id="auth-link">
+                <span class="tooltip">Log in</span>
+            </a>
             <div class="icon cart-icon" id="cart-icon">
                 <span>0</span>
+                <span class="tooltip">View your cart</span>
             </div>
-            <div class="icon menu-icon" id="menu-icon"></div>
+            <div class="icon menu-icon" id="menu-icon">
+                <span class="tooltip">Open menu</span>
+            </div>
         </div>
     </header>
 
@@ -91,8 +96,9 @@
                     setTimeout(() => {
                         successMessage.style.display = 'none';
                     }, 3000); 
+                    form.reset(); // Clear form after submission
                 } else {
-                    alert(result.message);
+                    alert(result.message || 'Failed to send the message.');
                 }
             } catch (error) {
                 console.error('Error during sending the message:', error);
@@ -100,8 +106,6 @@
             }
         });
     </script>
-    
-
-    <script src="script.js"></script>
+    <script> src="script.js"</script>
 </body>
 </html>

@@ -81,14 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
             <li>
                 <div>
                     <strong>${product.name}</strong><br>
-                    <img src="${product.images[0]}" alt="${product.name}" style="max-width: 50px;">
                     <p><strong>Description:</strong> ${product.description}</p>
                     <p><strong>Price:</strong> $${product.price.toFixed(2)}</p>
                     <p><strong>Stock:</strong> <span class="product-amount">${product.stock}</span></p>
                     <div class="quantity-control">
                         <input type="number" class="manual-amount" value="1" min="1" data-id="${product.id}">
-                        <button class="add-amount" data-id="${product.id}">Add</button>
-                        <button class="remove-amount" data-id="${product.id}">Remove</button>
+                        <button class="add-amount" data-id="${product.id}">Add to stock</button>
+                        <button class="remove-amount" data-id="${product.id}">Remove form stock</button>
                     </div>
                     <div class="product-actions">
                         <button class="change-name" data-id="${product.id}">Change Name</button>

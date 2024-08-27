@@ -15,11 +15,16 @@
         </div>
         <div class="header-right">
             <span id="user-greeting" class="user-greeting"></span>
-            <a href="login.html" class="icon login-icon" id="auth-link"></a>
+            <a href="login.html" class="icon login-icon" id="auth-link">
+                <span class="tooltip">Log in</span> <!-- Tooltip added -->
+            </a>
             <div class="icon cart-icon" id="cart-icon">
-                <span>0</span>
+                <span>0</span> <!-- Cart item count -->
+                <span class="tooltip">View your cart</span>
             </div>
-            <div class="icon menu-icon" id="menu-icon"></div>
+            <div class="icon menu-icon" id="menu-icon">
+                <span class="tooltip">Open menu</span>
+            </div>
         </div>
     </header>
 
@@ -59,8 +64,8 @@
     
     <script>
         async function fetchSportsNews() {
-            try{
-                const response = await fetch('/api/news'); // Fetch from your backend router
+            try {
+                const response = await fetch('/api/news');
                 if (response.ok) {
                     const data = await response.json();
                     displayNews(data);
@@ -73,28 +78,24 @@
         }
       
         function displayNews(articles) {
-          const newsContainer = document.getElementById('news-reel');
-          newsContainer.innerHTML = ''; // Clear existing content
+            const newsContainer = document.getElementById('news-reel');
+            newsContainer.innerHTML = ''; // Clear existing content
       
-          articles.forEach(article => {
-            const articleElement = document.createElement('div');
-            articleElement.className = 'news-item';
-      
-            articleElement.innerHTML = `
-              <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
-              <p>${article.description}</p>
-              <p><small>${new Date(article.publishedAt).toLocaleDateString()}</small></p>
-            `;
-      
-            newsContainer.appendChild(articleElement);
-          });
+            articles.forEach(article => {
+                const articleElement = document.createElement('div');
+                articleElement.className = 'news-item';
+                articleElement.innerHTML = `
+                    <h3><a href="${article.url}" target="_blank">${article.title}</a></h3>
+                    <p>${article.description}</p>
+                    <p><small>${new Date(article.publishedAt).toLocaleDateString()}</small></p>
+                `;
+                newsContainer.appendChild(articleElement);
+            });
         }
       
-        // Fetch news when the page loads
         document.addEventListener('DOMContentLoaded', fetchSportsNews);
     </script>
        
-    
     <script src="script.js"></script>
 </body>
 </html>
