@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getCart, saveCart, addToCart } = require('./persist');
+const { getCart, saveCart, addToCart , getProductById , updateProduct} = require('./persist');
 const { verifyToken } = require('./middleware'); // Middleware for authentication
 const { logActivity } = require('./activityLogger'); // Activity logging
 
@@ -12,7 +12,9 @@ router.get('/view', verifyToken, async (req, res) => {
     const username = req.user.username; // Assuming req.user is set by verifyToken
     try {
         const cartItems = await getCart(username);
+        console.log("items " + cartItems);
         res.json(cartItems);
+
     } catch (error) {
         res.status(500).send({ message: 'Error fetching cart items' });
     }
@@ -25,10 +27,11 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
     console.log('cart of user :', username); // Debugging log
     console.log(req.body);
 
-    const { productId } = req.body; // Ensure productId is correctly extracted from the request body
+    const { productId , quantity} = req.body; // Ensure productId is correctly extracted from the request body
+    console.log("quantity " + quantity);
 
     try {
-        await addToCart(username, productId);
+        await addToCart(username, productId, quantity);
         const cartItems = await getCart(username); // Get updated cart items for the response
         console.log(cartItems);
         await logActivity(username, 'item-added-to-cart');
@@ -42,7 +45,9 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
 // Remove an item from the cart
 router.post('/remove', verifyToken, async (req, res) => {
     console.log('/remove route hit'); // Debugging log
-    const username = req.user; // Assuming req.user is set by verifyToken
+    const username = req.user.username; // Assuming req.user is set by verifyToken
+    console.log(username + " removing for user");
+    console.log(req.body);
     const { productId } = req.body;
     try {
         let cartItems = await getCart(username);
@@ -58,7 +63,7 @@ router.post('/remove', verifyToken, async (req, res) => {
 // Remove all items from the cart
 router.post('/removeAll', verifyToken, async (req, res) => {
     console.log('/remove all route hit'); // Debugging log
-    const username = req.user; // Assuming req.user is set by verifyToken
+    const username = req.user.username; // Assuming req.user is set by verifyToken
     try {
         const cartItems = [];
         await saveCart(username, cartItems);
@@ -72,18 +77,39 @@ router.post('/removeAll', verifyToken, async (req, res) => {
 // Complete the purchase
 router.post('/complete-purchase', verifyToken, async (req, res) => {
     console.log('/complete-purchase route hit'); // Debugging log
-    const username = req.user; // Assuming req.user is set by verifyToken
+    const username = req.user.username; // Assuming req.user is set by verifyToken
 
     try {
         // Fetch the current cart items
         const cartItems = await getCart(username);
+        console.log(JSON.stringify(cartItems, null, 2) + " cart items");
+        
         if (cartItems.length === 0) {
             return res.status(400).send({ message: 'Cart is empty. Cannot complete purchase.' });
         }
 
-        // Here you would typically process payment and handle order saving logic
-        // (e.g., save the order to the database, send an email confirmation, etc.)
-        // For now, we will just log the activity and clear the cart.
+        // Process payment and handle order saving logic
+        // Update the stock for each product in the cart
+        for (const item of cartItems) {
+            const productId = item.product_id; // Ensure the field name matches your database schema
+            const quantityPurchased = item.quantity;
+
+            // Fetch the current product details to determine the remaining stock
+            const product = await getProductById(productId); // Assume this function fetches the product by ID
+
+            if (!product) {
+                return res.status(400).send({ message: `Product with ID ${productId} not found.` });
+            }
+
+            const newStock = product.stock - quantityPurchased;
+
+            if (newStock < 0) {
+                return res.status(400).send({ message: `Insufficient stock for product ${product.name}.` });
+            }
+
+            // Update the product's stock in the database
+            await updateProduct(productId, { stock: newStock });
+        }
 
         // Log the purchase activity
         await logActivity(username, 'purchase-completed');

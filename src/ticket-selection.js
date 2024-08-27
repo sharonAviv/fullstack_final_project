@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             const games = await fetchGames(); // Fetch the games
+            console.log(games);
             const filteredGames = filterGames(games, selectedMonth); // Filter based on selected month
             console.log("Filtered Games:", filteredGames); // Log filtered results
             displayGames(filteredGames); // Display the filtered games
@@ -224,9 +225,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log(`${stand} available tickets:`, availableTickets); // Log available tickets
     
                     if (availableTickets > 0) {
+                        console.log(stand + " available");
                         standElement.className = 'stand available';
                         standElement.addEventListener('click', () => selectStand(stand));
                     } else {
+                        console.log(stand + " not available");
                         standElement.className = 'stand unavailable';
                     }
                 });

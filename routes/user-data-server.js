@@ -4,7 +4,9 @@ const { verifyToken, verifyAdmin } = require('./middleware'); // Adjust the path
 
 // Example route accessible to all authenticated users
 router.get('/user-data', verifyToken, (req, res) => {
-    const user = req.user;
+    console.log("im in user data");
+    console.log("user data req: " + req);
+    const user = req.user.username;
     console.log('User authenticated:', user);
     res.json({ user });
 });

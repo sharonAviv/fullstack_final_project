@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { logActivity } = require('./activityLogger');
+const { verifyToken } = require('./middleware');
 
-router.post('/', async (req, res) => {
+router.post('/',verifyToken, async (req, res) => {
     console.log("Attempting to logout");
-    const { username } = req.body; // Access the username from the request body
+    const username = req.user.username; // Access the username from the request body
 
     if (!username) {
         return res.status(400).json({ message: 'Username is required' });

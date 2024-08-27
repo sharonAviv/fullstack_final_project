@@ -13,14 +13,17 @@ router.get('/', async (req, res) => {
         let tickets;
         if (gameId) {
             // Fetch tickets by gameId
+            console.log("Fetching tickets by gameId:", gameId);
             tickets = await getTicketsByGameID(gameId);
             console.log("Tickets fetched for gameId:", { gameId, tickets });
         } else if (gameId && stand) {
             // Fetch tickets by gameId and stand
+            console.log("Fetching tickets by gameId and stand:", { gameId, stand });
             tickets = await getTicketsByGameStand(gameId, stand);
             console.log("Tickets fetched for gameId and stand:", { gameId, stand, tickets });
         } else if (ticketId) {
             // Fetch tickets by ticketId
+            console.log("Fetching ticket by ID:", ticketId);
             tickets = await getTicketsByTicketID(ticketId);
             console.log("Tickets fetched for ticketId:", { ticketId, tickets });
         } else {

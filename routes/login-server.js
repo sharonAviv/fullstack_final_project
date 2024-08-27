@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
         res.cookie('token', token, { maxAge: remember ? 864000000 : 1800000, httpOnly: true });
 
         await logActivity(username, 'login');
-        res.json({ message: 'Logged in successfully', redirect: '/shop' });
+        res.json({ message: 'Logged in successfully', redirect: '/shop', token });
         
     } catch (error) {
         console.error('Error during login:', error);

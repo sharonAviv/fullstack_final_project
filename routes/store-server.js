@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { searchProducts, retrieveAllProducts } = require('./products');
+const {retrieveAllProducts } = require('./products');
 const { verifyToken } = require('./middleware');
-const { addToCart } = require('./persist');
+const { addToCart, searchProducts } = require('./persist');
 
 // Get all products
 router.get('/products', async (req, res) => {

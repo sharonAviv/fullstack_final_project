@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Israel's Soccer Team's Store</title>
     <link rel="stylesheet" href="styles.css">
-    <script defer src="shop.js"></script>
-    <script>src="login.js"</script>
+    <script defer src="auth_cart.js"></script> <!-- Updated to use auth and cart functionalities -->
 </head>
 <body>
     <header class="main-header">
@@ -16,11 +15,16 @@
         </div>
         <div class="header-right">
             <span id="user-greeting" class="user-greeting"></span>
-            <a href="login.html" class="icon login-icon" id="auth-link"></a>
+            <a href="login.html" class="icon login-icon" id="auth-link">
+                <span class="tooltip">Log in</span>
+            </a>
             <div class="icon cart-icon" id="cart-icon">
-                <span>0</span>
+                <span>0</span> <!-- Cart item count -->
+                <span class="tooltip">View your cart</span>
             </div>
-            <div class="icon menu-icon" id="menu-icon"></div>
+            <div class="icon menu-icon" id="menu-icon">
+                <span class="tooltip">Open menu</span>
+            </div>
         </div>
     </header>
 
@@ -74,8 +78,6 @@
             </div>
             <button id="back-game" style="width: 50%; margin: 10px;">Back</button>
         </div>
-        
-        
     
         <div id="seat-selection" class="selection-step form-container" style="display: none; width: 550px;">
             <h2>Select a Seat</h2>
@@ -89,7 +91,7 @@
             <h2>Your Tickets</h2>
             <div id="ticket-cart" class="news-scroller" style="text-align: left;"></div>
             <div id="checkoutContainer" class="news-scroller" style="text-align: left; max-height: 200px;"></div>
-            <h2>Payment Details</h3>
+            <h2>Payment Details</h2>
             <form id="checkout-form" style="text-align: left;">
                 <div class="form-group">
                     <label for="card-number">Card Number</label>
@@ -114,9 +116,7 @@
             <button id="back-seat-checkout" style="width: 50%; margin: 10px;">Back to seat selection</button>
         </div>
     </main>
-    
-
+    <script src="ticket-selection.js"></script> <!-- Additional script for ticket selection functionality -->
     <script src="script.js"></script>
-    <script src="ticket-selection.js"></script>
 </body>
 </html>

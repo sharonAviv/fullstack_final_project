@@ -17,7 +17,7 @@ async function init() {
     console.log("games")
     await initTickets();
     console.log("tickets")
-    // await initProducts();
+    await initProducts();
     console.log("products")
 
   } catch (error) {
@@ -216,7 +216,7 @@ async function initProducts() {
         name: "White Sneakers",
         description: "Stylish white sneakers suitable for casual wear.",
         price: 49.99,
-        images: JSON.stringify(["../icons/front_sneakers_ISR.jpg", "../icons/rear_sneakers_ISR.jpg"]),
+        images: JSON.stringify(["../icons/front_sneakers_ISR.jpg"]),
         stock: 50
       }
     ];
@@ -282,6 +282,7 @@ async function findUserByUsername(username) {
 }
 
 async function findUserIDByUsername(username) {
+  console.log(username);
   return new Promise((resolve, reject) => {
     const query = `SELECT user_id FROM users WHERE username = ?`;
     db.get(query, [username], (err, row) => {
@@ -550,7 +551,7 @@ async function addCartItem(cartId, productDetails) {
   try {
     return new Promise((resolve, reject) => {
       const query = `INSERT INTO cart_items (cart_id, product_id, quantity, name, price) VALUES (?, ?, ?, ?, ?)`;
-      db.run(query, [cartId, productDetails.product_id, productDetails.quantity, productDetails.name, productDetails.price], function (err) {
+      db.run(query, [cartId, productDetails.product_id, productDetails.quantity, productDetails.name, productDetails.price * productDetails.quantity], function (err) {
         if (err) {
           console.error('Error inserting cart item:', err); // Log any errors
           reject(err);
@@ -588,8 +589,7 @@ async function saveGame(game) {
       if (err) {
         reject(err);
       } else {
-        resolve(this.lastID);
-      }
+        resolve({ game_id: this.lastID, ...game });}
     });
   });
 }
@@ -692,6 +692,26 @@ async function getProducts() {
   });
 }
 
+function getProductById(productId) {
+  return new Promise((resolve, reject) => {
+      const sql = 'SELECT * FROM products WHERE id = ?';
+
+      db.get(sql, [productId], (err, row) => {
+          if (err) {
+              reject(err);
+          } else if (!row) {
+              resolve(null); // No product found with the given ID
+          } else {
+              // Parse the JSON data for images if necessary
+              if (row.images) {
+                  row.images = JSON.parse(row.images);
+              }
+              resolve(row);
+          }
+      });
+  });
+}
+
 // Search products in the database
 async function searchProducts(query) {
   return new Promise((resolve, reject) => {
@@ -708,26 +728,40 @@ async function searchProducts(query) {
 }
 
 // Add a product to the user's cart
-async function addToCart(username, productId) {
+async function addToCart(username, productId, quantityToAdd) {
   try {
+    console.log(`addToCart called with username: ${username}, productId: ${productId}, quantityToAdd: ${quantityToAdd}`);
+
     const user = await findUserByUsername(username);
     if (!user) {
       throw new Error('User not found');
     }
+    console.log(`User found: ${JSON.stringify(user)}`);
+
     const userId = user.user_id;
     const cart = await getCartByUserId(userId);
     const cartId = cart ? cart.cart_id : await createCart(userId);
+    console.log(`Cart ID: ${cartId}`);
+
     const existingCartItem = await findCartItem(cartId, productId);
     const productDetails = await getProductDetails(productId);
     if (!productDetails) {
       throw new Error('Product not found');
     }
+    console.log(`Product details: ${JSON.stringify(productDetails)}`);
+
     if (existingCartItem) {
-      await updateCartItemQuantity(existingCartItem.product_id, existingCartItem.quantity + 1, productDetails.price);
+      console.log(`Existing cart item found: ${JSON.stringify(existingCartItem)}`);
+      console.log(`Already exist, we have: ${existingCartItem.quantity}, adding: ${quantityToAdd}`);
+      const existingQuantity = Number(existingCartItem.quantity);
+      const quantityToAddNumber = Number(quantityToAdd);
+      const newQuantity = existingQuantity + quantityToAddNumber;
+      await updateCartItemQuantity(existingCartItem.product_id, newQuantity, productDetails.price);
     } else {
+      console.log(`Adding new item to cart with productId: ${productId}, quantity: ${quantityToAdd}`);
       await addCartItem(cartId, {
         product_id: productId,
-        quantity: 1,
+        quantity: quantityToAdd,
         name: productDetails.name,
         price: productDetails.price
       });
@@ -737,7 +771,6 @@ async function addToCart(username, productId) {
     throw error;
   }
 }
-
 // Add a product to the user's ticket cart
 async function addToTicketCart(username, ticketId) {
   const user = await findUserByUsername(username);
@@ -789,17 +822,49 @@ async function findTicketCartItem(userId, ticketId) {
 
 // Update the quantity of a cart item
 async function updateCartItemQuantity(productId, quantity, price) {
+  console.log(`updateCartItemQuantity called with productId: ${productId}, quantity: ${quantity}, price: ${price}`);
+  
+  if (quantity <= 0) {
+    // If quantity is 0 or less, remove the item from the cart
+    return removeCartItem(productId);
+  }
+  
   return new Promise((resolve, reject) => {
     const query = `UPDATE cart_items SET quantity = ?, price = ? WHERE product_id = ?`;
-    db.run(query, [quantity, price * quantity, productId], (err) => {
+    const totalPrice = price * quantity;
+    console.log(`Executing query: ${query} with values quantity: ${quantity}, totalPrice: ${totalPrice}, productId: ${productId}`);
+    
+    db.run(query, [quantity, totalPrice, productId], (err) => {
       if (err) {
+        console.error('Error updating cart item quantity:', err);
         reject(err);
       } else {
+        console.log('Cart item updated successfully');
         resolve();
       }
     });
   });
 }
+
+async function removeCartItem(productId) {
+  console.log(`removeCartItem called with productId: ${productId}`);
+  
+  return new Promise((resolve, reject) => {
+    const query = `DELETE FROM cart_items WHERE product_id = ?`;
+    console.log(`Executing query: ${query} with value productId: ${productId}`);
+    
+    db.run(query, [productId], (err) => {
+      if (err) {
+        console.error('Error removing cart item:', err);
+        reject(err);
+      } else {
+        console.log('Cart item removed successfully');
+        resolve();
+      }
+    });
+  });
+}
+
 
 // Get tickets for a specific game and stand
 async function getTicketsByGameStand(gameId, stand) {
@@ -886,6 +951,7 @@ module.exports = {
   purchaseTickets,
   removeProduct,
   addProduct,
-  updateProduct
+  updateProduct,
+  getProductById
 };
 

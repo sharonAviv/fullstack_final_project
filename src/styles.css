@@ -4,10 +4,11 @@ body {
     font-family: Poppins, Arial, sans-serif;
     background-color: #f0f8ff; /* Light blue background */
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding-top: 130px; /* Account for both headers */
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    min-height: 100vh; /* Ensure the body takes at least the full viewport height */
+    padding: 0; /* Remove padding to ensure full centering */
 }
 
 /* Container styles */
@@ -99,7 +100,6 @@ body {
     text-decoration: underline;
 }
 
-/* Main Header styles */
 .main-header {
     background-color: white;
     border-bottom: 1px solid #ccc;
@@ -113,6 +113,21 @@ body {
     top: 0;
     z-index: 1000;
 }
+
+/* Main Header styles */
+/* .main-header {
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 60px;
+    position: fixed;
+    width: calc(100% - 120px);
+    top: 0;
+    z-index: 1000;
+} */
 
 .header-left {
     display: flex;
@@ -131,14 +146,63 @@ body {
     font-size: 18px;
 }
 
+.header-right {
+    overflow: visible; /* Ensure tooltips are not clipped by parent elements */
+}
+
 .header-right .icon {
+    position: relative; /* Needed for the tooltip positioning */
     width: 24px;
     height: 24px;
     margin-left: 20px;
     display: inline-block;
     background-size: contain;
     cursor: pointer;
-    filter: none; /* Remove any default border */
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 100; /* Ensures icon is on top */
+}
+
+/* Tooltip container */
+.header-right .icon .tooltip {
+    visibility: hidden;
+    width: 120px; 
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 8px 10px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 100000; /* Maximum z-index to surpass all other elements */
+    top: 100%; 
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 14px;
+    white-space: nowrap;
+    pointer-events: none; /* Prevents tooltip from interfering with hover */
+
+}
+
+/* Show the tooltip on hover */
+.header-right .icon:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Tooltip arrow */
+
+.header-right .icon .tooltip::after {
+    content: '';
+    position: absolute;
+    top: -5px; /* Position above the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent; /* Arrow pointing up */
+    z-index: 100000; /* Ensure the arrow stays above everything */
 }
 
 .header-right .login-icon {
@@ -163,16 +227,11 @@ body {
     top: -5px;
     right: -10px;
     font-size: 12px;
+    z-index: 1;
 }
 
 .header-right .menu-icon {
     background-image: url('../icons/hamburger.png');
-}
-
-/* Hover effects for icons */
-.header-right .icon:hover {
-    background-color: #0038a8;
-    filter: invert(1);
 }
 
 /* Products Header styles */
@@ -199,20 +258,23 @@ body {
     visibility: hidden;
     opacity: 0;
     transition: opacity 0.2s;
-    z-index: 1001;
+    z-index: 10000; /* Ensure it's on top of everything */
 }
 
 /* Main content padding to accommodate fixed headers */
 .shop-container {
-    padding-top: 150px; /* Ensure content isn't hidden behind headers */
+    padding-top: 100px; /* Account for the fixed header */
+    padding-bottom: 100px; /* Ensure space at the bottom */
     max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
+    flex: 1; /* Allow the container to grow and push content downward */
 }
 
 /* Product Grid */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr); /* Set 3 items per row */
     gap: 20px;
     padding: 20px;
 }
@@ -240,7 +302,23 @@ body {
     height: 300px; /* Set a fixed height */
     overflow: hidden;
     border-radius: 10px 10px 0 0;
-    background-color: #f0f0f0; /* Add background color to prevent flickering */
+    background-color: #ffffff; /* Change background color to white */
+}
+
+.quantity-container {
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.quantity-container input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    margin-left: 5px;
+    font-size: 14px;
 }
 
 .product-image {
@@ -253,24 +331,24 @@ body {
 
 /* Carousel buttons */
 .carousel-btn {
-    position: absolute;
+    position: absolute; /* Place buttons on top of the images */
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%); /* Center the buttons vertically */
     background: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
     border-radius: 50%;
-    padding: 5px;
+    padding: 10px;
     cursor: pointer;
-    z-index: 1001; /* Ensure buttons are above images */
+    z-index: 100; /* Ensure buttons are above images */
 }
 
 .prev-btn {
-    left: 10px;
+    left: 10px; /* Position the previous button on the left */
 }
 
 .next-btn {
-    right: 10px;
+    right: 10px; /* Position the next button on the right */
 }
 
 .carousel-btn:hover {
@@ -315,8 +393,9 @@ body {
     background-color: #0056b3;
 }
 
-/* Panel Styles for Sliding Elements (Navigation and Cart) */
+/* Panel Styles */
 .panel {
+    overflow: visible; /* Prevent clipping of tooltip */
     background-color: white;
     border-left: 1px solid #ccc;
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
@@ -327,7 +406,7 @@ body {
     height: calc(100% - 50px); /* Adjust to move down the menu */
     padding: 20px;
     transition: right 0.3s ease;
-    z-index: 999;
+    z-index: 10000; /* Ensure it's on top */
 }
 
 .panel.active {
@@ -340,7 +419,7 @@ body {
     font-weight: 300;
 }
 
-/* Navigation Menu Specific Styles */
+/* Navigation Menu Styles */
 .navigation-menu {
     background-color: white;
     border-left: 1px solid #ccc;
@@ -352,7 +431,11 @@ body {
     height: calc(100% - 50px); /* Adjust to move down the menu */
     padding: 20px;
     transition: right 0.3s ease;
-    z-index: 999;
+    z-index: 300; /* Higher than panel to ensure it is on top */
+}
+
+.navigation-menu.active {
+    right: 0;
 }
 
 #navigation-menu ul {
@@ -381,8 +464,17 @@ body {
 }
 
 /* Cart styles */
-.cartTab{
-
+.cartTab {
+    position: fixed;
+    top: 50px;
+    right: -350px; /* Initially hidden, completely out of the screen */
+    width: 300px;
+    height: calc(100% - 50px); /* Adjust to move down the menu */
+    background-color: white;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: right 0.3s ease;
+    z-index: 300; /* Highest z-index to ensure it is on top */
 }
 
 body.showCart .cartTab {
@@ -400,31 +492,43 @@ body.showCart .container {
 }
 
 .cartTab .cart-footer {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 20px;
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
 }
 
-.cartTab .close-cart {
+.total-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #0038a8; /* Dark blue color to match the site’s theme */
+    text-align: left;
+}
+
+/* .cartTab .close-cart {
     background-color: #e74c3c;
     color: #fff;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-}
+} */
 
 .cartTab .checkout-button {
-    background-color: #1238cf; /* Blue button */
-    color: #fff;
-    border: none;
+    background-color: #007bff;
+    color: white;
     padding: 10px 20px;
+    border: none;
     border-radius: 5px;
+    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .cartTab .close-cart:hover {
-    background-color: #c0392b;
+    background-color: #003f8a; /* Darker blue on hover */
 }
 
 .cartTab .checkout-button:hover {
@@ -450,7 +554,6 @@ body.showCart .container {
     text-align: center;
     align-items: center;
 }
-
 .listCart .item img {
     width: 100%;
 }
@@ -571,7 +674,7 @@ body.showCart .container {
 
 #west-stand {
     position: absolute;
-    left: 65%;
+    right: 65%;
     top: 47%;
     transform: translateY(-50%);
     width: 75px; 
@@ -580,7 +683,7 @@ body.showCart .container {
 
 #east-stand {
     position: absolute;
-    right: 65%;
+    left: 65%;
     top: 47%;
     transform: translateY(-50%);
     width: 75px; 
@@ -835,6 +938,90 @@ body.showCart .container {
     background-color: #003f8a;
 }
 
+/* Redesign Clear Cart Button */
+.clear-cart {
+    background-color: #e56759; /* Red background for emphasis */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+    margin: 20px auto; /* Center the button horizontally with margin auto */
+    display: block; /* Make the button a block element */
+    text-align: center;
+    width: 150px; /* Optional: Set a fixed width for consistent styling */
+}
+
+.clear-cart:hover {
+    background-color: #c0392b; /* Darker red on hover */
+}
+
+/* Cart Items Container */
+.cart-items {
+    max-height: 400px; /* Set a maximum height for the cart items section */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    padding: 10px;
+    border-top: 1px solid #ddd; /* Optional: Add a top border */
+}
+
+/* Style the scrollbar for a better user experience */
+.cart-items::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Individual Cart Item */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.item-details {
+    flex-grow: 1;
+}
+
+.item-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #333;
+}
+
+.item-quantity {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.item-quantity button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 14px;
+}
+
+.item-quantity button:hover {
+    background-color: #0056b3;
+}
+
+.item-price {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    text-align: right;
+    min-width: 80px;
+}
+
 
 .admin-container {
     background-color: white;
@@ -848,9 +1035,12 @@ body.showCart .container {
 h1, h2, h3 {
     color: #0038a8;
     margin-bottom: 20px;
+    text-align: center; /* Center the text */
+
 }
 
 input[type="text"],
+input[type="number"],
 textarea {
     width: calc(100% - 20px);
     padding: 10px;
@@ -861,15 +1051,15 @@ textarea {
 }
 
 input[type="text"]:focus,
+input[type="number"]:focus,
 textarea:focus {
-    border-color: #0056b3;
+    border-color: #0056b3; /* Blue border on focus */
 }
 
 /* Section styles */
 section {
     margin-bottom: 40px;
 }
-
 /* Activity Log Styles */
 #activity-log {
     background-color: #eef3fb;
@@ -940,6 +1130,8 @@ button[type="submit"]:hover {
 #product-list {
     list-style-type: none;
     padding: 0;
+    text-align: center; /* Center the text */
+
 }
 
 #product-list li {
@@ -1022,6 +1214,7 @@ button[type="submit"]:hover {
     border: 2px dashed #ccc;
     padding: 20px;
     text-align: center;
+    margin-top: 15px;
     margin-bottom: 15px;
     cursor: pointer;
 }
