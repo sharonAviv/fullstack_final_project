@@ -211,33 +211,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load stands
     function loadStands(selectedGameId) {
-        // Fetch tickets for the selected game
         fetch(`/api/tickets?gameId=${selectedGameId}`)
             .then(response => response.json())
             .then(tickets => {
-                console.log("Fetched Tickets for Game ID:", selectedGameId, tickets); // Log fetched tickets
-    
-                // Iterate through your stand elements
-                const stands = ['north', 'south', 'east', 'west']; // Adjust this based on your stand names
+                console.log("Fetched Tickets for Game ID:", selectedGameId, tickets);
+                const stands = ['north', 'south', 'east', 'west'];
                 stands.forEach(stand => {
                     const standElement = document.getElementById(`${stand}-stand`);
                     const availableTickets = tickets.filter(ticket => ticket.stand === stand && ticket.status === 'available').length;
-                    console.log(`${stand} available tickets:`, availableTickets); // Log available tickets
+                    console.log(`${stand} available tickets:`, availableTickets);
+    
+                    // Remove any existing event listeners
+                    standElement.replaceWith(standElement.cloneNode(true));
+                    const newStandElement = document.getElementById(`${stand}-stand`);
     
                     if (availableTickets > 0) {
                         console.log(stand + " available");
-                        standElement.className = 'stand available';
-                        standElement.addEventListener('click', () => selectStand(stand));
+                        newStandElement.className = 'stand available';
+                        newStandElement.addEventListener('click', () => selectStand(stand));
                     } else {
                         console.log(stand + " not available");
-                        standElement.className = 'stand unavailable';
+                        newStandElement.className = 'stand unavailable';
                     }
                 });
             })
             .catch(error => console.error('Error fetching tickets:', error));
     }
     
-
+  
+    
     function selectStand(stand) {
         selectedStand = stand;
         standSelection.style.display = 'none';
@@ -250,24 +252,32 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/api/tickets?gameId=${selectedGameId}&stand=${selectedStand}`)
             .then(response => response.json())
             .then(tickets => {
-                console.log("Fetched tickets for selected stand:", tickets); // Log fetched tickets
+                console.log("Fetched tickets for selected stand:", tickets);
                 seatsMap.innerHTML = '';
                 for (let i = 1; i <= 100; i++) {
                     const seatNumber = `${i}`;
-                    const seat = tickets.find(ticket => ticket.seat_number.startsWith(seatNumber) && ticket.seat_number.endsWith(selectedStand.charAt(0).toUpperCase()));
+                    const seatTickets = tickets.filter(ticket => ticket.seat_number.startsWith(seatNumber) && ticket.seat_number.endsWith(selectedStand.charAt(0).toUpperCase()));
                     const seatElement = document.createElement('div');
                     seatElement.className = 'seat';
-                    if (seat && seat.status === 'available') {
-                        seatElement.classList.add('available');
-                        seatElement.addEventListener('click', () => selectSeat(seat));
+                    if (seatTickets.length > 0) {
+                        const availableTicket = seatTickets.find(ticket => ticket.status === 'available');
+                        if (availableTicket) {
+                            seatElement.classList.add('available');
+                            seatElement.setAttribute('data-ticket-id', availableTicket.ticket_id);
+                            seatElement.addEventListener('click', () => selectSeat(availableTicket));
+                        } else {
+                            seatElement.classList.add('unavailable');
+                        }
                     } else {
                         seatElement.classList.add('unavailable');
                     }
                     seatsMap.appendChild(seatElement);
                 }
             })
-            .catch(error => console.error('Error fetching seats:', error)); // Log any error
+            .catch(error => console.error('Error fetching seats:', error));
     }
+    
+    
 
     function selectSeat(seat) {
         seatInfo = document.createElement('div');
@@ -294,9 +304,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json().then(data => ({ status: response.status, data }));
         })
         .then(({ status, data }) => {
-            if (status === 201) { // Expecting status code 201 for resource creation
+            if (status === 201) {
                 alert('Ticket added to cart');
                 console.log('Ticket was added to ticket cart with ticket ID:', ticketId);
+                // Change the seat color to light green
+                const seatElement = document.querySelector(`.seat[data-ticket-id="${ticketId}"]`);
+                if (seatElement) {
+                    seatElement.classList.remove('available');
+                    seatElement.classList.add('in-cart');
+                }
             } else {
                 alert('Failed to add ticket to cart: ' + data.message);
             }
@@ -304,6 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error:', error));
     }
+    
 
 // Load user's ticket cart for checkout
 function loadCheckout() {

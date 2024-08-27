@@ -610,31 +610,30 @@ body.showCart .container {
 
 #games-list {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 20px;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .game-item {
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin: 10px;
+    margin: 10px 0;
     padding: 10px;
     cursor: pointer;
-    width: 200px;
     text-align: center;
     transition: background-color 0.2s;
-}
-
-.game-item.single {
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .game-item:hover {
     background-color: #f0f8ff;
 }
+
+.game-item.single {
+    width: 100%;
+}
+
 
 .message {
     margin-top: 10px;
@@ -799,6 +798,11 @@ body.showCart .container {
 .seat-info button:hover {
     background-color: #0038a8;
 }
+
+.seat.in-cart {
+    background-color: #90EE90; /* Light green color */
+}
+
 
 #stadium-map {
     display: flex;
