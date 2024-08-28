@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameDateFilter = document.getElementById('game-date-filter');
     const continueButton = document.getElementById('continue-button');
     const checkoutTicketsButton = document.getElementById('checkout-tickets');  
-    const purchaseCompleteButton = document.getElementById('complete-purchase-button');
+    const purchaseCompleteButton = document.getElementById('checkout-form');
 
     const backToGameButton = document.getElementById('back-game');
     const backToGameFromSeatButton = document.getElementById('back-game-seat');
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadCheckout();
     });
 
-    purchaseCompleteButton.addEventListener('click', (event) => {
+    purchaseCompleteButton.addEventListener('submit', (event) => {
         console.log('Purchase complete button clicked.');
         event.preventDefault(); // Prevents the default form submission behavior
         checkoutScreen.style.display = 'none';

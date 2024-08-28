@@ -631,7 +631,7 @@ body.showCart .container {
 }
 
 .game-item.single {
-    width: 100%;
+    width: auto;
 }
 
 
@@ -923,6 +923,14 @@ body.showCart .container {
 .form-group input[type="text"]:focus,
 .form-group textarea:focus {
     border-color: #0056b3; /* Blue border on focus */
+}
+
+#complete-purchase-button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    width: 50%;
 }
 
 /* Checkout Button */
