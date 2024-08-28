@@ -634,6 +634,7 @@ body.showCart .container {
     width: 100%;
 }
 
+
 .message {
     margin-top: 10px;
     color: red; /* Change color to your preference */
@@ -797,6 +798,11 @@ body.showCart .container {
 .seat-info button:hover {
     background-color: #0038a8;
 }
+
+.seat.in-cart {
+    background-color: #90EE90; /* Light green color */
+}
+
 
 #stadium-map {
     display: flex;
