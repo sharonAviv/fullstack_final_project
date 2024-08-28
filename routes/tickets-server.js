@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getTicketsByGameStand, purchaseTickets, getTicketsByGameID, getTicketsByTicketID } = require('./persist'); // Adjust the path as necessary
+const { getTicketsByGameStand, purchaseTickets, getTicketsByGameID, getTicketsByTicketID, getGameById } = require('./persist'); // Adjust the path as necessary
 
 // GET tickets for a specific (game and stand) or ticketId
 router.get('/', async (req, res) => {
@@ -49,5 +49,39 @@ router.post('/purchase', async (req, res) => {
         res.status(500).send(error);
     }
 });
+
+router.post('/', async (req, res) => {
+    const { gameId, seatNumber, stand, price } = req.body;
+    console.log('Received POST request to add ticket:', req.body);
+
+    try {
+        const game = await getGameById(gameId); // You'll need to implement this function
+        if (!game) {
+            return res.status(404).send({ message: 'Game not found' });
+        }
+
+        const newTicket = { 
+            game_id: gameId, 
+            game_date: game.game_date, 
+            seat_number: seatNumber, 
+            stand, 
+            price, 
+            status: 'available' 
+        };
+        
+        const addedTicket = await saveTicket(newTicket);
+        
+        if (typeof addedTicket === 'number') {
+            console.log('Ticket added:', addedTicket);
+            res.status(201).send({ message: 'Ticket added successfully', ticketId: addedTicket });
+        } else {
+            console.log('Ticket already exists:', addedTicket);
+            res.status(200).send({ message: 'Ticket already exists', ticket: addedTicket });
+        }
+    } catch (error) {
+        res.status(400).send({ message: 'Error adding ticket', error: error.message });
+    }
+});
+
 
 module.exports = router;

@@ -6,15 +6,23 @@ const { saveGame, getAllGames } = require('./persist'); // Adjust the path as ne
 router.post('/', async (req, res) => {
     const { title, date, teamHome, teamAway, stadiumName } = req.body;
     console.log('Received POST request to add game:', req.body);
+
     try {
         const newGame = { title, game_date: date, team_home: teamHome, team_away: teamAway, stadium_name: stadiumName, status: 'scheduled' };
         const addedGame = await saveGame(newGame);
-        console.log('Game added:', addedGame);
-        res.status(201).send(addedGame);
+        
+        if (addedGame.game_id) {
+            console.log('Game added:', addedGame);
+            res.status(201).send(addedGame);
+        } else {
+            console.log('Game already exists:', addedGame);
+            res.status(200).send({ message: 'Game already exists', game: addedGame });
+        }
     } catch (error) {
         res.status(400).send({ message: 'Error adding game', error: error.message });
     }
 });
+
 
 // GET all games
 router.get('/', async (req, res) => {

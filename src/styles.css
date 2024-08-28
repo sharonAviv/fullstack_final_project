@@ -631,7 +631,7 @@ body.showCart .container {
 }
 
 .game-item.single {
-    width: 100%;
+    width: auto;
 }
 
 

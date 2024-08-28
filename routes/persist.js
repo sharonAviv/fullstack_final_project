@@ -584,12 +584,23 @@ async function addTicketCartItem(userId, ticketId) {
 // Save a game to the database
 async function saveGame(game) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name , status) VALUES (?, ?, ?, ?, ?, ?)`;
-    db.run(query, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
+    const checkQuery = `SELECT * FROM games WHERE title = ? AND game_date = ? AND team_home = ? AND team_away = ? AND stadium_name = ?`;
+    db.get(checkQuery, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name], (err, row) => {
       if (err) {
         reject(err);
+      } else if (row) {
+        console.log('Game already exists:', row);
+        resolve(row);
       } else {
-        resolve({ game_id: this.lastID, ...game });}
+        const insertQuery = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name, status) VALUES (?, ?, ?, ?, ?, ?)`;
+        db.run(insertQuery, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ game_id: this.lastID, ...game });
+          }
+        });
+      }
     });
   });
 }
@@ -648,15 +659,41 @@ async function getAllGames() {
   });
 }
 
+function getGameById(gameId) {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM games WHERE game_id = ?';
+
+    db.get(sql, [gameId], (err, row) => {
+      if (err) {
+        reject(err);
+      } else if (!row) {
+        resolve(null); // No game found with the given ID
+      } else {
+        resolve(row);
+      }
+    });
+  });
+}
+
 // Save a new ticket to the database
 async function saveTicket(ticket) {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO tickets (seat_number, game_date, stand, price, status, game_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    db.run(query, [ticket.seat_number, ticket.game_date, ticket.stand, ticket.price, ticket.status, ticket.game_id, ticket.user_id], function (err) {
+    const checkQuery = `SELECT * FROM tickets WHERE game_id = ? AND game_date = ? AND seat_number = ? AND stand = ?`;
+    db.get(checkQuery, [ticket.game_id, ticket.game_date, ticket.seat_number, ticket.stand], (err, row) => {
       if (err) {
         reject(err);
+      } else if (row) {
+        console.log('Ticket already exists:', row);
+        resolve(row);
       } else {
-        resolve(this.lastID);
+        const insertQuery = `INSERT INTO tickets (seat_number, game_date, stand, price, status, game_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        db.run(insertQuery, [ticket.seat_number, ticket.game_date, ticket.stand, ticket.price, ticket.status, ticket.game_id, ticket.user_id], function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(this.lastID);
+          }
+        });
       }
     });
   });
@@ -952,6 +989,7 @@ module.exports = {
   removeProduct,
   addProduct,
   updateProduct,
-  getProductById
+  getProductById,
+  getGameById
 };
 
