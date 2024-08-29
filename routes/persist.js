@@ -17,7 +17,7 @@ async function init() {
     console.log("games")
     await initTickets();
     console.log("tickets")
-    await initProducts();
+   // await initProducts();
     console.log("products")
 
   } catch (error) {
@@ -584,7 +584,9 @@ async function addTicketCartItem(userId, ticketId) {
 // Save a game to the database
 async function saveGame(game) {
   return new Promise((resolve, reject) => {
-    const checkQuery = `SELECT * FROM games WHERE title = ? AND game_date = ? AND team_home = ? AND team_away = ? AND stadium_name = ?`;
+    const checkQuery = `
+      SELECT * FROM games WHERE title = ? AND game_date = ? AND team_home = ? AND team_away = ? AND stadium_name = ?
+    `;
     db.get(checkQuery, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name], (err, row) => {
       if (err) {
         reject(err);
@@ -592,18 +594,63 @@ async function saveGame(game) {
         console.log('Game already exists:', row);
         resolve(row);
       } else {
-        const insertQuery = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name, status) VALUES (?, ?, ?, ?, ?, ?)`;
+        const insertQuery = `
+          INSERT INTO games (title, game_date, team_home, team_away, stadium_name, status) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
         db.run(insertQuery, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
           if (err) {
             reject(err);
           } else {
-            resolve({ game_id: this.lastID, ...game });
+            const gameId = this.lastID;
+            // After successfully adding the game, create tickets
+            createTicketsForGame(gameId, game.game_date, game.stadium_name)
+              .then(() => {
+                resolve({ game_id: gameId, ...game });
+              })
+              .catch(ticketErr => {
+                reject(ticketErr);
+              });
           }
         });
       }
     });
   });
 }
+
+async function createTicketsForGame(gameId, game_date, stadium_name) {
+  return new Promise((resolve, reject) => {
+    // Define some example stands and the number of tickets per stand
+    const stands = ['north', 'south', 'east', 'west'];
+    const ticketsPerStand = 100; // Example: 100 tickets per stand
+
+    const query = `
+      INSERT INTO tickets (game_id, game_date, seat_number, stand, price, status)
+      VALUES (?, ?, ?, ?, ?, 'available')
+    `;
+
+    db.serialize(() => {
+      const stmt = db.prepare(query);
+
+      stands.forEach(stand => {
+        for (let i = 1; i <= ticketsPerStand; i++) {
+          const seatNumber = `${i}${stand[0].toUpperCase()}`;
+          const price = 50.00; // Example price
+          stmt.run([gameId, game_date, seatNumber, stand, price]);
+        }
+      });
+
+      stmt.finalize((err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  });
+}
+
 
 async function addActivity(activity) {
   return new Promise((resolve, reject) => {
@@ -860,26 +907,27 @@ async function findTicketCartItem(userId, ticketId) {
 // Update the quantity of a cart item
 async function updateCartItemQuantity(productId, quantity, price) {
   console.log(`updateCartItemQuantity called with productId: ${productId}, quantity: ${quantity}, price: ${price}`);
-  
+
   if (quantity <= 0) {
-    // If quantity is 0 or less, remove the item from the cart
-    return removeCartItem(productId);
+      // If quantity is 0 or less, remove the item from the cart
+      console.log(`Quantity is ${quantity}, removing item with productId: ${productId}`);
+      return removeCartItem(productId);
   }
-  
+
   return new Promise((resolve, reject) => {
-    const query = `UPDATE cart_items SET quantity = ?, price = ? WHERE product_id = ?`;
-    const totalPrice = price * quantity;
-    console.log(`Executing query: ${query} with values quantity: ${quantity}, totalPrice: ${totalPrice}, productId: ${productId}`);
-    
-    db.run(query, [quantity, totalPrice, productId], (err) => {
-      if (err) {
-        console.error('Error updating cart item quantity:', err);
-        reject(err);
-      } else {
-        console.log('Cart item updated successfully');
-        resolve();
-      }
-    });
+      const query = `UPDATE cart_items SET quantity = ?, price = ? WHERE product_id = ?`;
+      const totalPrice = price * quantity;
+      console.log(`Executing query: ${query} with values quantity: ${quantity}, totalPrice: ${totalPrice}, productId: ${productId}`);
+      
+      db.run(query, [quantity, totalPrice, productId], (err) => {
+          if (err) {
+              console.error('Error updating cart item quantity:', err);
+              reject(err);
+          } else {
+              console.log('Cart item updated successfully');
+              resolve();
+          }
+      });
   });
 }
 

@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedGameId = null;
     let selectedStand = null;
     let seatInfo = null;
-    let ticketIds = null;
+    let ticketIds = [];
     let totalPrice = 0;
 
     // Load games and filter based on selected month
@@ -156,14 +156,14 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault(); // Prevents the default form submission behavior
         checkoutScreen.style.display = 'none';
         ticketPayment();
-        console.log('Payment proccess finished, redirecting confirmation');
+        console.log('Payment process finished, redirecting to confirmation');
         window.location.href = 'confirmation.html';
     });
     
     async function ticketPayment() {
         try {
             // Simulate order completion and clearing the cart on the server
-            console.log('trying to purchase tickets for ' + JSON.stringify({ ticketIds }));
+            console.log('Trying to purchase tickets for ' + JSON.stringify({ ticketIds }));
             const response = await fetch('/api/tickets/purchase', {
                 method: 'POST',
                 credentials: 'include', // Include cookies for authentication
@@ -238,13 +238,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error fetching tickets:', error));
     }
     
-  
-    
     function selectStand(stand) {
         selectedStand = stand;
         standSelection.style.display = 'none';
         seatSelection.style.display = 'block';
-        loadSeats(stand);
+        loadSeats();
     }
 
     // Load seats
@@ -255,30 +253,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("Fetched tickets for selected stand:", tickets);
                 seatsMap.innerHTML = '';
                 for (let i = 1; i <= 100; i++) {
-                    const seatNumber = `${i}`;
-                    const seatTickets = tickets.filter(ticket => ticket.seat_number.startsWith(seatNumber) && ticket.seat_number.endsWith(selectedStand.charAt(0).toUpperCase()));
+                    const seatNumber = `${i}${selectedStand.charAt(0).toUpperCase()}`;
+                    const ticket = tickets.find(t => t.seat_number === seatNumber);
                     const seatElement = document.createElement('div');
                     seatElement.className = 'seat';
-                    if (seatTickets.length > 0) {
-                        const availableTicket = seatTickets.find(ticket => ticket.status === 'available');
-                        if (availableTicket) {
+                    seatElement.setAttribute('data-seat-number', seatNumber);
+                    if (ticket) {
+                        seatElement.setAttribute('data-ticket-id', ticket.ticket_id);
+                        if (ticket.status === 'available') {
                             seatElement.classList.add('available');
-                            seatElement.setAttribute('data-ticket-id', availableTicket.ticket_id);
-                            seatElement.addEventListener('click', () => selectSeat(availableTicket));
+                            seatElement.addEventListener('click', () => selectSeat(ticket));
                         } else {
                             seatElement.classList.add('unavailable');
                         }
                     } else {
                         seatElement.classList.add('unavailable');
-                    }
+                    }                    
                     seatsMap.appendChild(seatElement);
                 }
             })
             .catch(error => console.error('Error fetching seats:', error));
     }
     
-    
-
     function selectSeat(seat) {
         seatInfo = document.createElement('div');
         seatInfo.className = 'seat-info';
@@ -320,70 +316,67 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error:', error));
     }
-    
 
-// Load user's ticket cart for checkout
-function loadCheckout() {
-    fetch(`/api/ticket-cart/view`)
-        .then(response => {
-            console.log('Fetch tickets response:', response);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(ticketCartItems => {
-            // Extract all ticket_id values
-            ticketIds = ticketCartItems.map(item => item.ticket_id);
-            console.log('Fetch ticket ids:', ticketIds);
-            
-            // Fetch ticket details for each ticket_id
-            const ticketDetailsPromises = ticketIds.map(ticketId =>
-                fetch(`/api/tickets?ticketId=${ticketId}`)
-                    .then(response => response.json())
-            );
+    // Load user's ticket cart for checkout
+    function loadCheckout() {
+        fetch(`/api/ticket-cart/view`)
+            .then(response => {
+                console.log('Fetch tickets response:', response);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(ticketCartItems => {
+                // Extract all ticket_id values
+                ticketIds = ticketCartItems.map(item => item.ticket_id);
+                console.log('Fetch ticket ids:', ticketIds);
+                
+                // Fetch ticket details for each ticket_id
+                const ticketDetailsPromises = ticketIds.map(ticketId =>
+                    fetch(`/api/tickets?ticketId=${ticketId}`)
+                        .then(response => response.json())
+                );
 
-            // Wait for all ticket details to be fetched
-            return Promise.all(ticketDetailsPromises);
-        })
-        // Handle tickets presentation
-        .then(ticketsDetailsArray => {
-            // Flatten the array of ticket details
-            const ticketsDetails = ticketsDetailsArray.flat();
+                // Wait for all ticket details to be fetched
+                return Promise.all(ticketDetailsPromises);
+            })
+            // Handle tickets presentation
+            .then(ticketsDetailsArray => {
+                // Flatten the array of ticket details
+                const ticketsDetails = ticketsDetailsArray.flat();
 
-            // Clear the container before adding new tickets
-            const checkoutContainer = document.getElementById('checkoutContainer');
-            checkoutContainer.innerHTML = ''; // Clear existing tickets
-            
-            // Display the required fields for each ticket
-            ticketsDetails.forEach(ticket => {
-                const { ticket_id, game_date, seat_number, stand, price } = ticket;
-                totalPrice += price;
-                // Render each ticket's details
-                renderTicketDetails(ticket_id, game_date, seat_number, stand, price);
+                // Clear the container before adding new tickets
+                const checkoutContainer = document.getElementById('checkoutContainer');
+                checkoutContainer.innerHTML = ''; // Clear existing tickets
+                
+                // Display the required fields for each ticket
+                ticketsDetails.forEach(ticket => {
+                    const { ticket_id, game_date, seat_number, stand, price } = ticket;
+                    totalPrice += price;
+                    // Render each ticket's details
+                    renderTicketDetails(ticket_id, game_date, seat_number, stand, price);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading checkout:', error);
             });
-        })
-        .catch(error => {
-            console.error('Error loading checkout:', error);
-        });
-}
+    }
 
-// Example function to render ticket details (you should implement this)
-function renderTicketDetails(ticket_id, game_date, seat_number, stand, price) {
-    // Create a div for the ticket details
-    const ticketDetailsDiv = document.createElement('div');
-    ticketDetailsDiv.innerHTML = `
-        <p><b>Game Date</b>: ${game_date}</p>
-        <p><b>Seat Number</b>: ${seat_number}</p>
-        <p><b>Stand</b>: ${stand}</p>
-        <p><b>Price</b>: ${price}$</p>
-        <p><b>Ticket ID</b>: ${ticket_id}</p>
-    `;
-    // Append the div to the container
-    document.getElementById('checkoutContainer').appendChild(ticketDetailsDiv);
-}
-
-
+    // Example function to render ticket details (you should implement this)
+    function renderTicketDetails(ticket_id, game_date, seat_number, stand, price) {
+        // Create a div for the ticket details
+        const ticketDetailsDiv = document.createElement('div');
+        ticketDetailsDiv.innerHTML = `
+            <p><b>Game Date</b>: ${game_date}</p>
+            <p><b>Seat Number</b>: ${seat_number}</p>
+            <p><b>Stand</b>: ${stand}</p>
+            <p><b>Price</b>: ${price}$</p>
+            <p><b>Ticket ID</b>: ${ticket_id}</p>
+        `;
+        // Append the div to the container
+        document.getElementById('checkoutContainer').appendChild(ticketDetailsDiv);
+    }
 
     loadGames();
 });

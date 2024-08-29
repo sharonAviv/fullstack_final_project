@@ -37,28 +37,55 @@
 
         <!-- Manage Products Section -->
         <section id="manage-products">
-            <h2>Manage Products</h2>
+            <h2>Add Product</h2>
             <form id="add-product-form" enctype="multipart/form-data">
                 <input type="text" id="product-title" placeholder="Product Title" required>
-                <textarea id="product-description" placeholder="Product Description" required></textarea>
                 <input type="number" id="price" placeholder="Price" required step="0.01">
-
+                <input type="number" id="amount" placeholder="Quantity" required> <!-- Default value is 0 -->
+                
                 <!-- Drop area for image upload -->
                 <div id="image-drop-area" class="drop-area">
                     <p>Drag and drop images here, or click to select images</p>
-                    <input type="file" id="product-image-file" name="images" accept="image/*" multiple>
+                    <input type="file" id="product-image-file" name="images" accept="image/*" multiple style="display: none;">
+                </div>
+
+                <!-- Input for image URL -->
+                <div>
+                    <input type="text" id="image-url-input" placeholder="Enter image URL">
+                    <button type="button" id="add-image-url-btn">Add Image</button>
                 </div>
 
                 <!-- Preview uploaded images -->
                 <div id="image-preview" class="image-preview"></div>
 
-                <input type="number" id="amount" placeholder="Quantity" required> <!-- Default value is 0 -->
                 <button type="submit">Add Product</button>
             </form>
             <h3>Existing Products</h3>
             <div class="product-scroller">
                 <ul id="product-list">
                     <!-- Dynamically populated product list -->
+                </ul>
+            </div>
+        </section>
+
+        <!-- Add Game Section -->
+        <section id="manage-games">
+            <h2>Add Game</h2>
+            <form id="add-game-form">
+                <input type="text" id="game-title" placeholder="Game Title" required>
+                <input type="date" id="game-date" required>
+                <input type="text" id="team_home" placeholder="Home Team" required>
+                <input type="text" id="team_away" placeholder="Away Team" required>
+                <input type="text" id="stadium-name" placeholder="Stadium Name" required>
+                <select id="status" required>
+                    <option value="scheduled">Scheduled</option>
+                </select>
+                <button type="submit">Add Game</button>
+            </form>
+            <h3>Existing Games</h3>
+            <div class="game-scroller">
+                <ul id="game-list">
+                    <!-- Dynamically populated game list -->
                 </ul>
             </div>
         </section>

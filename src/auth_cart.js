@@ -100,18 +100,24 @@ function clearCartDisplay() {
 }
 
 function checkUserAuthentication() {
+    console.log('checkUserAuthentication function called'); // Initial log to ensure the function is called
+
     fetch('/api/user-data/user-data')
         .then(response => {
-            console.log('Fetch user response:', response);
+            console.log('Fetch user response:', response); // Log the response
+
             if (!response.ok) {
+                console.error('Network response was not ok');
                 throw new Error('Network response was not ok');
             }
-            return response.json();
+
+            return response.json(); // Proceed to parse the JSON if the response is ok
         })
         .then(data => {
             if (!data || !data.user) { // Check if the user object is present and has a username
                 console.log('No user found or user is not authenticated.');
                 displayLoginLink();
+                hideAdminLink();
             } else {
                 console.log('Authenticated user:', data.user.username);
                 displayUserGreeting(data.user.username);
@@ -188,7 +194,9 @@ function displayUserGreeting(username) {
 
                     // Update the cart display to prompt login for adding items
                     displayLoginToAddMessage();
+                    hideAdminLink();
 
+                    
                     authLink.onclick = function() {
                         window.location.href = '/login.html'; // Redirect to login page
                     };
@@ -254,13 +262,22 @@ function displayCartItems(cartItems) {
     const cartFooter = document.querySelector('.cart-footer'); // Select the cart footer to display total price
     cartItemsContainer.innerHTML = ''; // Clear existing cart items
 
+    console.log('Received cartItems:', JSON.stringify(cartItems, null, 2));
+
     if (cartItems && cartItems.length > 0) {
         let totalItems = 0; // Initialize total items counter
         let totalPrice = 0; // Initialize total price
-
+        
         cartItems.forEach(item => {
+            console.log(`Processing item: ${item.name} (ID: ${item.product_id})`);
+            console.log(`Unit price: ${item.price}, Quantity: ${item.quantity}`);
+
             totalItems += item.quantity; // Accumulate the total quantity
-            totalPrice += item.price * item.quantity; // Calculate total price
+            //const itemTotalPrice = item.price * item.quantity; // Calculate the total price for this item
+            //console.log(`Item total price: ${itemTotalPrice}`);
+
+            totalPrice += item.price; // Add to total cart price
+            console.log(`Running total price: ${totalPrice}, Total items: ${totalItems}`);
 
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item';
@@ -273,7 +290,7 @@ function displayCartItems(cartItems) {
                         <span id="quantity-${item.product_id}">${item.quantity}</span>
                         <button class="increase-quantity" data-id="${item.product_id}">+</button>
                     </div>
-                    <div class="item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+                    <div class="item-price">$${(item.price).toFixed(2)}</div> <!-- Update with correct total price -->
                 </div>
             `;
             cartItemsContainer.appendChild(itemElement);
@@ -289,15 +306,18 @@ function displayCartItems(cartItems) {
         });
 
         // Update the cart icon's span with the total number of items
+        console.log(`Final total items: ${totalItems}, Final total price: ${totalPrice}`);
         cartIconSpan.textContent = totalItems;
         cartFooter.innerHTML = `
             <div class="total-price">Total: $${totalPrice.toFixed(2)}</div>
             <button id="checkout" class="checkout-button">Checkout</button>
         `;
     } else {
+        console.log('Cart is empty.');
         displayEmptyCartMessage(); // If no items, display empty cart message
     }
 }
+
 
 function displayErrorFetchingCart() {
     const cartItemsContainer = document.getElementById('cart-items');

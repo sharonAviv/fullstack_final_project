@@ -246,6 +246,29 @@ body {
     color: #0038a8;
 }
 
+/* Container for the search input */
+#product-search {
+    width: 50%;              /* Adjust width to make the search bar prominent but not overwhelming */
+    padding: 12px 20px;      /* Padding for better text visibility and comfort */
+    font-size: 18px;         /* Larger font size for readability */
+    border: 2px solid #ccc;  /* Subtle border for definition */
+    border-radius: 25px;     /* Rounded corners for aesthetics */
+    outline: none;           /* Remove default outline */
+    transition: border-color 0.3s ease; /* Smooth transition for focus effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+#product-search:focus {
+    border-color: #007bff; /* Highlight color when focused */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    #product-search {
+        width: 80%; /* Increase width on smaller screens for better accessibility */
+    }
+}
+
 /* Tooltip styles */
 .tooltip {
     position: absolute;
@@ -308,7 +331,6 @@ body {
 .quantity-container {
     display: inline-block;
     margin-right: 10px;
-    vertical-align: middle;
 }
 
 .quantity-container input[type="number"] {
@@ -1179,6 +1201,7 @@ button[type="submit"]:hover {
     cursor: pointer;
     margin-left: 10px;
     font-size: 14px;
+    margin-bottom: 5px;
 }
 
 #product-list li button:hover {
@@ -1370,4 +1393,62 @@ button[type="submit"]:hover {
 
 .quantity-control button:hover {
     background-color: #003f8a;
+}
+
+
+#add-game-form {
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+/* Input fields styling */
+#add-game-form input,
+#add-game-form select,
+#add-game-form button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Button styling */
+#add-game-form button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#add-game-form button:hover {
+    background-color: #0056b3;
+}
+
+/* List of existing games styling */
+.game-scroller {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#game-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    list-style: none;
+}
+
+#game-list li div {
+    margin-bottom: 10px;
+}
+
+#game-list li button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#game-list li button:hover {
+    background-color: #c82333;
 }

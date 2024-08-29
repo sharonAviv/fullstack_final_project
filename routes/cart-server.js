@@ -23,17 +23,24 @@ router.get('/view', verifyToken, async (req, res) => {
 // Add an item to the cart
 router.post('/add-to-cart', verifyToken, async (req, res) => {
     console.log('/add-to-cart route hit'); // Debugging log
-    const username = req.user.username; // Assuming req.user is set by verifyToken
-    console.log('cart of user :', username); // Debugging log
-    console.log(req.body);
+    
+    // Check if the user is authenticated
+    if (!req.user || !req.user.username) {
+        console.log("User not authenticated, redirecting to login page");
+        return res.status(401); // Redirect to login if not authenticated
+    }
 
-    const { productId , quantity} = req.body; // Ensure productId is correctly extracted from the request body
-    console.log("quantity " + quantity);
+    const username = req.user.username; // Assuming req.user is set by verifyToken
+    console.log('cart of user:', username); // Debugging log
+    console.log('Request body:', req.body); // Log the request body for debugging
+
+    const { productId, quantity } = req.body; // Ensure productId is correctly extracted from the request body
+    console.log(`Received productId: ${productId}, quantity: ${quantity}`);
 
     try {
         await addToCart(username, productId, quantity);
         const cartItems = await getCart(username); // Get updated cart items for the response
-        console.log(cartItems);
+        console.log('Updated cart items:', JSON.stringify(cartItems, null, 2));
         await logActivity(username, 'item-added-to-cart');
         res.status(201).send({ message: 'Item added to cart successfully', cartItems });
     } catch (error) {
@@ -41,6 +48,7 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
         res.status(500).send({ message: 'Error adding item to cart', error: error.message });
     }
 });
+
 
 // Remove an item from the cart
 router.post('/remove', verifyToken, async (req, res) => {
