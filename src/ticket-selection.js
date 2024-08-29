@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedGameId = null;
     let selectedStand = null;
     let seatInfo = null;
-    let ticketIds = null;
+    let ticketIds = [];
     let totalPrice = 0;
 
     // Load games and filter based on selected month
@@ -255,22 +255,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("Fetched tickets for selected stand:", tickets);
                 seatsMap.innerHTML = '';
                 for (let i = 1; i <= 100; i++) {
-                    const seatNumber = `${i}`;
-                    const seatTickets = tickets.filter(ticket => ticket.seat_number.startsWith(seatNumber) && ticket.seat_number.endsWith(selectedStand.charAt(0).toUpperCase()));
+                    const seatNumber = `${i}${selectedStand.charAt(0).toUpperCase()}`;
+                    const ticket = tickets.find(t => t.seat_number === seatNumber);
                     const seatElement = document.createElement('div');
                     seatElement.className = 'seat';
-                    if (seatTickets.length > 0) {
-                        const availableTicket = seatTickets.find(ticket => ticket.status === 'available');
-                        if (availableTicket) {
+                    seatElement.setAttribute('data-seat-number', seatNumber);
+                    if (ticket) {
+                        seatElement.setAttribute('data-ticket-id', ticket.ticket_id);
+                        if (ticket.status === 'available') {
                             seatElement.classList.add('available');
-                            seatElement.setAttribute('data-ticket-id', availableTicket.ticket_id);
-                            seatElement.addEventListener('click', () => selectSeat(availableTicket));
+                            seatElement.addEventListener('click', () => selectSeat(ticket));
                         } else {
                             seatElement.classList.add('unavailable');
                         }
                     } else {
                         seatElement.classList.add('unavailable');
-                    }
+                    }                    
                     seatsMap.appendChild(seatElement);
                 }
             })
