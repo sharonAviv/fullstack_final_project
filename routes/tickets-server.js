@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getTicketsByGameStand, purchaseTickets, getTicketsByGameID, getTicketsByTicketID, getGameById } = require('./persist'); // Adjust the path as necessary
+const { verifyAdmin } = require('./middleware');
 
 // GET tickets for a specific (game and stand) or ticketId
 router.get('/', async (req, res) => {
@@ -50,12 +51,12 @@ router.post('/purchase', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', verifyAdmin, async (req, res) => {
     const { gameId, seatNumber, stand, price } = req.body;
     console.log('Received POST request to add ticket:', req.body);
 
     try {
-        const game = await getGameById(gameId); // You'll need to implement this function
+        const game = await getGameById(gameId); 
         if (!game) {
             return res.status(404).send({ message: 'Game not found' });
         }

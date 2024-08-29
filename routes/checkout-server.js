@@ -17,20 +17,6 @@ router.get('/review', verifyToken, async (req, res) => {
     }
 });
 
-// Route to review ticket-cart items before checkout
-router.get('/review-ticket-cart', verifyToken, async (req, res) => {
-    const username = req.user;
-    try {
-        const cartItems = await getTicketCart(username);
-        if(cartItems.length === 0) {
-            return res.status(400).send({ message: 'Your ticket cart is empty' });
-        }
-        res.json(cartItems);
-    } catch (error) {
-        res.status(500).send({ message: 'Error retrieving cart items' });
-    }
-});
-
 // Route to process the checkout
 router.post('/pay', verifyToken, async (req, res) => {
     const username = req.user;
@@ -41,22 +27,6 @@ router.post('/pay', verifyToken, async (req, res) => {
         }
         // Assume payment is successful
         await saveCart(username, []); // Clear the cart after payment
-        res.status(200).send({ message: 'Payment successful, your order is being processed', redirectUrl: '/thank-you' });
-    } catch (error) {
-        res.status(500).send({ message: 'Error processing your payment' });
-    }
-});
-
-// Route to process the checkout
-router.post('/pay-tickets', verifyToken, async (req, res) => {
-    const username = req.user;
-    try {
-        const cartItems = await getTicketCart(username);
-        if(cartItems.length === 0) {
-            return res.status(400).send({ message: 'Your ticket cart is empty' });
-        }
-        // Assume payment is successful
-        await saveTicketCart(username, []); // Clear the cart after payment
         res.status(200).send({ message: 'Payment successful, your order is being processed', redirectUrl: '/thank-you' });
     } catch (error) {
         res.status(500).send({ message: 'Error processing your payment' });
