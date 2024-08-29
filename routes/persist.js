@@ -15,8 +15,6 @@ async function init() {
     console.log("admin")
     await initGames();
     console.log("games")
-    await initTickets();
-    console.log("tickets")
     await initProducts();
     console.log("products")
 
@@ -169,37 +167,6 @@ async function initGames() {
     await saveGame(game);
   }
   console.log('Games initialized:', games);
-}
-
-// Initialize tickets from a predefined list
-async function initTickets() {
-  // Retrieve the game IDs
-  const games = await getAllGames();
-
-  if (games.length < 2) {
-    console.error('Not enough games found to initialize tickets - Games init error');
-    return;
-  }
-
-  const firstGameId = games[0].game_id;
-  const secondGameId = games[1].game_id;
-
-  // Implement logic to initialize tickets if necessary
-  const tickets = [
-    { seat_number: '1N', game_date: '2024-08-20', stand: 'north', price: '50', status:'available', game_id: firstGameId },
-    { seat_number: '1S', game_date: '2024-08-20', stand: 'south', price: '50', status:'available', game_id: firstGameId },
-    { seat_number: '1E', game_date: '2024-08-20', stand: 'east', price: '30', status:'available', game_id: firstGameId },
-    { seat_number: '1W', game_date: '2024-08-20', stand: 'west', price: '30', status:'available', game_id: firstGameId },
-    { seat_number: '1N', game_date: '2024-09-10', stand: 'north', price: '60', status:'available', game_id: secondGameId },
-    { seat_number: '1S', game_date: '2024-09-10', stand: 'south', price: '60', status:'available', game_id: secondGameId },
-    { seat_number: '1E', game_date: '2024-09-10', stand: 'east', price: '20', status:'available', game_id: secondGameId },
-    { seat_number: '1W', game_date: '2024-09-10', stand: 'west', price: '20', status:'available', game_id: secondGameId },
-  ]
-  console.log('Tickets initialized');
-
-  for (const ticket of tickets) {
-    await saveTicket(ticket);
-  }
 }
 
 async function initProducts() {
@@ -584,7 +551,9 @@ async function addTicketCartItem(userId, ticketId) {
 // Save a game to the database
 async function saveGame(game) {
   return new Promise((resolve, reject) => {
-    const checkQuery = `SELECT * FROM games WHERE title = ? AND game_date = ? AND team_home = ? AND team_away = ? AND stadium_name = ?`;
+    const checkQuery = `
+      SELECT * FROM games WHERE title = ? AND game_date = ? AND team_home = ? AND team_away = ? AND stadium_name = ?
+    `;
     db.get(checkQuery, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name], (err, row) => {
       if (err) {
         reject(err);
@@ -592,18 +561,50 @@ async function saveGame(game) {
         console.log('Game already exists:', row);
         resolve(row);
       } else {
-        const insertQuery = `INSERT INTO games (title, game_date, team_home, team_away, stadium_name, status) VALUES (?, ?, ?, ?, ?, ?)`;
+        const insertQuery = `
+          INSERT INTO games (title, game_date, team_home, team_away, stadium_name, status) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
         db.run(insertQuery, [game.title, game.game_date, game.team_home, game.team_away, game.stadium_name, game.status], function (err) {
           if (err) {
             reject(err);
           } else {
-            resolve({ game_id: this.lastID, ...game });
+            const gameId = this.lastID;
+            // After successfully adding the game, create tickets
+            createTicketsForGame(gameId, game.game_date, game.stadium_name)
+              .then(() => {
+                resolve({ game_id: gameId, ...game });
+              })
+              .catch(ticketErr => {
+                reject(ticketErr);
+              });
           }
         });
       }
     });
   });
 }
+
+async function createTicketsForGame(gameId, gameDate) {
+  const stands = ['north', 'south', 'east', 'west'];
+  for (const stand of stands) {
+    for (let i = 1; i <= 100; i++) {
+      const seatNumber = `${i}${stand.charAt(0).toUpperCase()}`;
+      const price = (Math.random() * (50 - 20) + 20).toFixed(2);
+      const newTicket = {
+        game_id: gameId,
+        game_date: gameDate,
+        seat_number: seatNumber,
+        stand: stand,
+        price: parseFloat(price),
+        status: 'available'
+      };
+      await saveTicket(newTicket);
+    }
+  }
+  console.log(`Tickets created for game ${gameId}`);
+}
+
 
 async function addActivity(activity) {
   return new Promise((resolve, reject) => {
