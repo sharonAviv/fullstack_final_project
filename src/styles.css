@@ -1067,7 +1067,7 @@ body.showCart .container {
     margin: 40px auto; /* Center the admin container */
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
     color: #0038a8;
     margin-bottom: 25px;
     font-size: 24px;

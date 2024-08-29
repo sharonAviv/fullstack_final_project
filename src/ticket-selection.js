@@ -300,6 +300,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json().then(data => ({ status: response.status, data }));
         })
         .then(({ status, data }) => {
+            if (status === 200) {
+                // If the server responds with a 200 indicating the user needs to sign in
+                alert('You need to sign in to add items to your cart. Redirecting to login...');
+                window.location.href = '/login.html';
+                return null; // Return null to prevent further processing
+            }
             if (status === 201) {
                 alert('Ticket added to cart');
                 console.log('Ticket was added to ticket cart with ticket ID:', ticketId);

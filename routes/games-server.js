@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { saveGame, getAllGames } = require('./persist'); // Adjust the path as necessary
+const { verifyAdmin } = require('./middleware');
 
 // POST a new game
-router.post('/', async (req, res) => {
+router.post('/', verifyAdmin, async (req, res) => {
     const { title, date, teamHome, teamAway, stadiumName } = req.body;
     console.log('Received POST request to add game:', req.body);
 
