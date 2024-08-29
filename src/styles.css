@@ -1044,7 +1044,7 @@ body.showCart .container {
     width: 100%;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
     color: #0038a8;
     margin-bottom: 20px;
     text-align: center; /* Center the text */
@@ -1338,4 +1338,21 @@ button[type="submit"]:hover {
 
 .back-to-shop-btn:hover {
     background-color: #0056b3;
+}
+
+.readme p{
+    text-align: left;
+}
+
+.readme h3, h4{
+    text-align: left;
+}
+
+.readme ul {
+    text-align: left;
+    padding-left: 20px;
+}
+
+.readme li {
+    text-align: left;
 }
