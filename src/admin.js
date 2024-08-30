@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagePreviewContainer = document.getElementById('image-preview');
     const imageUrlInput = document.getElementById('image-url-input');
 
-
     let uploadedImages = [];
 
     // Fetch and display user activities
@@ -177,26 +176,68 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle adding a new product with image upload
     addProductForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-
+    
         const formData = new FormData();
         formData.append('name', document.getElementById('product-title').value);
+        formData.append('description', document.getElementById('description').value);
         formData.append('price', parseFloat(document.getElementById('price').value));
         formData.append('stock', parseInt(document.getElementById('amount').value) || 0);
-
-        uploadedImages.forEach((file) => {
-            formData.append('images', file);
+    
+        let valid = true;
+        let imageCount = 0;
+        let imageUrlCount = 0;
+    
+        uploadedImages.forEach((image) => {
+            if (typeof image === 'string') {
+                if (isValidUrl(image)) { // Check if the string is a valid URL
+                    formData.append('imageUrls', image);
+                    imageUrlCount++;
+                    console.log(`Added URL: ${image} (Type: ${typeof image})`);
+                } else {
+                    alert(`Invalid URL: ${image}`);
+                    valid = false;
+                }
+            } else if (image instanceof File && image.type.startsWith('image/')) {
+                if (image.size <= 2 * 1024 * 1024) { // Check file size (2 MB limit)
+                    formData.append('images', image);
+                    imageCount++;
+                    console.log(`Added file: ${image.name} (Type: File, Size: ${image.size} bytes, MIME Type: ${image.type})`);
+                } else {
+                    alert(`Image ${image.name} is too large (limit: 2MB).`);
+                    valid = false;
+                }
+            } else {
+                alert(`File ${image.name || 'Unknown'} is not a valid image.`);
+                valid = false;
+            }
         });
-
+    
+        console.log(`Total images added: ${imageCount}`);
+        console.log(`Total image URLs added: ${imageUrlCount}`);
+    
+        if (!valid) {
+            return; // Stop form submission if there are invalid files
+        }
+    
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                console.log(`${key}: [File] Name: ${value.name}, Size: ${value.size} bytes, Type: ${value.type}`);
+            } else {
+                console.log(`${key}: ${value} (Type: ${typeof value})`);
+            }
+        }
+    
         try {
             const response = await fetch('/api/admin/add-product', {
                 method: 'POST',
                 body: formData
             });
-
+    
             if (response.ok) {
                 alert('Product added successfully!');
                 addProductForm.reset();
                 uploadedImages = [];
+                imagePreviewContainer.innerHTML = ''; // Clear the preview
                 fetchProducts();
             } else {
                 const errorData = await response.json();
@@ -207,6 +248,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function isValidUrl(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
     // Image upload handling
     const imageDropArea = document.getElementById('image-drop-area');
     const imageInput = document.getElementById('product-image-file');
@@ -216,30 +266,25 @@ document.addEventListener('DOMContentLoaded', () => {
         imageInput.click(); // Simulate click on the hidden file input
     });
 
-    // Handle file dragging over the drop area
     imageDropArea.addEventListener('dragover', (event) => {
         event.preventDefault();
         imageDropArea.classList.add('dragover');
     });
 
-    // Handle drag leave
     imageDropArea.addEventListener('dragleave', () => {
         imageDropArea.classList.remove('dragover');
     });
 
-    // Handle dropping files into the drop area
     imageDropArea.addEventListener('drop', (event) => {
         event.preventDefault();
         imageDropArea.classList.remove('dragover');
         handleFiles(event.dataTransfer.files);
     });
 
-    // Handle file selection via file dialog
     imageInput.addEventListener('change', (event) => {
         handleFiles(event.target.files);
     });
 
-    // Handle adding an image via URL
     addImageUrlBtn.addEventListener('click', () => {
         const imageUrl = imageUrlInput.value.trim();
         if (imageUrl) {
@@ -256,8 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const reader = new FileReader();
             reader.onload = (event) => {
-                const imageUrl = event.target.result;
-                addImageToPreview(imageUrl);
+                addImageToPreview(event.target.result);
             };
             reader.readAsDataURL(file);
         }
@@ -265,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to handle images added via URL
     function addImageFromUrl(url) {
-        uploadedImages.push(url); // Push the URL to the uploadedImages array
+        uploadedImages.push(url);
         addImageToPreview(url);
     }
 
@@ -282,6 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imageContainer.appendChild(img);
         imagePreviewContainer.appendChild(imageContainer);
     }
+
     const loadGames = async () => {
         try {
             const response = await fetch('/api/games');
@@ -304,12 +349,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p><strong>Stadium:</strong> ${game.stadium_name}</p>
                     <p><strong>Status:</strong> ${game.status}</p>
                 </div>
-                <button data-id="${game.id}" class="remove-game-btn">Remove Game</button>
+                <button data-id="${game.id}" class="remove-product">Remove Game</button>
             </li>
         `).join('');
 
         // Handle game removal
-        gameList.querySelectorAll('.remove-game-btn').forEach(button => {
+        gameList.querySelectorAll('.remove-product').forEach(button => {
             button.addEventListener('click', async (event) => {
                 const gameId = button.getAttribute('data-id');
                 if (confirm('Are you sure you want to remove this game?')) {

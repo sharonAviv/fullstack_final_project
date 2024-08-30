@@ -1071,6 +1071,7 @@ h1, h2, h3, h4 {
     color: #0038a8;
     margin-bottom: 25px;
     font-size: 24px;
+    text-align: center;
 }
 
 input[type="text"],
@@ -1432,23 +1433,53 @@ button[type="submit"]:hover {
 }
 
 #game-list li {
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    list-style: none;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+#game-list li:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+
 #game-list li div {
-    margin-bottom: 10px;
+    flex-grow: 1;
+    text-align: left;
 }
 
 #game-list li button {
-    background-color: #dc3545;
+    background-color: #0056b3;
     color: white;
+    padding: 10px 16px;
     border: none;
-    padding: 5px 10px;
+    border-radius: 6px;
     cursor: pointer;
+    margin-left: 10px;
+    font-size: 14px;
+    margin-bottom: 5px;
 }
 
-#game-list li button:hover {
-    background-color: #c82333;
+#add-image-url-btn {
+    background-color: #0056b3;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 5px; /* Adjust margin as needed */
+}
+
+/* Optional hover effect */
+#add-image-url-btn:hover {
+    background-color: #003f8a; /* Darker blue on hover */
 }

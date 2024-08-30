@@ -33,16 +33,28 @@ router.get('/activities', verifyToken, verifyAdmin, async (req, res) => {
 
 // Route to handle file uploads and add a product
 router.post('/add-product', verifyToken, verifyAdmin, upload.array('images'), async (req, res) => {
-    console.log(req.body); // Debugging
-    console.log(req.files); // Debugging
+    console.log('Request body:', req.body); // Debugging
+    console.log('Uploaded files:', req.files); // Debugging
 
-    const { name, description, price, stock } = req.body;
+    const { name, description, price, stock, imageUrls = [] } = req.body;
+
+    // Handle image URLs from the request body
+    let urlsArray = Array.isArray(imageUrls) ? imageUrls : [imageUrls]; // Ensure it's an array
+    console.log('Image URLs:', urlsArray);
+
+    // Handle uploaded image files
     const images = req.files.map(file => `/icons/${file.filename}`);
+    console.log('Images from files:', images);
+
+    // Combine URLs and uploaded images into a single array
+    const combinedImages = [...images, ...urlsArray];
+    console.log('Combined images array:', combinedImages);
 
     try {
-        await addProduct({ name, description, price, images, stock });
+        await addProduct({ name, description, price, images: combinedImages, stock });
         res.status(201).send({ message: 'Product added successfully' });
     } catch (error) {
+        console.error('Error adding product:', error);
         res.status(500).send({ message: 'Error adding product', error: error.message });
     }
 });
