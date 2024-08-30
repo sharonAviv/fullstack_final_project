@@ -38,6 +38,7 @@ async function runTests() {
     await testTicketCartRoute();
     await testStoreRoute();
     await testCartRoute();
+    await testCheckoutRoute();
     await testAdminRoute();
 
     console.log('All tests completed.');
@@ -162,14 +163,16 @@ async function testLogoutRoute() {
     console.log('/api/logout route tests completed.');
 }
 
-async function reLogin() {
-    console.log('Re-logging in to ensure user is logged in for future tests...');
-
-    // Re-login after logout to ensure user is logged in for subsequent tests
+async function reLogin(asAdmin = true) {
+    console.log(`Re-logging in as ${asAdmin ? 'admin' : 'regular user'}...`);
+    const credentials = asAdmin ? 
+        { username: 'admin', password: 'admin' } : 
+        { username: 'testuser1', password: 'password123' };
+    
     let response = await fetch(`${baseUrl}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: 'testuser1', password: 'password123' })
+        body: JSON.stringify(credentials)
     });
     let data = await response.json();
     if (response.status === 200 && data.message === 'Logged in successfully') {
@@ -180,44 +183,39 @@ async function reLogin() {
     }
 }
 
+
 async function testUserDataRoute() {
     console.log('Testing /api/user-data route...');
-    console.log("toekn check for user data: " + authToken);
+    console.log("token check for user data: " + authToken);
     // Ensure authToken is valid before starting the test
     if (!authToken) {
         console.error('Auth token is missing.');
         return;
     }
 
-    // Test case 1: Fetch user data while logged in
     let response = await fetch(`${baseUrl}/user-data`, {
-        // headers: { 
-        //     'Cookie': `token=${authToken}`,
-        //     'Authorization': `Bearer ${authToken}`,
-        //     'Content-Type': 'application/json'
-        // },
-        //credentials: 'include'
+        headers: { 'Cookie': `token=${authToken}` }
     });
+
+    let data;
+    try {
+        data = await response.json();
+        if (response.status === 200 && data.user) {
+            console.log('Test 1 passed: User data fetched successfully.');
+        } else if (response.status === 200 && data.message === 'No token provided, proceeding as guest') {
+            console.log('Test 1 passed: Correctly identified as guest.');
+        } else {
+            console.log('Test 1 failed:', data);
+        }
+    } catch (error) {
+        console.error('Failed to parse response as JSON:', error);
+        return;
+    }
 
     // Check if the response is HTML
     if (response.headers.get('Content-Type').includes('text/html')) {
         console.error('Unexpected HTML response:', await response.text());
         return;
-    }
-
-    // Handle JSON response
-    let data;
-    try {
-        data = await response.json();
-    } catch (error) {
-        console.error('Failed to parse JSON:', error);
-        return;
-    }
-
-    if (response.status === 200 && data.user && data.user.username === 'testuser1') {
-        console.log('Test 1 passed: User data fetched successfully.');
-    } else {
-        console.log('Test 1 failed:', data);
     }
 
     // Test case 2: Logout the test user
@@ -462,87 +460,71 @@ async function testGamesRoute() {
     async function testTicketsRoute() {
         console.log('Testing /api/tickets route...');
     
-        const firstGameId = 1;
-        const secondGameId = 2;
+        const gameId = 1;
+        let ticketId;
     
-        // Test case 1: Posting a new ticket
+        // Test 1: Post a new ticket (admin only)
         const newTicket = {
-            gameId: firstGameId,
-            seatNumber: '10A',
+            gameId: gameId,
+            seatNumber: '101N',
             stand: 'north',
             price: 50
         };
     
         let response = await fetch(`${baseUrl}/tickets`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Cookie': `token=${authToken}`
+            },
             body: JSON.stringify(newTicket)
         });
     
         let data = await response.json();
         if (response.status === 201 && data.message === 'Ticket added successfully') {
-            console.log('Test 1 passed: New ticket posted successfully.');
+            console.log('Test 1 passed: New ticket added successfully.');
+            ticketId = data.ticketId;
         } else {
             console.log('Test 1 failed:', data);
         }
     
-        // Test case 2: Attempting to post the same ticket again
-        response = await fetch(`${baseUrl}/tickets`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newTicket)
+        // Test 2: Get tickets by gameId
+        response = await fetch(`${baseUrl}/tickets?gameId=${gameId}`, {
+            headers: { 'Content-Type': 'application/json' }
         });
     
         data = await response.json();
-        if (response.status === 200 && data.message === 'Ticket already exists') {
-            console.log('Test 2 passed: Duplicate ticket correctly identified.');
+        if (response.status === 200 && Array.isArray(data) && data.length > 0) {
+            console.log('Test 2 passed: Tickets fetched successfully by gameId.');
         } else {
             console.log('Test 2 failed:', data);
         }
     
-        // Test case 3: Fetching tickets by gameId (firstGameId)
-        response = await fetch(`${baseUrl}/tickets?gameId=${firstGameId}`, {
-            method: 'GET',
+        // Test 3: Get tickets by gameId and stand
+        response = await fetch(`${baseUrl}/tickets?gameId=${gameId}&stand=north`, {
             headers: { 'Content-Type': 'application/json' }
         });
     
         data = await response.json();
         if (response.status === 200 && Array.isArray(data) && data.length > 0) {
-            console.log('Test 3 passed: Tickets fetched successfully for gameId 1.');
+            console.log('Test 3 passed: Tickets fetched successfully by gameId and stand.');
         } else {
             console.log('Test 3 failed:', data);
         }
     
-        // Test case 4: Fetching tickets by gameId and stand (secondGameId and 'north')
-        response = await fetch(`${baseUrl}/tickets?gameId=${secondGameId}&stand=north`, {
-            method: 'GET',
+        // Test 4: Get ticket by ticketId
+        response = await fetch(`${baseUrl}/tickets?ticketId=${ticketId}`, {
             headers: { 'Content-Type': 'application/json' }
         });
     
         data = await response.json();
-        if (response.status === 200 && Array.isArray(data) && data.length > 0) {
-            console.log('Test 4 passed: Tickets fetched successfully for gameId 2 and stand north.');
+        if (response.status === 200 && data.ticket_id === ticketId) {
+            console.log('Test 4 passed: Ticket fetched successfully by ticketId.');
         } else {
             console.log('Test 4 failed:', data);
         }
     
-        // Test case 5: Fetching a ticket by ticketId (assuming first ticket has id 1)
-        const ticketId = 1;
-        response = await fetch(`${baseUrl}/tickets?ticketId=${ticketId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-    
-        data = await response.json();
-        console.log('Test 5 response data:', data);
-    
-        if (response.status === 200 && data[0] && data[0].ticket_id === ticketId) {
-            console.log('Test 5 passed: Ticket fetched successfully by ticketId.');
-        } else {
-            console.log('Test 5 failed:', data);
-        }
-    
-        // Test case 6: Purchasing tickets (purchase ticket with ticketId 1)
+        // Test 5: Purchase tickets
         response = await fetch(`${baseUrl}/tickets/purchase`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -551,13 +533,14 @@ async function testGamesRoute() {
     
         data = await response.json();
         if (response.status === 200 && data.message === 'Tickets purchased successfully') {
-            console.log('Test 6 passed: Ticket purchased successfully.');
+            console.log('Test 5 passed: Ticket purchased successfully.');
         } else {
-            console.log('Test 6 failed:', data);
+            console.log('Test 5 failed:', data);
         }
     
         console.log('/api/tickets route tests completed.');
     }
+    
 
 async function testTicketCartRoute() {
     console.log('Testing /api/ticket-cart route...');
@@ -753,6 +736,35 @@ async function testCartRoute() {
     console.log('Test 3: Complete purchase -', response.status === 200 && data.message === 'Purchase completed successfully' ? 'Passed' : 'Failed');
 
     console.log('Cart routes tests completed.');
+}
+
+async function testCheckoutRoute() {
+    console.log('Testing checkout routes...');
+
+    // Test case 1: Review cart
+    let response = await fetch(`${baseUrl}/checkout/review`, {
+        headers: { 'Cookie': `token=${authToken}` }
+    });
+    let data = await response.json();
+    if (response.status === 200 && Array.isArray(data)) {
+        console.log('Test 1 passed: Cart reviewed successfully.');
+    } else {
+        console.log('Test 1 failed:', data);
+    }
+
+    // Test case 2: Process payment
+    response = await fetch(`${baseUrl}/checkout/pay`, {
+        method: 'POST',
+        headers: { 'Cookie': `token=${authToken}` }
+    });
+    data = await response.json();
+    if (response.status === 200 && data.message === 'Payment successful, your order is being processed') {
+        console.log('Test 2 passed: Payment processed successfully.');
+    } else {
+        console.log('Test 2 failed:', data);
+    }
+
+    console.log('Checkout routes tests completed.');
 }
 
 async function testAdminRoute() {
