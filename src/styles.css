@@ -1467,19 +1467,26 @@ button[type="submit"]:hover {
     margin-bottom: 5px;
 }
 
-#add-image-url-btn {
-    background-color: #0056b3;
-    color: white;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 5px; /* Adjust margin as needed */
+#game-list li button:hover {
+    background-color: #c82333;
 }
 
-/* Optional hover effect */
-#add-image-url-btn:hover {
-    background-color: #003f8a; /* Darker blue on hover */
+.readme p{
+    text-align: left;
+}
+
+.readme h3, h4{
+    text-align: left;
+}
+
+.readme h3{
+    font-size: 20px;
+}
+
+.readme h4{
+    font-size: 18px;
+}
+
+.readme ul, li{
+    text-align: left;
 }

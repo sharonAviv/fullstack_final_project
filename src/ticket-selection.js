@@ -279,15 +279,17 @@ document.addEventListener('DOMContentLoaded', function() {
         seatInfo = document.createElement('div');
         seatInfo.className = 'seat-info';
         seatInfo.innerHTML = `
+            <button class="close-btn" style="position: absolute; top: -13px; right: -45px; background: none; border: none; font-size: 1.2em; cursor: pointer; color: black;">x</button>            
             <p>Seat: ${seat.seat_number}</p>
             <p>Price: $${seat.price}</p>
             <button>Add to Cart</button>
         `;
-        seatInfo.querySelector('button').addEventListener('click', () => addToCart(seat.ticket_id));
+        seatInfo.querySelector('button:not(.close-btn)').addEventListener('click', () => addToCart(seat.ticket_id));
+        seatInfo.querySelector('.close-btn').addEventListener('click', () => seatInfo.style.display = 'none');
         seatsMap.appendChild(seatInfo);
         seatInfo.style.display = 'block';
     }
-
+    
     function addToCart(ticketId) {
         fetch('/api/ticket-cart/add-to-cart', {
             method: 'POST',
