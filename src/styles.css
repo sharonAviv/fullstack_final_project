@@ -248,15 +248,20 @@ body {
 
 /* Container for the search input */
 #product-search {
-    width: 50%;              /* Adjust width to make the search bar prominent but not overwhelming */
-    padding: 12px 20px;      /* Padding for better text visibility and comfort */
-    font-size: 18px;         /* Larger font size for readability */
-    border: 2px solid #ccc;  /* Subtle border for definition */
-    border-radius: 25px;     /* Rounded corners for aesthetics */
-    outline: none;           /* Remove default outline */
-    transition: border-color 0.3s ease; /* Smooth transition for focus effect */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-}
+    position: absolute;
+    left: 50%;
+    top: 60px; /* Adjust this to position vertically as needed */
+    transform: translateX(-50%);
+    width: 16.5%; /* Adjust width as needed */
+    padding: 12px 20px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
 
 #product-search:focus {
     border-color: #007bff; /* Highlight color when focused */
@@ -1031,6 +1036,15 @@ body.showCart .container {
     display: flex;
     align-items: center;
     font-size: 14px;
+    position: absolute;
+}
+
+.item-quantity-checkout {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    position: absolute;
+    left: 48%;
 }
 
 .item-quantity button {

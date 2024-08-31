@@ -114,9 +114,9 @@ router.post('/complete-purchase', verifyToken, async (req, res) => {
             if (newStock < 0) {
                 return res.status(400).send({ message: `Insufficient stock for product ${product.name}.` });
             }
-
+            console.log("newStock: " + newStock);
             // Update the product's stock in the database
-            await updateProduct(productId, { stock: newStock });
+            await updateProduct(productId, newStock );
         }
 
         // Log the purchase activity

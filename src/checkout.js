@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                     itemElement.innerHTML = `
                         <span class="item-name">${item.name}</span>
-                        <span class="item-quantity">Quantity: ${item.quantity}</span>
+                        <span class="item-quantity-checkout">Quantity: ${item.quantity}</span>
                         <span class="item-price">$${(item.price * item.quantity).toFixed(2)}</span>
                     `;
 
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Handle form submission
     document.getElementById('checkout-form').addEventListener('submit', async function (event) {
         event.preventDefault();
-
+    
         try {
             // Simulate order completion and clearing the cart on the server
             const response = await fetch('/api/cart/complete-purchase', {
@@ -71,14 +71,24 @@ document.addEventListener('DOMContentLoaded', async function () {
                     'Content-Type': 'application/json'
                 }
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to complete purchase.');
+    
+            // Parse the JSON response from the server
+            const data = await response.json();
+    
+            if (response.status === 400) {
+                alert(`Error: ${data.message}`);
+                window.location.href = 'shop.html';
+                return;
+            } else if (response.status === 500) {
+                alert(`Server error: ${data.message || 'There was a problem completing your purchase. Please try again later.'}`);
+                return;
+            } else if (!response.ok) {
+                throw new Error('Unexpected error during purchase.');
             }
-
+    
             // Clear cart data locally after purchase
             localStorage.removeItem('cartItems');
-
+    
             // Redirect to the thank you screen
             window.location.href = 'confirmation.html';
         } catch (error) {

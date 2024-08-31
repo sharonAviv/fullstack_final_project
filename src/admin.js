@@ -69,6 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/admin/products');
             if (!response.ok) throw new Error('Failed to fetch products');
             const products = await response.json();
+            products.forEach((product, index) => {
+                console.log(`Product ${index + 1}:`);
+                Object.keys(product).forEach(key => {
+                    console.log(`${key}: ${product[key]}`);
+                });
+                console.log('-------------------------');
+           });
+            
             displayProducts(products);
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -77,6 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Display products in the list
     function displayProducts(products) {
+        products.forEach(product => {
+            console.log(`Product Name: ${product.name}`);
+            console.log('Stock:', product.stock);  // Log the stock object to inspect its structure
+        });
+    
         productList.innerHTML = products.map(product => `
             <li>
                 <div>
