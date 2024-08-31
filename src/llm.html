@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Israel's Soccer Team's Store</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="auth_cart.js"></script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-left">
+            <img src="../icons/flag.png" alt="Israeli Flag" class="flag-icon">
+            <span>Israel's Soccer Team's Store</span>
+        </div>
+        <div class="header-right">
+            <span id="user-greeting" class="user-greeting"></span>
+            <a href="login.html" class="icon login-icon" id="auth-link"></a>
+            <div class="icon cart-icon" id="cart-icon">
+                <span>0</span>
+            </div>
+            <div class="icon menu-icon" id="menu-icon"></div>
+        </div>
+    </header>
+
+    <nav id="navigation-menu" class="navigation-menu panel">
+        <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="#" class="cart-link">My Cart <span class="cart-symbol"></span></a></li>
+            <li><a href="shop.html">Store</a></li>
+            <li><a href="tickets.html">Tickets</a></li>
+            <li><a href="news.html">News</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+            <li><a href="admin.html">Admin</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sliding Cart Window -->
+    <div id="cart" class="cartTab panel">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+        </div>
+        <button id="clear-cart" class="clear-cart">Clear cart</button>
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be dynamically loaded here -->
+        </div>
+        <div class="cart-footer">
+            <button id="close-cart" class="close-cart">&times;</button>
+            <button id="checkout" class="checkout-button">Checkout</button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    <div class="form-container selection-step readme" style="width: 1000px;">
+        <h2>LLM overview</h2>
+        <div class="news-scroller readme">
+            <h3>Specify all the code that LLM generated for you</h3>
+            <p>All of our code was written with LLM, save for /readme.html and /llm.html.<br>
+                The working process was as follows:
+                <ul>
+                    <li>Writing a prompt for a needed code</li>
+                    <li>Implement the code recieved by the LLM (GPT and\or claude)</li>
+                    <li>First manual check</li>
+                    <ul>
+                        <li>The code works? -> Next task</li>
+                        <li>The code doesn't work? -> Add a prompt to the LLM describing the problem</li>
+                        <ul>
+                            <li>If after a few tries the LLM could not solve - solve manually</li>
+                        </ul>
+                    </ul>
+                </ul>
+            </p>
+            <h3>LLM usage - Partial example (Claude 3.5)</h3>
+            <p>This is an example of the working process, with the two starting prompts as part of the development of /tests/test.js
+                <ul>
+                    <li>Prompt: suggest a test in test.js that tests all of the routes in cart-server.js in a logical order.</li>
+                    <li>Answer: Claude 3.5 Sonnet<br>
+                        Certainly! I can suggest a comprehensive test function that covers all the routes in cart-server.js in a logical order. Here's a new test function you can add to the test.js file:<br>
+                        async function testCartRoutes() {<br>
+                            console.log('Testing cart routes...');<br>
+                            <br>
+                            // Ensure the user is logged in<br>
+                            await reLogin();<br>
+                            <br>
+                            // Test 1: View an empty cart<br>
+                            let response = await fetch(`${baseUrl}/cart/view`, {<br>
+                                method: 'GET',<br>
+                                headers: { 'Cookie': `token=${authToken}` }<br>
+                            });<br>
+                            let data = await response.json();<br>
+                            console.log('Test 1: View empty cart -', response.status === 200 && data.length === 0 ? 'Passed' : 'Failed');<br>
+                            <br>
+                            // Test 2: Add an item to the cart<br>
+                            response = await fetch(`${baseUrl}/cart/add-to-cart`, {<br>
+                                method: 'POST',<br>
+                                headers: { <br>
+                                    'Content-Type': 'application/json',<br>
+                                    'Cookie': `token=${authToken}` <br>
+                                },<br>
+                                body: JSON.stringify({ productId: 1 })<br>
+                            });<br>
+                            data = await response.json();<br>
+                            console.log('Test 2: Add item to cart -', response.status === 201 && data.cartItems.length > 0 ? 'Passed' : 'Failed');<br>
+                            <br>
+                            // Test 3: View the cart with the added item<br>
+                            response = await fetch(`${baseUrl}/cart/view`, {<br>
+                                method: 'GET',<br>
+                                headers: { 'Cookie': `token=${authToken}` }<br>
+                            });<br>
+                            data = await response.json();<br>
+                            console.log('Test 3: View cart with item -', response.status === 200 && data.length > 0 ? 'Passed' : 'Failed');<br>
+                            <br>
+                            // Test 4: Remove an item from the cart<br>
+                            response = await fetch(`${baseUrl}/cart/remove`, {<br>
+                                method: 'POST',<br>
+                                headers: { <br>
+                                    'Content-Type': 'application/json',<br>
+                                    'Cookie': `token=${authToken}` <br>
+                                },<br>
+                                body: JSON.stringify({ productId: 1 })<br>
+                            });<br>
+                            data = await response.json();<br>
+                            console.log('Test 4: Remove item from cart -', response.status === 200 && data.cartItems.length === 0 ? 'Passed' : 'Failed');<br>
+                            <br>
+                            // Test 5: Add multiple items to the cart<br>
+                            await fetch(`${baseUrl}/cart/add-to-cart`, {<br>
+                                method: 'POST',<br>
+                                headers: { <br>
+                                    'Content-Type': 'application/json',<br>
+                                    'Cookie': `token=${authToken}` <br>
+                                },<br>
+                                body: JSON.stringify({ productId: 1 })<br>
+                            });<br>
+                            await fetch(`${baseUrl}/cart/add-to-cart`, {<br>
+                                method: 'POST',<br>
+                                headers: { <br>
+                                    'Content-Type': 'application/json',<br>
+                                    'Cookie': `token=${authToken}` <br>
+                                },<br>
+                                body: JSON.stringify({ productId: 2 })<br>
+                            });<br>
+                            <br>
+                            // Test 6: Complete purchase<br>
+                            response = await fetch(`${baseUrl}/cart/complete-purchase`, {<br>
+                                method: 'POST',<br>
+                                headers: { 'Cookie': `token=${authToken}` }<br>
+                            });<br>
+                            data = await response.json();<br>
+                            console.log('Test 6: Complete purchase -', response.status === 200 && data.message === 'Purchase completed successfully' ? 'Passed' : 'Failed');<br>
+                            <br>
+                            // Test 7: View empty cart after purchase<br>
+                            response = await fetch(`${baseUrl}/cart/view`, {<br>
+                                method: 'GET',<br>
+                                headers: { 'Cookie': `token=${authToken}` }<br>
+                            });<br>
+                            data = await response.json();<br>
+                            console.log('Test 7: View empty cart after purchase -', response.status === 200 && data.length === 0 ? 'Passed' : 'Failed');<br>
+                            <br>
+                            console.log('Cart routes tests completed.');<br>
+                        }<br>
+                        <br>
+                        This test function covers all the routes in cart-server.js in a logical order:<br>
+                        <br>
+                        View an empty cart<br>
+                        Add an item to the cart<br>
+                        View the cart with the added item<br>
+                        Remove an item from the cart<br>
+                        Add multiple items to the cart<br>
+                        Complete a purchase<br>
+                        View the empty cart after purchase<br>
+                        To use this test function, you should add it to your test.js file and call it within the runTests() function, like this:<br>
+                        <br>
+                        async function runTests() {<br>
+                            // ... existing tests ...<br>
+                            await testCartRoutes();<br>
+                            // ... other tests ...<br>
+                        }<br>
+                        This comprehensive test will ensure that all cart-related functionality is working as expected.<br></li>
+                        <li>Prompt: it does not test the /removeAll route, please add it </li>
+                        <li>You're absolutely right. Let's add a test for the /removeAll route to make the test suite even more comprehensive. Here's an updated version of the testCartRoutes function that includes testing the /removeAll route:<br>
+                            <br>
+                            async function testCartRoutes() {<br>
+                                console.log('Testing cart routes...');<br>
+                                <br>
+                                // Ensure the user is logged in<br>
+                                await reLogin();<br>
+                                <br>
+                                // ... (previous tests remain the same)<br>
+                                <br>
+                                // Test 8: Add multiple items to the cart again<br>
+                                await fetch(`${baseUrl}/cart/add-to-cart`, {<br>
+                                    method: 'POST',<br>
+                                    headers: { <br>
+                                        'Content-Type': 'application/json',<br>
+                                        'Cookie': `token=${authToken}` <br>
+                                    },<br>
+                                    body: JSON.stringify({ productId: 1 })<br>
+                                });<br>
+                                await fetch(`${baseUrl}/cart/add-to-cart`, {<br>
+                                    method: 'POST',<br>
+                                    headers: { <br>
+                                        'Content-Type': 'application/json',<br>
+                                        'Cookie': `token=${authToken}` <br>
+                                    },<br>
+                                    body: JSON.stringify({ productId: 2 })<br>
+                                });<br>
+                                <br>
+                                // Test 9: Remove all items from the cart<br>
+                                response = await fetch(`${baseUrl}/cart/removeAll`, {<br>
+                                    method: 'POST',<br>
+                                    headers: { 'Cookie': `token=${authToken}` }<br>
+                                });<br>
+                                data = await response.json();<br>
+                                console.log('Test 9: Remove all items from cart -', response.status === 200 && data.cartItems.length === 0 ? 'Passed' : 'Failed');<br>
+                                <br>
+                                // Test 10: View empty cart after removing all items<br>
+                                response = await fetch(`${baseUrl}/cart/view`, {<br>
+                                    method: 'GET',<br>
+                                    headers: { 'Cookie': `token=${authToken}` }<br>
+                                });<br>
+                                data = await response.json();<br>
+                                console.log('Test 10: View empty cart after removing all items -', response.status === 200 && data.length === 0 ? 'Passed' : 'Failed');<br>
+                                <br>
+                                console.log('Cart routes tests completed.');<br>
+                            }<br>
+                            <br>
+                            This updated version adds two new tests:<br>
+                            <br>
+                            Remove all items from the cart using the /removeAll route<br>
+                            View the cart to confirm it's empty after removing all items<br>
+                            These additional tests ensure that the /removeAll route is functioning correctly. The test suite now covers all routes in cart-server.js, providing a thorough check of the cart functionality.</li>
+                </ul>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

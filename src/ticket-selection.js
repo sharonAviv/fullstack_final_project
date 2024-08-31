@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p><b>Stand</b>: ${stand}</p>
             <p><b>Price</b>: ${price}$</p>
             <p><b>Ticket ID</b>: ${ticket_id}</p>
-            <button class="clear-cart" data-ticket-id="${ticket_id}">Remove ticket</button>
+            <button class="clear-cart" data-ticket-id="${ticket_id}" style="background-color: #c0392b; transition: background-color 0.3s ease; width: 50%;">Remove ticket</button>
         `;
         document.getElementById('checkoutContainer').appendChild(ticketDetailsDiv);
     
@@ -398,7 +398,12 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({ ticketId: ticketId })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.message === 'Item removed successfully') {
                 const ticketElement = document.querySelector(`.ticket-details[data-ticket-id="${ticketId}"]`);
@@ -409,8 +414,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Failed to remove ticket from cart');
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove ticket from cart. Please try again.');
+        });
     }
+    
+    
     
      
 
