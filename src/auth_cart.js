@@ -9,8 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartContainer = document.getElementById('cart');
     const navigationMenu = document.getElementById('navigation-menu');
     const overlay = document.getElementById('overlay');
-    const checkoutButton = document.getElementById('checkout');
-    const adminLink = document.querySelector('nav a[href="admin.html"]');
 
     // Check if the user is logged in
     checkUserAuthentication();
@@ -60,9 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.classList.remove('active');
     });
 
-    checkoutButton.addEventListener('click', function () {
-        window.location.href = 'checkout.html';
-    });
+
 });
 
 function cartClear() {
@@ -116,11 +112,14 @@ function checkUserAuthentication() {
         .then(data => {
             if (!data || !data.user) { // Check if the user object is present and has a username
                 console.log('No user found or user is not authenticated.');
+                displayLoginToAddMessage();
                 displayLoginLink();
+                hideNewsAndContact();
                 hideAdminLink();
             } else {
                 console.log('Authenticated user:', data.user.username);
                 displayUserGreeting(data.user.username);
+                displayNewsAndContact();
 
                 // Check if the user is an admin
                 if (data.user.isAdmin) {
@@ -149,6 +148,32 @@ function hideAdminLink() {
     const adminLink = document.querySelector('nav a[href="admin.html"]');
     if (adminLink) {
         adminLink.style.display = 'none'; // Hide the admin link
+    }
+}
+
+function hideNewsAndContact() {
+    const newsLink = document.querySelector('nav a[href="news.html"]');
+    const contactLink = document.querySelector('nav a[href="contact.html"]');
+
+    if (newsLink) {
+        newsLink.style.display = 'none'; // Hide the news link
+    }
+
+    if (contactLink) {
+        contactLink.style.display = 'none'; // Hide the contact link
+    }
+}
+
+function displayNewsAndContact() {
+    const newsLink = document.querySelector('nav a[href="news.html"]');
+    const contactLink = document.querySelector('nav a[href="contact.html"]');
+
+    if (newsLink) {
+        newsLink.style.display = 'block'; // Show the news link
+    }
+
+    if (contactLink) {
+        contactLink.style.display = 'block'; // Show the contact link
     }
 }
 
@@ -312,6 +337,12 @@ function displayCartItems(cartItems) {
             <div class="total-price">Total: $${totalPrice.toFixed(2)}</div>
             <button id="checkout" class="checkout-button">Checkout</button>
         `;
+        const checkoutButton = document.getElementById('checkout');
+
+        checkoutButton.addEventListener('click', function () {
+            window.location.href = 'checkout.html';
+        });
+
     } else {
         console.log('Cart is empty.');
         displayEmptyCartMessage(); // If no items, display empty cart message

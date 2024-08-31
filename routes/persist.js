@@ -461,57 +461,25 @@ async function addProduct(product) {
 }
 
 
-function updateProduct(productId, updateData) {
+function updateProduct(productId, stock) {
   return new Promise((resolve, reject) => {
-      const fields = [];
-      const values = [];
-
-      if (updateData.name) {
-          fields.push('name = ?');
-          values.push(updateData.name);
+      if (stock === undefined || stock === null) {
+          return reject(new Error('Stock value is required'));
       }
 
-      if (updateData.description) {
-          fields.push('description = ?');
-          values.push(updateData.description);
-      }
+      const sql = `UPDATE products SET stock = ? WHERE id = ?`;
 
-      if (updateData.price) {
-          fields.push('price = ?');
-          values.push(updateData.price);
-      }
-
-      if (updateData.images) {
-          const imagesJson = JSON.stringify(updateData.images);
-          fields.push('images = ?');
-          values.push(imagesJson);
-      }
-
-      if (updateData.stock) {
-          fields.push('stock = ?');
-          values.push(updateData.stock);
-      }
-
-      if (fields.length === 0) {
-          return reject(new Error('No fields to update'));
-      }
-
-      values.push(productId);
-
-      const sql = `UPDATE products SET ${fields.join(', ')} WHERE id = ?`;
-
-      db.run(sql, values, function(err) {
+      db.run(sql, [stock, productId], function(err) {
           if (err) {
               reject(err);
           } else if (this.changes === 0) {
-              resolve(null);
+              resolve(null); // No rows were updated, maybe product doesn't exist
           } else {
-              resolve({ id: productId, ...updateData });
+              resolve({ id: productId, stock });
           }
       });
   });
 }
-
 
 // Add a cart item
 async function addCartItem(cartId, productDetails) {
@@ -578,6 +546,33 @@ async function saveGame(game) {
               .catch(ticketErr => {
                 reject(ticketErr);
               });
+          }
+        });
+      }
+    });
+  });
+}
+
+async function removeGameById(gameId) {
+  return new Promise((resolve, reject) => {
+    const deleteTicketsQuery = `DELETE FROM tickets WHERE game_id = ?`;
+    const deleteGameQuery = `DELETE FROM games WHERE game_id = ?`;
+
+    db.run(deleteTicketsQuery, [gameId], function(err) {
+      if (err) {
+        console.error('Error removing tickets for game:', err);
+        reject(err);
+      } else {
+        console.log(`Tickets for game with ID ${gameId} removed successfully.`);
+        
+        // Now proceed to delete the game
+        db.run(deleteGameQuery, [gameId], function(err) {
+          if (err) {
+            console.error('Error removing game:', err);
+            reject(err);
+          } else {
+            console.log(`Game with ID ${gameId} removed successfully.`);
+            resolve(this.changes); // Returns the number of rows affected by the game deletion
           }
         });
       }
@@ -992,6 +987,7 @@ module.exports = {
   addProduct,
   updateProduct,
   getProductById,
-  getGameById
+  getGameById,
+  removeGameById
 };
 

@@ -83,73 +83,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>${product.name}</strong><br>
                     <p><strong>Price:</strong> $${product.price.toFixed(2)}</p>
                     <p><strong>Stock:</strong> <span class="product-amount">${product.stock}</span></p>
-                    <div class="quantity-control">
-                        <input type="number" class="manual-amount" value="1" min="1" data-id="${product.id}">
-                        <button class="add-amount" data-id="${product.id}">Add to stock</button>
-                        <button class="remove-amount" data-id="${product.id}">Remove from stock</button>
-                    </div>
                 </div>
                 <button data-id="${product.id}" class="remove-product">Remove Product</button>
             </li>
         `).join('');
 
-        // Handle product list actions
-        productList.addEventListener('click', async (event) => {
-            const productId = event.target.getAttribute('data-id');
-            const stockElement = event.target.closest('li').querySelector('.product-amount');
-            const manualAmountInput = event.target.closest('li').querySelector('.manual-amount');
-            let currentStock = parseInt(stockElement.textContent);
-            let stockChange = 0;
-            let operationString = '';
-
-            if (event.target.classList.contains('add-amount')) {
-                stockChange = parseInt(manualAmountInput.value);
-                operationString = 'add';
-            } else if (event.target.classList.contains('remove-amount')) {
-                stockChange = -parseInt(manualAmountInput.value);
-                operationString = 'remove';
-            }
-
-            if (stockChange !== 0) {
-                const updatedStock = currentStock + stockChange;
-                if (updatedStock >= 0 && confirm(`Are you sure you want to ${operationString} the stock?`)) {
-                    await updateProductInfo(productId, { stock: updatedStock }, stockElement);
-                }
-            }
-
-            if (event.target.classList.contains('remove-product')) {
+        // Handle product removal
+        productList.querySelectorAll('.remove-product').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const productId = button.getAttribute('data-id');
                 if (confirm('Are you sure you want to remove this product?')) {
                     await removeProduct(productId);
                 }
-            }
-        });
-    }
-
-    // Function to update product information (only stock is updated)
-    async function updateProductInfo(productId, updateData, stockElement = null) {
-        try {
-            const formData = new FormData();
-            formData.append('productId', productId);
-            formData.append('stock', updateData.stock);
-
-            const response = await fetch('/api/admin/update-product-info', {
-                method: 'POST',
-                body: formData
             });
-
-            if (response.ok) {
-                alert('Product updated successfully!');
-                if (stockElement) {
-                    stockElement.textContent = updateData.stock;
-                }
-                fetchProducts();
-            } else {
-                const errorData = await response.json();
-                alert('Error updating product: ' + errorData.message);
-            }
-        } catch (error) {
-            console.error('Error updating product:', error);
-        }
+        });
     }
 
     // Function to remove a product
@@ -176,17 +123,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle adding a new product with image upload
     addProductForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-    
+
         const formData = new FormData();
         formData.append('name', document.getElementById('product-title').value);
         formData.append('description', document.getElementById('description').value);
         formData.append('price', parseFloat(document.getElementById('price').value));
         formData.append('stock', parseInt(document.getElementById('amount').value) || 0);
-    
+
         let valid = true;
         let imageCount = 0;
         let imageUrlCount = 0;
-    
+
         uploadedImages.forEach((image) => {
             if (typeof image === 'string') {
                 if (isValidUrl(image)) { // Check if the string is a valid URL
@@ -211,14 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 valid = false;
             }
         });
-    
+
         console.log(`Total images added: ${imageCount}`);
         console.log(`Total image URLs added: ${imageUrlCount}`);
-    
+
         if (!valid) {
             return; // Stop form submission if there are invalid files
         }
-    
+
         for (let [key, value] of formData.entries()) {
             if (value instanceof File) {
                 console.log(`${key}: [File] Name: ${value.name}, Size: ${value.size} bytes, Type: ${value.type}`);
@@ -226,13 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`${key}: ${value} (Type: ${typeof value})`);
             }
         }
-    
+
         try {
             const response = await fetch('/api/admin/add-product', {
                 method: 'POST',
                 body: formData
             });
-    
+
             if (response.ok) {
                 alert('Product added successfully!');
                 addProductForm.reset();
@@ -349,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p><strong>Stadium:</strong> ${game.stadium_name}</p>
                     <p><strong>Status:</strong> ${game.status}</p>
                 </div>
-                <button data-id="${game.id}" class="remove-product">Remove Game</button>
+                <button data-id="${game.game_id}" class="remove-product">Remove Game</button>
             </li>
         `).join('');
 
@@ -357,6 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameList.querySelectorAll('.remove-product').forEach(button => {
             button.addEventListener('click', async (event) => {
                 const gameId = button.getAttribute('data-id');
+                console.log("gameid: " + gameId );
                 if (confirm('Are you sure you want to remove this game?')) {
                     await removeGame(gameId);
                 }

@@ -371,20 +371,48 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Example function to render ticket details (you should implement this)
     function renderTicketDetails(ticket_id, game_date, seat_number, stand, price) {
-        // Create a div for the ticket details
         const ticketDetailsDiv = document.createElement('div');
+        ticketDetailsDiv.className = 'ticket-details';
+        ticketDetailsDiv.setAttribute('data-ticket-id', ticket_id);
         ticketDetailsDiv.innerHTML = `
             <p><b>Game Date</b>: ${game_date}</p>
             <p><b>Seat Number</b>: ${seat_number}</p>
             <p><b>Stand</b>: ${stand}</p>
             <p><b>Price</b>: ${price}$</p>
             <p><b>Ticket ID</b>: ${ticket_id}</p>
+            <button class="clear-cart" data-ticket-id="${ticket_id}">Remove ticket</button>
         `;
-        // Append the div to the container
         document.getElementById('checkoutContainer').appendChild(ticketDetailsDiv);
+    
+        ticketDetailsDiv.querySelector('.clear-cart').addEventListener('click', function() {
+            removeTicketFromCart(ticket_id);
+        });
     }
+    
+    function removeTicketFromCart(ticketId) {
+        fetch('/api/ticket-cart/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ticketId: ticketId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Item removed successfully') {
+                const ticketElement = document.querySelector(`.ticket-details[data-ticket-id="${ticketId}"]`);
+                if (ticketElement) {
+                    ticketElement.remove();
+                }
+            } else {
+                console.error('Failed to remove ticket from cart');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+     
 
     loadGames();
 });

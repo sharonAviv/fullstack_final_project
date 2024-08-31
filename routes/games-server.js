@@ -1,36 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { saveGame, getAllGames } = require('./persist'); // Adjust the path as necessary
-const { verifyAdmin } = require('./middleware');
-
-// POST a new game
-router.post('/', verifyAdmin, async (req, res) => {
-    const { title, date, teamHome, teamAway, stadiumName } = req.body;
-    console.log('Received POST request to add game:', req.body);
-
-    try {
-        const newGame = { title, game_date: date, team_home: teamHome, team_away: teamAway, stadium_name: stadiumName, status: 'scheduled' };
-        const addedGame = await saveGame(newGame);
-        
-        if (addedGame.game_id) {
-            console.log('Game added:', addedGame);
-            res.status(201).send(addedGame);
-        } else {
-            console.log('Game already exists:', addedGame);
-            res.status(200).send({ message: 'Game already exists', game: addedGame });
-        }
-    } catch (error) {
-        res.status(400).send({ message: 'Error adding game', error: error.message });
-    }
-});
-
+const { getAllGames } = require('./persist'); // Adjust the path as necessary
 
 // GET all games
 router.get('/', async (req, res) => {
+    console.log('Received GET request to fetch all games');
+    
     try {
         const games = await getAllGames();
+        console.log('Games fetched successfully:', games.length, 'games found.');
         res.status(200).send(games);
     } catch (error) {
+        console.error('Error fetching games:', error);
         res.status(500).send({ message: 'Error fetching games', error: error.message });
     }
 });

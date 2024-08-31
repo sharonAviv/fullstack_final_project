@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 function verifyToken(req, res, next) {
     console.log("verifyToken middleware called"); // Debugging log
+    console.log('Cookies:', req.cookies);
     const token = req.cookies.token; // Extract the token from the cookie
     console.log('Token from cookies:', token); // Debugging log
 

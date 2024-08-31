@@ -1490,3 +1490,21 @@ button[type="submit"]:hover {
 .readme ul, li{
     text-align: left;
 }
+
+
+.add-image-url-btn {
+    background-color: #007bff; /* Blue background color */
+    color: #ffffff; /* White text color */
+    border: none; /* No border */
+    border-radius: 4px; /* Slightly rounded corners */
+    padding: 5px 10px; /* Small padding for a compact button */
+    font-size: 14px; /* Small font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    text-align: center; /* Center text */
+    display: inline-block; /* Inline block for flexibility */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+.add-image-url-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}

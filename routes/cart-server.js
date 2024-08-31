@@ -51,22 +51,22 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
 
 
 // Remove an item from the cart
-router.post('/remove', verifyToken, async (req, res) => {
-    console.log('/remove route hit'); // Debugging log
-    const username = req.user.username; // Assuming req.user is set by verifyToken
-    console.log(username + " removing for user");
-    console.log(req.body);
-    const { productId } = req.body;
-    try {
-        let cartItems = await getCart(username);
-        cartItems = cartItems.filter(item => item.productId !== productId);
-        await saveCart(username, cartItems);
-        await logActivity(username, 'item-removed-from-cart');
-        res.send({ message: 'Item removed successfully', cartItems });
-    } catch (error) {
-        res.status(500).send({ message: 'Error removing item from cart', error: error.message });
-    }
-});
+// router.post('/remove', verifyToken, async (req, res) => {
+//     console.log('/remove route hit'); // Debugging log
+//     const username = req.user.username; // Assuming req.user is set by verifyToken
+//     console.log(username + " removing for user");
+//     console.log(req.body);
+//     const { productId } = req.body;
+//     try {
+//         let cartItems = await getCart(username);
+//         cartItems = cartItems.filter(item => item.productId !== productId);
+//         await saveCart(username, cartItems);
+//         await logActivity(username, 'item-removed-from-cart');
+//         res.send({ message: 'Item removed successfully', cartItems });
+//     } catch (error) {
+//         res.status(500).send({ message: 'Error removing item from cart', error: error.message });
+//     }
+// });
 
 // Remove all items from the cart
 router.post('/removeAll', verifyToken, async (req, res) => {

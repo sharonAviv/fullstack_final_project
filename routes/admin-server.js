@@ -3,7 +3,7 @@ const path = require('path');
 const multer = require('multer');
 const router = express.Router();
 const { readActivities } = require('./activityLogger');
-const { getProducts, addProduct, removeProduct, updateProduct, saveGame } = require('./persist');
+const { getProducts, addProduct, removeProduct, removeGameById, saveGame } = require('./persist');
 const { verifyToken, verifyAdmin } = require('./middleware'); // Middleware for authentication
 
 // Set up multer storage configuration with a 2 MB file size limit
@@ -80,47 +80,18 @@ router.get('/products', verifyToken, verifyAdmin, async (req, res) => {
     }
 });
 
-// Route to update product information, including file uploads
-router.post('/update-product-info', verifyToken, verifyAdmin, upload.array('images'), async (req, res) => {
-    console.log('Received request to update product info'); // Debugging log
-    console.log('Request body:', req.body); // Log the request body for debugging
-    console.log('Uploaded files:', req.files); // Log the uploaded files for debugging
-
-    const { productId, existingImages = [], ...updateData } = req.body;
-
-    // Debugging logs for extracted data
-    console.log(`Product ID: ${productId}`);
-    console.log('Existing images:', existingImages);
-    console.log('Update data:', updateData);
-
-    // Add existing images to the updateData
-    if (existingImages.length > 0) {
-        updateData.images = Array.isArray(existingImages) ? existingImages : [existingImages];
-        console.log('Updated images with existing ones:', updateData.images);
-    }
-
-    // If new images were uploaded, add their URLs to the updateData
-    if (req.files && req.files.length > 0) {
-        const imageUrls = req.files.map(file => `/icons/${file.filename}`);
-        updateData.images = updateData.images ? updateData.images.concat(imageUrls) : imageUrls;
-        console.log('Updated images with new uploaded ones:', updateData.images);
-    }
-
+router.post('/remove-game', verifyToken, verifyAdmin, async (req, res) => {
+    const { gameId } = req.body;
     try {
-        console.log('Attempting to update product in the database...');
-        const updatedProduct = await updateProduct(productId, updateData);
-        if (updatedProduct) {
-            console.log('Product updated successfully:', updatedProduct); // Log the successful update
-            res.status(200).send({ message: 'Product updated successfully!' });
-        } else {
-            console.log('Product not found for ID:', productId); // Log if the product was not found
-            res.status(404).send({ message: 'Product not found' });
-        }
+        await removeGameById(gameId);
+        res.send({ message: 'Game removed successfully' });
     } catch (error) {
-        console.error('Error updating product:', error); // Log any errors that occur during the process
-        res.status(500).send({ message: 'Error updating product', error: error.message });
+        res.status(500).send({ message: 'Error removing game', error: error.message });
     }
 });
+
+module.exports = router;
+
 router.post('/add-game', verifyToken, verifyAdmin, async (req, res) => {
     const { title, game_date, team_home, team_away, stadium_name, status } = req.body;
     console.log('Received game data:', { title, game_date, team_home, team_away, stadium_name, status });
@@ -134,7 +105,7 @@ router.post('/add-game', verifyToken, verifyAdmin, async (req, res) => {
 
         // Debug: Log the game ID
         console.log('Game added with ID:', gameId);
-        res.status(200).send({ message: 'Game added successfully!' });
+        res.status(200).send({ message: 'Game added successfully!' ,game_id: gameId});
 
     } catch (error) {
         // Debug: Log the error
