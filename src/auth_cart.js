@@ -232,6 +232,7 @@ function displayUserGreeting(username) {
                     // Update the cart display to prompt login for adding items
                     displayLoginToAddMessage();
                     hideAdminLink();
+                    hideNewsContactLMM();
 
                     
                     authLink.onclick = function() {
