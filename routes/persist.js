@@ -170,7 +170,7 @@ async function initGames() {
 }
 
 async function initProducts() {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const products = [
       {
         name: "Blue T-Shirt",
@@ -188,21 +188,34 @@ async function initProducts() {
       }
     ];
 
-    db.serialize(() => {
-      const stmt = db.prepare(`INSERT INTO products (id, name, description, price, images, stock) VALUES (?, ?, ?, ?, ?, ?)`);
-      for (const product of products) {
-        stmt.run(product.id, product.name, product.description, product.price, product.images, product.stock);
-      }
-      stmt.finalize((err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
+    const existingProducts = await getProducts();
+    const productsToAdd = products.filter(product => 
+      !existingProducts.some(existingProduct => 
+        existingProduct.name === product.name && 
+        existingProduct.description === product.description
+      )
+    );
+
+    if (productsToAdd.length > 0) {
+      db.serialize(() => {
+        const stmt = db.prepare(`INSERT INTO products (name, description, price, images, stock) VALUES (?, ?, ?, ?, ?)`);
+        for (const product of productsToAdd) {
+          stmt.run(product.name, product.description, product.price, product.images, product.stock);
         }
+        stmt.finalize((err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
       });
-    });
+    } else {
+      resolve();
+    }
   });
 }
+
 
 // Save a new user to the database
 async function saveUser(user) {
