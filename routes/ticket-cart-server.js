@@ -40,6 +40,7 @@ router.post('/remove', verifyToken, async (req, res) => {
     console.log('/remove route hit'); // Debugging log
     const username = req.user.username; // Assuming req.user is set by verifyToken
     const { ticketId } = req.body;
+    console.log(ticketId);
     try {
         let cartItems = await getTicketCart(username);
         cartItems = cartItems.filter(ticket => ticket.ticket_id !== ticketId);

@@ -114,12 +114,12 @@ function checkUserAuthentication() {
                 console.log('No user found or user is not authenticated.');
                 displayLoginToAddMessage();
                 displayLoginLink();
-                hideNewsAndContact();
+                hideNewsContactLMM();
                 hideAdminLink();
             } else {
                 console.log('Authenticated user:', data.user.username);
                 displayUserGreeting(data.user.username);
-                displayNewsAndContact();
+                displayNewsContactLMM();
 
                 // Check if the user is an admin
                 if (data.user.isAdmin) {
@@ -151,9 +151,11 @@ function hideAdminLink() {
     }
 }
 
-function hideNewsAndContact() {
+function hideNewsContactLMM() {
     const newsLink = document.querySelector('nav a[href="news.html"]');
     const contactLink = document.querySelector('nav a[href="contact.html"]');
+    const llmLink = document.querySelector('nav a[href="llm.html"]');
+
 
     if (newsLink) {
         newsLink.style.display = 'none'; // Hide the news link
@@ -162,11 +164,17 @@ function hideNewsAndContact() {
     if (contactLink) {
         contactLink.style.display = 'none'; // Hide the contact link
     }
+
+    if(llmLink) {
+        llmLink.style.display = 'none'; // Hide the LMM link
+    }
 }
 
-function displayNewsAndContact() {
+function displayNewsContactLMM() {
     const newsLink = document.querySelector('nav a[href="news.html"]');
     const contactLink = document.querySelector('nav a[href="contact.html"]');
+    const llmLink = document.querySelector('nav a[href="llm.html"]');
+
 
     if (newsLink) {
         newsLink.style.display = 'block'; // Show the news link
@@ -174,6 +182,10 @@ function displayNewsAndContact() {
 
     if (contactLink) {
         contactLink.style.display = 'block'; // Show the contact link
+    }
+
+    if(llmLink) {
+        llmLink.style.display = 'block';
     }
 }
 
