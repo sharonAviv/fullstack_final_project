@@ -11,10 +11,4 @@ router.get('/user-data', verifyToken, (req, res) => {
     res.json({ user });
 });
 
-// Example route only accessible to admin users
-router.get('/admin-data', verifyToken, verifyAdmin, (req, res) => {
-    console.log('Admin authenticated:', req.user.username);
-    res.json({ message: 'Welcome, admin!', user: req.user });
-});
-
 module.exports = router;

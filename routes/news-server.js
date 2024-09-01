@@ -8,7 +8,6 @@ router.get('/', async (req, res) => {
 
   try {
     const response = await fetch(`https://newsapi.org/v2/everything?q=${query}&apiKey=${apiKey}`);
-    // const response = await fetch(`https://newsapi.org/v2/top-headlines?country=il&category=sports&q=${query}&apiKey=${apiKey}`);
     if (response.ok) {
       const data = await response.json();
       res.json(data.articles);

@@ -8,27 +8,17 @@ const { logActivity } = require('./activityLogger'); // Activity logging
 // GET tickets for a specific (game and stand) or ticketId
 router.get('/', async (req, res) => {
     const { gameId, stand, ticketId } = req.query;
-    //console.log("gameid : " + gameId);
-    //console.log("stand : " + stand);
-    //console.log("ticketid : " + ticketId);
-
     try {
         let tickets;
         if (gameId) {
             // Fetch tickets by gameId
-      //      console.log("Fetching tickets by gameId:", gameId);
             tickets = await getTicketsByGameID(gameId);
-        //    console.log("Tickets fetched for gameId:", { gameId, tickets });
         } else if (gameId && stand) {
             // Fetch tickets by gameId and stand
-          //  console.log("Fetching tickets by gameId and stand:", { gameId, stand });
             tickets = await getTicketsByGameStand(gameId, stand);
-            //console.log("Tickets fetched for gameId and stand:", { gameId, stand, tickets });
         } else if (ticketId) {
             // Fetch tickets by ticketId
-            //console.log("Fetching ticket by ID:", ticketId);
             tickets = await getTicketsByTicketID(ticketId);
-            //console.log("Tickets fetched for ticketId:", { ticketId, tickets });
         } else {
             throw new Error('Missing required query parameters');
         }
@@ -60,39 +50,5 @@ router.post('/purchase',verifyToken ,async (req, res) => {
         res.status(500).send(error);
     }
 });
-
-// router.post('/', verifyToken ,verifyAdmin, async (req, res) => {
-//     const { gameId, seatNumber, stand, price } = req.body;
-//     console.log('Received POST request to add ticket:', req.body);
-
-//     try {
-//         const game = await getGameById(gameId); 
-//         if (!game) {
-//             return res.status(404).send({ message: 'Game not found' });
-//         }
-
-//         const newTicket = { 
-//             game_id: gameId, 
-//             game_date: game.game_date, 
-//             seat_number: seatNumber, 
-//             stand, 
-//             price, 
-//             status: 'available' 
-//         };
-        
-//         const addedTicket = await saveTicket(newTicket);
-        
-//         if (typeof addedTicket === 'number') {
-//             console.log('Ticket added:', addedTicket);
-//             res.status(201).send({ message: 'Ticket added successfully', ticketId: addedTicket });
-//         } else {
-//             console.log('Ticket already exists:', addedTicket);
-//             res.status(200).send({ message: 'Ticket already exists', ticket: addedTicket });
-//         }
-//     } catch (error) {
-//         res.status(400).send({ message: 'Error adding ticket', error: error.message });
-//     }
-// });
-
 
 module.exports = router;

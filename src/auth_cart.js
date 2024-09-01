@@ -206,7 +206,6 @@ function displayUserGreeting(username) {
 
     // Change the tooltip text to "Logout" after the user is signed in
     authTooltip.textContent = 'Logout';
-    console.log("needs to logout");
     authLink.onclick = function(event) {
         event.preventDefault(); // Prevent the default link behavior
 
@@ -233,11 +232,13 @@ function displayUserGreeting(username) {
                     displayLoginToAddMessage();
                     hideAdminLink();
                     hideNewsContactLMM();
-
-                    
                     authLink.onclick = function() {
                         window.location.href = '/login.html'; // Redirect to login page
                     };
+
+                window.location.href = '/shop.html';
+                    
+                    
                 } else {
                     console.error('Logout failed');
                 }

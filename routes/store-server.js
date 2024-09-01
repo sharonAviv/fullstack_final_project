@@ -30,19 +30,5 @@ router.get('/search', async (req, res) => {
     }
 });
 
-// Add product to cart (protected route)
-router.post('/add-to-cart', verifyToken, async (req, res) => {
-    const { productId } = req.body;
-    if (!productId) {
-        return res.status(400).json({ message: 'Product ID is required' });
-    }
-    try {
-        await addToCart(req.user.username, productId);
-        res.status(200).json({ message: 'Product added to cart successfully' });
-    } catch (error) {
-        console.error('Error adding to cart:', error);
-        res.status(500).json({ message: 'Error adding product to cart', error: error.message });
-    }
-});
 
 module.exports = router;

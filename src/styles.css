@@ -114,21 +114,6 @@ body {
     z-index: 1000;
 }
 
-/* Main Header styles */
-/* .main-header {
-    background-color: white;
-    border-bottom: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 60px;
-    position: fixed;
-    width: calc(100% - 120px);
-    top: 0;
-    z-index: 1000;
-} */
-
 .header-left {
     display: flex;
     align-items: center;
@@ -533,15 +518,6 @@ body.showCart .container {
     color: #0038a8; /* Dark blue color to match the site’s theme */
     text-align: left;
 }
-
-/* .cartTab .close-cart {
-    background-color: #e74c3c;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-} */
 
 .cartTab .checkout-button {
     background-color: #007bff;
@@ -1482,7 +1458,7 @@ button[type="submit"]:hover {
 }
 
 #game-list li button:hover {
-    background-color: #c82333;
+    background-color: #0056b3; /* Darker blue on hover */
 }
 
 .readme p{
@@ -1504,7 +1480,6 @@ button[type="submit"]:hover {
 .readme ul, li{
     text-align: left;
 }
-
 
 .add-image-url-btn {
     background-color: #007bff; /* Blue background color */
