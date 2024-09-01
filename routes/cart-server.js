@@ -6,13 +6,11 @@ const { logActivity } = require('./activityLogger'); // Activity logging
 
 // View the cart
 router.get('/view', verifyToken, async (req, res) => {
-    console.log('/view route hit'); // Debugging log
     console.log(req.user.username + " username in cart");
 
     const username = req.user.username; // Assuming req.user is set by verifyToken
     try {
         const cartItems = await getCart(username);
-        console.log("items " + cartItems);
         res.json(cartItems);
 
     } catch (error) {
@@ -31,8 +29,6 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
     }
 
     const username = req.user.username; // Assuming req.user is set by verifyToken
-    console.log('cart of user:', username); // Debugging log
-    console.log('Request body:', req.body); // Log the request body for debugging
 
     const { productId, quantity } = req.body; // Ensure productId is correctly extracted from the request body
     console.log(`Received productId: ${productId}, quantity: ${quantity}`);
@@ -48,25 +44,6 @@ router.post('/add-to-cart', verifyToken, async (req, res) => {
         res.status(500).send({ message: 'Error adding item to cart', error: error.message });
     }
 });
-
-
-// Remove an item from the cart
-// router.post('/remove', verifyToken, async (req, res) => {
-//     console.log('/remove route hit'); // Debugging log
-//     const username = req.user.username; // Assuming req.user is set by verifyToken
-//     console.log(username + " removing for user");
-//     console.log(req.body);
-//     const { productId } = req.body;
-//     try {
-//         let cartItems = await getCart(username);
-//         cartItems = cartItems.filter(item => item.productId !== productId);
-//         await saveCart(username, cartItems);
-//         await logActivity(username, 'item-removed-from-cart');
-//         res.send({ message: 'Item removed successfully', cartItems });
-//     } catch (error) {
-//         res.status(500).send({ message: 'Error removing item from cart', error: error.message });
-//     }
-// });
 
 // Remove all items from the cart
 router.post('/removeAll', verifyToken, async (req, res) => {
@@ -114,7 +91,6 @@ router.post('/complete-purchase', verifyToken, async (req, res) => {
             if (newStock < 0) {
                 return res.status(400).send({ message: `Insufficient stock for product ${product.name}.` });
             }
-            console.log("newStock: " + newStock);
             // Update the product's stock in the database
             await updateProduct(productId, newStock );
         }

@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 
 function verifyToken(req, res, next) {
     console.log("verifyToken middleware called"); // Debugging log
-    console.log('Cookies:', req.cookies);
     const token = req.cookies.token; // Extract the token from the cookie
     console.log('Token from cookies:', token); // Debugging log
 
@@ -18,7 +17,6 @@ function verifyToken(req, res, next) {
             // Return a similar response if token verification fails
             return res.status(200).json({ message: 'Invalid token, proceeding as guest' });
         }
-        console.log('Token decoded:', decoded); // Debugging log
         req.user = { username: decoded.username, isAdmin: decoded.isAdmin }; // Set user context including isAdmin
         next(); // Proceed to the next middleware or route handler
     });

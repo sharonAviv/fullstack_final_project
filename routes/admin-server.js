@@ -33,18 +33,13 @@ router.get('/activities', verifyToken, verifyAdmin, async (req, res) => {
 
 // Route to handle file uploads and add a product
 router.post('/add-product', verifyToken, verifyAdmin, upload.array('images'), async (req, res) => {
-    console.log('Request body:', req.body); // Debugging
-    console.log('Uploaded files:', req.files); // Debugging
-
     const { name, description, price, stock, imageUrls = [] } = req.body;
 
     // Handle image URLs from the request body
     let urlsArray = Array.isArray(imageUrls) ? imageUrls : [imageUrls]; // Ensure it's an array
-    console.log('Image URLs:', urlsArray);
 
     // Handle uploaded image files
     const images = req.files.map(file => `/icons/${file.filename}`);
-    console.log('Images from files:', images);
 
     // Combine URLs and uploaded images into a single array
     const combinedImages = [...images, ...urlsArray];
@@ -99,8 +94,7 @@ router.post('/add-game', verifyToken, verifyAdmin, async (req, res) => {
     // Debug: Log the received data
 
     try {
-        // Debug: Log before adding the game
-        console.log('Attempting to add game to the database...');
+        
         const gameId = await saveGame({ title, game_date, team_home, team_away, stadium_name, status });
 
         // Debug: Log the game ID

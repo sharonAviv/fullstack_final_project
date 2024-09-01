@@ -12,11 +12,11 @@ async function init() {
     await createTables();
     console.log("tabels created")
     await ensureAdminUserExists();
-    console.log("admin")
+    console.log("admin exist")
     await initGames();
-    console.log("games")
+    console.log("created example games")
     await initProducts();
-    console.log("products")
+    console.log("created exapmle products")
 
   } catch (error) {
     console.error('Initialization error:', error);
