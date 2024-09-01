@@ -161,6 +161,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     async function ticketPayment() {
+        if (ticketIds.length === 0) {
+            console.log('No tickets in cart to purchase');
+            return;
+        }
         try {
             // Simulate order completion and clearing the cart on the server
             console.log('Trying to purchase tickets for ' + JSON.stringify({ ticketIds }));
@@ -398,27 +402,22 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({ ticketId: ticketId })
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             if (data.message === 'Item removed successfully') {
                 const ticketElement = document.querySelector(`.ticket-details[data-ticket-id="${ticketId}"]`);
                 if (ticketElement) {
                     ticketElement.remove();
                 }
+                // Update the ticketIds array
+                ticketIds = ticketIds.filter(id => id !== ticketId);
             } else {
                 console.error('Failed to remove ticket from cart');
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to remove ticket from cart. Please try again.');
-        });
+        .catch(error => console.error('Error:', error));
     }
+    
     
     
     
