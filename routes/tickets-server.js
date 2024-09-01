@@ -33,17 +33,12 @@ router.get('/', async (req, res) => {
 router.post('/purchase',verifyToken ,async (req, res) => {
     const username = req.user.username;
     const { ticketIds } = req.body;
-    if (Array.isArray(ticketIds)) {
-        console.log("ticketIds is an array");
-    } else {
-        console.log("ticketIdsType: " + ticketIds.constructor.name);
-    }
     console.log('/purchase route hit for ticketIds' + JSON.stringify({ ticketIds }));
     try {
         await purchaseTickets(ticketIds);
         await saveTicketCart(username, []);
-        console.log('Tickets purchased successfully');
         await logActivity(username, 'purchase-completed');
+        console.log('Tickets purchased successfully');
         res.status(200).send({ message: 'Tickets purchased successfully' });
     } catch (error) {
         console.error('Error purchasing tickets:', error);

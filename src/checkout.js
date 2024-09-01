@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         try {
             const cartItems = await getShoppingCart(); // Wait for the cart items to be retrieved
             let total = 0;
-
+            console.log(JSON.stringify(cartItems, null, 2)); // This will show the filtered items in JSON format
             // Clear previous items
             orderItemsContainer.innerHTML = '';
 
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     itemElement.innerHTML = `
                         <span class="item-name">${item.name}</span>
                         <span class="item-quantity-checkout">Quantity: ${item.quantity}</span>
-                        <span class="item-price">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <span class="item-price">$${(item.price).toFixed(2)}</span>
                     `;
 
                     orderItemsContainer.appendChild(itemElement);

@@ -40,10 +40,12 @@ router.post('/remove', verifyToken, async (req, res) => {
     console.log('/remove route hit'); // Debugging log
     const username = req.user.username; // Assuming req.user is set by verifyToken
     const { ticketId } = req.body;
-    console.log(ticketId);
+    console.log("ticketid: " + ticketId);
     try {
         let cartItems = await getTicketCart(username);
+        console.log(JSON.stringify(cartItems, null, 2)); // This will show all items with full details in JSON format
         cartItems = cartItems.filter(ticket => ticket.ticket_id !== ticketId);
+        console.log(JSON.stringify(cartItems, null, 2)); // This will show all items with full details in JSON format
         await saveTicketCart(username, cartItems);
         await logActivity(username, 'item-removed-from-cart');
         res.send({ message: 'Item removed successfully', cartItems });
