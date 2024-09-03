@@ -453,7 +453,6 @@ async function testTicketsRoute() {
         console.log('Test 3 failed:', data);
     }
 
-    console.log("ticketId: " + ticketId);
     const ticketIds = [ticketId];
 
     // Test case 4: Purchase tickets

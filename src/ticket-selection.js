@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let seatInfo = null;
     let ticketIds = [];
     let totalPrice = 0;
+    const res = null;
 
     // Load games and filter based on selected month
     const loadGames = async () => {
@@ -156,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault(); // Prevents the default form submission behavior
         checkoutScreen.style.display = 'none';
         ticketPayment();
+        console.log("res: " + res);
         console.log('Payment process finished, redirecting to confirmation');
         window.location.href = 'confirmation.html';
     });
@@ -174,33 +176,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json'
                 }, 
-                body: JSON.stringify({ ticketIds }) // Replace with an array if multiple IDs
+                body: JSON.stringify({ ticketIds }) 
             });
+
+            res = response.status;
 
             if (response.ok) {
                 console.log('Tickets purchased successfully');
-
-                // Loop through each ticketId and remove it from the cart
-                for (const ticketId of ticketIds) {
-                    const removeResponse = await fetch('/api/ticket-cart/remove', {
-                        method: 'POST',
-                        credentials: 'include', // Include cookies for authentication
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ ticketId }) // Send the current ticketId to remove
-                    });
-
-                    if (removeResponse.ok) {
-                        console.log(`Ticket ID ${ticketId} removed from cart successfully.`);
-                    } else {
-                        console.error(`Failed to remove Ticket ID ${ticketId} from cart.`);
-                    }
-                }
+                alert('Tickets purchased successfully');
             } else {
                 console.error('Failed to purchase tickets');
+                alert('Failed to purchase tickets');
+
             }
         } catch (error) {
+            res = response.status;
+            alert(error);
             console.error('Error during purchase:', error);
             alert('There was an issue completing your purchase. Please try again.');
         }
