@@ -154,8 +154,6 @@ function hideAdminLink() {
 function hideNewsContactLMM() {
     const newsLink = document.querySelector('nav a[href="news.html"]');
     const contactLink = document.querySelector('nav a[href="contact.html"]');
-    const llmLink = document.querySelector('nav a[href="llm.html"]');
-
 
     if (newsLink) {
         newsLink.style.display = 'none'; // Hide the news link
@@ -164,17 +162,11 @@ function hideNewsContactLMM() {
     if (contactLink) {
         contactLink.style.display = 'none'; // Hide the contact link
     }
-
-    if(llmLink) {
-        llmLink.style.display = 'none'; // Hide the LMM link
-    }
 }
 
 function displayNewsContactLMM() {
     const newsLink = document.querySelector('nav a[href="news.html"]');
     const contactLink = document.querySelector('nav a[href="contact.html"]');
-    const llmLink = document.querySelector('nav a[href="llm.html"]');
-
 
     if (newsLink) {
         newsLink.style.display = 'block'; // Show the news link
@@ -184,9 +176,6 @@ function displayNewsContactLMM() {
         contactLink.style.display = 'block'; // Show the contact link
     }
 
-    if(llmLink) {
-        llmLink.style.display = 'block';
-    }
 }
 
 function displayLoginLink() {

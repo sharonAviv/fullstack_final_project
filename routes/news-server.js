@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const apiKey = '84923122f7f44024a0f46f7fc72f7b2b'; 
+  const apiKey = 'YOUR_API_KEY'; 
   const query = 'Israel\'s national soccer team NOT war NOT Hamas NOT lebanon NOT Removed';
 
   try {

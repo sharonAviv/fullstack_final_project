@@ -8,8 +8,8 @@ let transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: 'emely.ledner98@ethereal.email',
-    pass: 'p93Se3dP3n76Cuh5SZ'
+    user: 'your.username@ethereal.email',
+    pass: 'your-password'
   }
 });
 
@@ -24,8 +24,8 @@ router.post('/', async (req, res) => {
 
     // Send email
     let info = await transporter.sendMail({
-      from: '"Your Store" <emely.ledner98@ethereal.email>',
-      to: "emely.ledner98@ethereal.email",
+      from: '"Your Store" <your.username@ethereal.email>',
+      to: "your.username@ethereal.email",
       subject: "New Contact Form Submission",
       text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`,
       html: `<p><strong>Name:</strong> ${name}</p>
